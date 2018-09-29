@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Builder
 public class DocParseConfiguration {
-    private List<String> _packages = new ArrayList<>();
     private List<IClassResolver> _classResolvers = new ArrayList<>();
     private List<IClassParser> _classParsers = new ArrayList<>();
     private List<IMethodParser> _methodParsers = new ArrayList<>();

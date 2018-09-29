@@ -62,13 +62,15 @@ public class DocParser implements IDocParser {
 
     private ControllerModel handleClass(Class clazz) {
         var controllerModel = new ControllerModel();
+        ClassJavadoc classDoc = RuntimeJavadoc.getJavadoc(clazz.getCanonicalName());
         for (var classParser : _configuration.getClassParsers())
         {
-            controllerModel = classParser.parse(clazz, controllerModel);
+            controllerModel = classParser.parse(clazz, classDoc, controllerModel);
         }
         for (var method : clazz.getMethods())
         {
-            var pathModel = handleMethod(method);
+            Optional<MethodJavadoc> methodDoc = classDoc.getMethods().stream().filter(o -> o.getName().equals(method.getName())).findFirst();
+            var pathModel = handleMethod(method, methodDoc.orElse(null));
             controllerModel.getControllerMethods().add(pathModel);
         }
         return controllerModel;
@@ -86,30 +88,34 @@ public class DocParser implements IDocParser {
 //        return controllerModel;
     }
 
-    private PathModel handleMethod(Method method) {
+    private PathModel handleMethod(Method method, MethodJavadoc methodJavadoc) {
         var pathModel = new PathModel();
         for (var methodParser : _configuration.getMethodParsers())
         {
-            pathModel = methodParser.parse(method, pathModel);
+            pathModel = methodParser.parse(method, methodJavadoc, pathModel);
         }
         for (var parameter : method.getParameters())
         {
-            var parameterModel = handleMethodParameter(parameter);
+            ParamJavadoc paramJavadoc = null;
+            if (methodJavadoc != null) {
+                paramJavadoc = methodJavadoc.getParams().stream().filter(o -> o.getName().equals(parameter.getName())).findFirst().orElse(null);
+            }
+            var parameterModel = handleMethodParameter(parameter, paramJavadoc);
             pathModel.getParameters().add(parameterModel);
         }
-        var responseModels = handleReturnValue(method.getReturnType());
+        var responseModels = handleReturnValue(method.getReturnType(), methodJavadoc.getReturns());
         pathModel.setResponse(responseModels);
         return pathModel;
     }
 
-    private List<ResponseModel> handleReturnValue(Class<?> returnType) {
+    private List<ResponseModel> handleReturnValue(Class<?> returnType, Comment returns) {
         var responseModels = new ArrayList<ResponseModel>();
         ResponseModel lastResponseModel = null;
         for (var returnParser : _configuration.getReturnParsers())
         {
             if (returnParser.isNew())
             {
-                var responseModel = returnParser.parse(returnType, new ResponseModel());
+                var responseModel = returnParser.parse(returnType, returns, new ResponseModel());
                 lastResponseModel = responseModel;
                 responseModels.add(responseModel);
             }
@@ -120,17 +126,17 @@ public class DocParser implements IDocParser {
                     lastResponseModel = new ResponseModel();
                     responseModels.add(lastResponseModel);
                 }
-                lastResponseModel = returnParser.parse(returnType, lastResponseModel);
+                lastResponseModel = returnParser.parse(returnType, returns, lastResponseModel);
             }
         }
         return responseModels;
     }
 
-    private ParameterModel handleMethodParameter(Parameter parameter) {
+    private ParameterModel handleMethodParameter(Parameter parameter, ParamJavadoc paramJavadoc) {
         var parameterModel = new ParameterModel();
         for (var parameterParser : _configuration.getMethodParameterParsers())
         {
-            parameterModel = parameterParser.parse(parameter, parameterModel);
+            parameterModel = parameterParser.parse(parameter, paramJavadoc, parameterModel);
         }
         return parameterModel;
     }
