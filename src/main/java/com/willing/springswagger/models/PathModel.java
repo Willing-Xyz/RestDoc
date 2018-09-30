@@ -15,11 +15,12 @@ public class PathModel {
     /**
      * url路径
      */
-    private String[] _paths;
+    private String[] _paths = new String[]{};
     /**
      * HTTP METHOD
      */
-    private RequestMethod[] _httpMethods;
+    private RequestMethod[] _httpMethods = new RequestMethod[]{};
+    private String _requestContentType;
     /**
      * 详细描述
      */
@@ -32,4 +33,5 @@ public class PathModel {
      * 响应
      */
     private List<ResponseModel> _response = new ArrayList<>();
+    private Boolean _deprecated;
 }

@@ -15,7 +15,8 @@ public class ParameterModel {
     /**
      * 是否必须
      */
-    private boolean _required;
+    private Boolean _required;
+    private Class _parameterClass;
     /**
      * 参数描述
      */

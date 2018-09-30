@@ -25,7 +25,7 @@ public class DocParser implements IDocParser {
     }
 
     @Override
-    public RootModel parse() {
+    public String parse() {
 //        var scanner = new ClassPathScanningCandidateComponentProvider(false);
 //        scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 //
@@ -41,7 +41,7 @@ public class DocParser implements IDocParser {
                 rootModel.getControllers().add(controllerModel);
             }
         }
-        return null;
+        return _configuration.getDocGenerator().generate(rootModel);
     }
 
 //    private void handlePackage(ClassPathScanningCandidateComponentProvider scanner, String packageName, RootModel rootModel) {
@@ -69,6 +69,14 @@ public class DocParser implements IDocParser {
         }
         for (var method : clazz.getMethods())
         {
+            boolean isSupport = false;
+            for (var methodResolver : _configuration.getMethodResolvers())
+            {
+                if (methodResolver.isSupport(method))
+                    isSupport = true;
+            }
+            if (!isSupport)
+                continue;
             Optional<MethodJavadoc> methodDoc = classDoc.getMethods().stream().filter(o -> o.getName().equals(method.getName())).findFirst();
             var pathModel = handleMethod(method, methodDoc.orElse(null));
             controllerModel.getControllerMethods().add(pathModel);
@@ -96,6 +104,14 @@ public class DocParser implements IDocParser {
         }
         for (var parameter : method.getParameters())
         {
+            boolean isSupport = false;
+            for (var methodParameterResolver : _configuration.getMethodParameterResolvers())
+            {
+                if (methodParameterResolver.isSupport(parameter))
+                    isSupport = true;
+            }
+            if (!isSupport)
+                continue;
             ParamJavadoc paramJavadoc = null;
             if (methodJavadoc != null) {
                 paramJavadoc = methodJavadoc.getParams().stream().filter(o -> o.getName().equals(parameter.getName())).findFirst().orElse(null);
@@ -103,19 +119,22 @@ public class DocParser implements IDocParser {
             var parameterModel = handleMethodParameter(parameter, paramJavadoc);
             pathModel.getParameters().add(parameterModel);
         }
-        var responseModels = handleReturnValue(method.getReturnType(), methodJavadoc.getReturns());
+        Comment returnComment = null;
+        if (methodJavadoc != null)
+            returnComment = methodJavadoc.getComment();
+        var responseModels = handleReturnValue(method, returnComment);
         pathModel.setResponse(responseModels);
         return pathModel;
     }
 
-    private List<ResponseModel> handleReturnValue(Class<?> returnType, Comment returns) {
+    private List<ResponseModel> handleReturnValue(Method method, Comment returns) {
         var responseModels = new ArrayList<ResponseModel>();
         ResponseModel lastResponseModel = null;
         for (var returnParser : _configuration.getReturnParsers())
         {
             if (returnParser.isNew())
             {
-                var responseModel = returnParser.parse(returnType, returns, new ResponseModel());
+                var responseModel = returnParser.parse(method, returns, new ResponseModel());
                 lastResponseModel = responseModel;
                 responseModels.add(responseModel);
             }
@@ -126,7 +145,7 @@ public class DocParser implements IDocParser {
                     lastResponseModel = new ResponseModel();
                     responseModels.add(lastResponseModel);
                 }
-                lastResponseModel = returnParser.parse(returnType, returns, lastResponseModel);
+                lastResponseModel = returnParser.parse(method, returns, lastResponseModel);
             }
         }
         return responseModels;
