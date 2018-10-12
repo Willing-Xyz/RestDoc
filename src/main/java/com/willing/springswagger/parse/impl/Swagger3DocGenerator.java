@@ -8,21 +8,33 @@ import com.willing.springswagger.models.ParameterType;
 import com.willing.springswagger.models.PathModel;
 import com.willing.springswagger.models.RootModel;
 import com.willing.springswagger.parse.IDocGenerator;
+import com.willing.springswagger.parse.Swagger3Configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.var;
 
 import java.util.*;
 
 public class Swagger3DocGenerator implements IDocGenerator {
+
+    private final Swagger3Configuration _configuration;
+
+    public Swagger3DocGenerator(Swagger3Configuration configuration)
+    {
+        _configuration = configuration;
+    }
 
     @Override
     public String generate(RootModel rootModel) {
@@ -41,10 +53,33 @@ public class Swagger3DocGenerator implements IDocGenerator {
     private OpenAPI generateOpenApi(RootModel rootModel) {
         var openApi = new OpenAPI();
 
+        convertServers(rootModel, openApi);
+        convertInfo(rootModel, openApi);
         convertTag(rootModel, openApi);
         convertPath(rootModel, openApi);
 
         return openApi;
+    }
+
+    private void convertServers(RootModel rootModel, OpenAPI openApi) {
+        var servers = new ArrayList<Server>();
+        for (var server : _configuration.getServers())
+        {
+            var serverInfo = new Server();
+            serverInfo.setDescription(server.getDescription());
+            serverInfo.setUrl(server.getUrl());
+
+            servers.add(serverInfo);
+        }
+        openApi.setServers(servers);
+    }
+
+    private void convertInfo(RootModel rootModel, OpenAPI openApi) {
+        var info = new Info();
+        info.setDescription(_configuration.getDescription());
+        info.setVersion(_configuration.getVersion());
+        info.setTitle(_configuration.getTitle());
+        openApi.setInfo(info);
     }
 
     private void convertTag(RootModel rootModel, OpenAPI openApi) {
@@ -93,7 +128,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
                             pathItem.put(operation);
                             break;
                         case POST:
-                            pathItem.put(operation);
+                            pathItem.post(operation);
                             break;
                         case DELETE:
                             pathItem.delete(operation);
@@ -122,7 +157,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
     private RequestBody convertRequestBody(ParameterModel parameterModel, OpenAPI openAPI) {
         var requestBody = new RequestBody();
 //        requestBody.setDescription(parameterModel.getDescription());
-        requestBody.setRequired(parameterModel.getRequired());
+//        requestBody.setRequired(parameterModel.getRequired());
         requestBody.set$ref("#/components/requestBodies/" + putRequestBodyComponent(parameterModel, openAPI).getKey());
         return requestBody;
     }
@@ -131,7 +166,15 @@ public class Swagger3DocGenerator implements IDocGenerator {
         var requestBody = new RequestBody();
 
         requestBody.setDescription(parameterModel.getDescription());
-        requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+        requestBody.setRequired(parameterModel.getRequired());
+        var content = new Content();
+        var mediaType = new MediaType();
+        var schema = new Schema();
+        schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+        mediaType.setSchema(schema);
+        content.addMediaType("application/json", mediaType);
+        requestBody.setContent(content);
+//        requestBody.set$ref();
 
         var paramClassName = parameterModel.getParameterClass().getCanonicalName();
         if (openAPI.getComponents() == null)
@@ -169,6 +212,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
         schema.setProperties(properties);
         return schema;
     }
+
     private ApiResponses convertResponse(PathModel method) {
         var response = new ApiResponses();
         for (var res : method.getResponse())

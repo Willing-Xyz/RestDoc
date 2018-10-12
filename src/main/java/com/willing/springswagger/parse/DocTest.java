@@ -59,17 +59,39 @@ public class DocTest {
         }
     }
 
+    /**
+     * Abc-class
+     */
     @Data
     public static class Abc
     {
+        /**
+         * Abc-str
+         */
         private String _str;
+        /**
+         * Abc-int
+         */
         private int _int;
+        /**
+         * Abc-def
+         */
         private Def _def;
     }
+
+    /**
+     * Def-class
+     */
     @Data
     public static class Def
     {
+        /**
+         * Def-hehe
+         */
         private String _hehe;
+        /**
+         * Def-nini
+         */
         private Integer _nini;
     }
 }

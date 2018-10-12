@@ -4,6 +4,7 @@ import com.willing.springswagger.parse.impl.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -20,7 +21,12 @@ public class DocParseConfiguration {
 
     public DocParseConfiguration(List<String> packages)
     {
-        _docGenerator = new Swagger3DocGenerator();
+        _docGenerator = new Swagger3DocGenerator(new Swagger3Configuration.Swagger3ConfigurationBuilder()
+                .description("todo description")
+                .version("todo version")
+                .title("todo title")
+                .servers(Arrays.asList(new Swagger3Configuration.ServerInfo.ServerInfoBuilder().description("todo server descritpion").url("http://www.todo.com").build()))
+                .build());
 
         _classResolvers = new ArrayList<>();
         _classResolvers.add(new SpringClassResolver(packages));
