@@ -2,13 +2,14 @@ package com.willing.springswagger.models;
 
 import lombok.Data;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class ReturnModel {
 
-    private Class _returnClass;
+    private Type _returnType;
     /**
      * 描述
      */

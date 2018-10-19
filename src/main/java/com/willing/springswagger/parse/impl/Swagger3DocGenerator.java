@@ -312,35 +312,35 @@ public class Swagger3DocGenerator implements IDocGenerator {
         var apiResponse = new ApiResponse();
         var returnModel = responseModel.getReturnModel();
 
-        if (_configuration.getTypeInspector().isSimpleType(returnModel.getReturnClass()))
-        {
-            // 如果是单个参数，直接嵌入.
-            var schema = new Schema();
-
-            schema.setDescription(returnModel.getDescription());
-            schema.setType(_configuration.getTypeInspector().toSwaggerType(returnModel.getReturnClass()));
-            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(returnModel.getReturnClass()));
-
-            var mediaType = new MediaType();
-            mediaType.setSchema(schema);
-            var content = new Content();
-            content.addMediaType("application/json", mediaType);
-            apiResponse.setContent(content);
-            apiResponse.setDescription(returnModel.getDescription());
-        }
-        else {
-            // 如果是复杂类型，引用Component
-            var schema = new Schema();
-            var mediaType = new MediaType();
-            mediaType.setSchema(schema);
-            var content = new Content();
-            content.addMediaType("application/json", mediaType);
-            apiResponse.setContent(content);
-            apiResponse.setDescription(returnModel.getDescription());
-//            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
-
-            schema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnClass(), returnModel.getChildren(), openAPI));
-        }
+//        if (_configuration.getTypeInspector().isSimpleType(returnModel.getReturnType()))
+//        {
+//            // 如果是单个参数，直接嵌入.
+//            var schema = new Schema();
+//
+//            schema.setDescription(returnModel.getDescription());
+//            schema.setType(_configuration.getTypeInspector().toSwaggerType(returnModel.getReturnType()));
+//            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(returnModel.getReturnType()));
+//
+//            var mediaType = new MediaType();
+//            mediaType.setSchema(schema);
+//            var content = new Content();
+//            content.addMediaType("application/json", mediaType);
+//            apiResponse.setContent(content);
+//            apiResponse.setDescription(returnModel.getDescription());
+//        }
+//        else {
+//            // 如果是复杂类型，引用Component
+//            var schema = new Schema();
+//            var mediaType = new MediaType();
+//            mediaType.setSchema(schema);
+//            var content = new Content();
+//            content.addMediaType("application/json", mediaType);
+//            apiResponse.setContent(content);
+//            apiResponse.setDescription(returnModel.getDescription());
+////            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+//
+//            schema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnType(), returnModel.getChildren(), openAPI));
+//        }
 
         return apiResponse;
     }

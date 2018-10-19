@@ -5,6 +5,7 @@ import com.github.therapi.runtimejavadoc.CommentFormatter;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import com.txws.common.webapi.response.Response;
 import com.willing.springswagger.parse.impl.DocParser;
+import com.willing.springswagger.parse.utils.ClassUtils;
 import lombok.Data;
 import lombok.var;
 import org.springframework.web.bind.annotation.*;
@@ -41,30 +42,46 @@ public class DocTest {
         return null;
     }
 
+    @PostMapping("/method-post3")
+    public <T> T post3(T t)
+    {
+        return null;
+    }
+
     /**
      * post方法2
      * @param hehe 参数hehe doc
      * @return 返回int111
      */
     @PostMapping("/method-post2")
-    public Response<Abc> post2(@RequestBody List<Integer> hehe)
+    public Response<Response<Abc>> post2(@RequestBody List<Integer> hehe)
     {
         return null;
     }
 
     public static void main(String[] args) throws NoSuchMethodException {
 
-        var method = DocTest.class.getMethod("post1", Abc.class);
-        var paramTypes = method.getGenericParameterTypes();
-        for (var type : paramTypes) {
-            if (type instanceof ParameterizedType)
+        var method = DocTest.class.getMethod("post2", List.class);
+        var type = method.getGenericReturnType();
+        if (type instanceof ParameterizedType)
+        {
+            var parameterizedType = (ParameterizedType)type;
+            var typeArgument = parameterizedType.getActualTypeArguments()[0];
+            var rawType = (Class)parameterizedType.getRawType();
+            var fields = rawType.getDeclaredFields();
+            for (var field : fields)
             {
-                var x = (ParameterizedType)type;
-                System.out.println(x.getActualTypeArguments()[0]);
+
+                System.out.println(field);
             }
-            else {
-                System.out.println(type.getTypeName());
-            }
+            var config = new DocParseConfiguration(Arrays.asList("."), "_");
+            var props = ClassUtils.parseProperty(config, type, 0);
+            System.out.println(props);
+//               ClassUtils.getPropertyItems(new DocParseConfiguration(Arrays.asList("."), "_"), rawType);
+            System.out.println(parameterizedType.getActualTypeArguments()[0]);
+        }
+        else {
+            System.out.println(type.getTypeName());
         }
 
 

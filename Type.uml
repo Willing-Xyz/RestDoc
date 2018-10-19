@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>java.lang.reflect.Type</OriginalElement>
+  <nodes>
+    <node x="242.0" y="80.0">java.lang.reflect.GenericArrayType</node>
+    <node x="413.0" y="80.0">java.lang.reflect.WildcardType</node>
+    <node x="98.0" y="80.0">java.lang.reflect.TypeVariable</node>
+    <node x="561.0" y="80.0">java.lang.reflect.ParameterizedType</node>
+    <node x="279.5" y="0.0">java.lang.reflect.Type</node>
+    <node x="0.0" y="80.0">java.lang.Class</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="java.lang.reflect.WildcardType" target="java.lang.reflect.Type">
+      <point x="0.0" y="-15.0" />
+      <point x="477.0" y="60.0" />
+      <point x="332.7" y="60.0" />
+      <point x="15.199999999999989" y="15.0" />
+    </edge>
+    <edge source="java.lang.reflect.TypeVariable" target="java.lang.reflect.Type">
+      <point x="0.0" y="-15.0" />
+      <point x="160.0" y="60.0" />
+      <point x="302.3" y="60.0" />
+      <point x="-15.199999999999989" y="15.0" />
+    </edge>
+    <edge source="java.lang.Class" target="java.lang.reflect.Type">
+      <point x="0.0" y="-15.0" />
+      <point x="39.0" y="50.0" />
+      <point x="287.1" y="50.0" />
+      <point x="-30.399999999999977" y="15.0" />
+    </edge>
+    <edge source="java.lang.reflect.ParameterizedType" target="java.lang.reflect.Type">
+      <point x="0.0" y="-15.0" />
+      <point x="641.0" y="50.0" />
+      <point x="347.9" y="50.0" />
+      <point x="30.399999999999977" y="15.0" />
+    </edge>
+    <edge source="java.lang.reflect.GenericArrayType" target="java.lang.reflect.Type">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="529.5" y="130.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>public</VISIBILITY>
+</Diagram>
+

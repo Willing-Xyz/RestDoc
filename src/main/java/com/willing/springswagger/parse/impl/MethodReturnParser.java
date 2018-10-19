@@ -24,13 +24,12 @@ public class MethodReturnParser implements IMethodReturnParser {
     public ResponseModel parse(Method method, Comment returns, ResponseModel responseModel) {
         responseModel.setStatusCode(HttpStatus.OK);
 
-        var returnValue = responseModel.getReturnModel();
-        var returnType = method.getReturnType();
+        var returnModel = responseModel.getReturnModel();
 
-        returnValue.setDescription(FormatUtils.format(returns));
-        returnValue.setReturnClass(returnType);
+        returnModel.setDescription(FormatUtils.format(returns));
+        returnModel.setReturnType(method.getGenericReturnType());
 
-        returnValue.setChildren(ClassUtils.parseProperty(_configuration, returnType, 0));
+//        returnModel.setChildren(ClassUtils.parseProperty(_configuration, method.getGenericReturnType(), 0));
 
         return responseModel;
     }
