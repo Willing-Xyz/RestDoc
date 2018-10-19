@@ -25,22 +25,11 @@ public class ParameterModel {
      * 参数位置，如参数放在查询字符串中或者放到body中
      */
     private ParameterLocation _location;
-    /**
-     * 参数类型
-     */
-    private ParameterType _type;
-    /**
-     * 如果参数类型是枚举或数组类型的时候，该字段表示包含的类型
-     */
-    private ItemType _itemType;
-    /**
-     * 如果参数类型是枚举类型，该字段表示枚举的可选值
-     */
-    private List<Object> _enumValues = new ArrayList<>();
+
     /**
      * 该参数包含的参数，如参数为对象类型时，包含对象每个key的参数信息
      */
-    private List<ParameterModel> _children = new ArrayList<>();
+    private List<PropertyModel> _children = new ArrayList<>();
 
     public enum ParameterLocation
     {

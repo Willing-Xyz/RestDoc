@@ -121,7 +121,7 @@ public class DocParser implements IDocParser {
         }
         Comment returnComment = null;
         if (methodJavadoc != null)
-            returnComment = methodJavadoc.getComment();
+            returnComment = methodJavadoc.getReturns();
         var responseModels = handleReturnValue(method, returnComment);
         pathModel.setResponse(responseModels);
         return pathModel;

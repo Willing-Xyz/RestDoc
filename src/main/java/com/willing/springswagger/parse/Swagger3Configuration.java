@@ -13,6 +13,7 @@ public class Swagger3Configuration {
     private String _description;
     private String _title;
     private List<ServerInfo> _servers = new ArrayList<>();
+    private ISwaggerTypeInspector _typeInspector;
 
     @Data
     @Builder

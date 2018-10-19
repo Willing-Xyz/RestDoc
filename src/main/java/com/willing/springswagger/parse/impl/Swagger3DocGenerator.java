@@ -3,12 +3,11 @@ package com.willing.springswagger.parse.impl;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.willing.springswagger.models.ParameterModel;
-import com.willing.springswagger.models.ParameterType;
-import com.willing.springswagger.models.PathModel;
-import com.willing.springswagger.models.RootModel;
+import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
+import com.willing.springswagger.models.*;
 import com.willing.springswagger.parse.IDocGenerator;
 import com.willing.springswagger.parse.Swagger3Configuration;
+import com.willing.springswagger.parse.utils.FormatUtils;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -116,7 +115,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
                         operation.setRequestBody(convertRequestBody(param, openApi));
                     }
                 }
-                operation.setResponses(convertResponse(method));
+                operation.setResponses(convertResponses(method, openApi));
 
                 for (var httpMethod : method.getHttpMethods())
                 {
@@ -154,74 +153,196 @@ public class Swagger3DocGenerator implements IDocGenerator {
         }
     }
 
+    /**
+     * 转换RequestBody
+     */
     private RequestBody convertRequestBody(ParameterModel parameterModel, OpenAPI openAPI) {
         var requestBody = new RequestBody();
-//        requestBody.setDescription(parameterModel.getDescription());
-//        requestBody.setRequired(parameterModel.getRequired());
-        requestBody.set$ref("#/components/requestBodies/" + putRequestBodyComponent(parameterModel, openAPI).getKey());
+
+        if (_configuration.getTypeInspector().isSimpleType(parameterModel.getParameterClass()))
+        {
+            // 如果是单个参数，直接嵌入
+            var schema = new Schema();
+
+            schema.setDescription(parameterModel.getDescription());
+            schema.setType(_configuration.getTypeInspector().toSwaggerType(parameterModel.getParameterClass()));
+            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(parameterModel.getParameterClass()));
+
+            if (parameterModel.getRequired() != null && parameterModel.getRequired()) {
+                schema.setRequired(Arrays.asList(parameterModel.getName()));
+            }
+
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            requestBody.setContent(content);
+        }
+        else {
+            // 如果是复杂类型，引用Component
+            var schema = new Schema();
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            requestBody.setContent(content);
+            requestBody.setRequired(parameterModel.getRequired());
+            requestBody.setDescription(parameterModel.getDescription());
+//            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+
+            schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel.getParameterClass(), parameterModel.getChildren(), openAPI));
+        }
         return requestBody;
     }
 
-    private Map.Entry<String, RequestBody> putRequestBodyComponent(ParameterModel parameterModel, OpenAPI openAPI) {
-        var requestBody = new RequestBody();
+//    private String putSchemaComponent(List<> parameterModel, OpenAPI openAPI) {
+//        var requestBody = new RequestBody();
+//
+//        requestBody.setDescription(parameterModel.getDescription());
+//        requestBody.setRequired(parameterModel.getRequired());
+//
+//        var content = new Content();
+//        var mediaType = new MediaType();
+//        var schema = new Schema();
+//        schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+//        mediaType.setSchema(schema);
+//        content.addMediaType("application/json", mediaType);
+//        requestBody.setContent(content);
+////        requestBody.set$ref();
+//
+//        var paramClassName = parameterModel.getParameterClass().getCanonicalName();
+//        if (openAPI.getComponents() == null)
+//            openAPI.components(new Components());
+//        if (!openAPI.getComponents().getRequestBodies().containsKey(paramClassName)) {
+//            openAPI.getComponents().addRequestBodies(paramClassName, requestBody);
+//        }
+//        return paramClassName;
+//    }
 
-        requestBody.setDescription(parameterModel.getDescription());
-        requestBody.setRequired(parameterModel.getRequired());
-        var content = new Content();
-        var mediaType = new MediaType();
-        var schema = new Schema();
-        schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
-        mediaType.setSchema(schema);
-        content.addMediaType("application/json", mediaType);
-        requestBody.setContent(content);
-//        requestBody.set$ref();
+    private String putSchemaComponent(Class clazz, List<PropertyModel> children, OpenAPI openAPI) {
+        var className = clazz.getCanonicalName();
 
-        var paramClassName = parameterModel.getParameterClass().getCanonicalName();
         if (openAPI.getComponents() == null)
             openAPI.components(new Components());
-        openAPI.getComponents().addRequestBodies(paramClassName, requestBody);
-        return new AbstractMap.SimpleEntry<>(paramClassName, requestBody);
-    }
+        if (openAPI.getComponents().getSchemas() == null)
+            openAPI.getComponents().schemas(new HashMap<>());
+        if (openAPI.getComponents().getSchemas().containsKey(className))
+        {
+            return className;
+        }
+        var schema = generateSchemaComponent(clazz, children, openAPI);
 
-    private String putSchemaComponent(ParameterModel parameterModel, OpenAPI openAPI) {
-        var className = parameterModel.getParameterClass().getCanonicalName();
 
-        var schema = generateSchemaComponent(parameterModel);
-
-        if (openAPI.getComponents() == null)
-            openAPI.components(new Components());
         openAPI.getComponents().addSchemas(className, schema);
 
         return className;
     }
 
-    private Schema generateSchemaComponent(ParameterModel parameterModel) {
+    private Schema generateSchemaComponent(Class clazz, List<PropertyModel> children, OpenAPI openAPI) {
         var schema = new Schema();
-        var className = parameterModel.getParameterClass().getCanonicalName();
+        var className = clazz.getCanonicalName();
         schema.setName(className);
-        schema.setType("object"); // todo
-        schema.setDescription(parameterModel.getDescription());
+        schema.setType(_configuration.getTypeInspector().toSwaggerType(clazz)); // todo
 
-        var properties = new HashMap<String, Schema>();
+        var classDoc = RuntimeJavadoc.getJavadoc(className);
+        schema.setDescription(FormatUtils.format(classDoc.getComment()));
 
-        for (var sub : parameterModel.getChildren())
-        {
-            properties.put(sub.getParameterClass().getCanonicalName(), generateSchemaComponent(parameterModel));
-        }
-
-        schema.setProperties(properties);
+        schema.setProperties(generateSchemaProperty(children, openAPI));
         return schema;
     }
 
-    private ApiResponses convertResponse(PathModel method) {
+    private Map<String, Schema> generateSchemaProperty(List<PropertyModel> propertyModels, OpenAPI openAPI) {
+        var schemas = new HashMap<String, Schema>();
+
+        for (var propertyModel : propertyModels) {
+            var schema = new Schema();
+            if (_configuration.getTypeInspector().isSimpleType(propertyModel.getPropertyClass())) {
+//                schema.setTitle(parameterModel.getPropertyClass().getCanonicalName());
+                schema.setDescription(propertyModel.getDescription());
+                schema.setType(_configuration.getTypeInspector().toSwaggerType(propertyModel.getPropertyClass()));
+                schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(propertyModel.getPropertyClass()));
+
+                if (propertyModel.getRequired() != null && propertyModel.getRequired()) {
+                    schema.setRequired(Arrays.asList(propertyModel.getName()));
+                }
+            }
+            else
+            {
+                schema.set$ref("#/components/schemas/" +  putSchemaComponent(propertyModel.getPropertyClass(), propertyModel.getChildren(), openAPI));
+//                schema.setProperties(generateSchemaProperty(propertyModel.getChildren()));
+            }
+            schemas.put(propertyModel.getName(), schema);
+        }
+        return schemas;
+    }
+
+//    private String putSchemaComponentByPropertyModel(PropertyModel propertyModel, OpenAPI openAPI) {
+//        var className = propertyModel.getPropertyClass().getCanonicalName();
+//
+//        if (openAPI.getComponents() == null)
+//            openAPI.components(new Components());
+//        if (openAPI.getComponents().getSchemas() == null)
+//            openAPI.getComponents().schemas(new HashMap<>());
+//        if (openAPI.getComponents().getSchemas().containsKey(className))
+//        {
+//            return className;
+//        }
+//        var schema = generateSchemaComponentByPropertyModel(propertyModel, openAPI);
+//
+//
+//        openAPI.getComponents().addSchemas(className, schema);
+//
+//        return className;
+//    }
+//
+//    private Schema generateSchemaComponentByPropertyModel(PropertyModel propertyModel, OpenAPI openAPI) {
+//    }
+
+    private ApiResponses convertResponses(PathModel method, OpenAPI openAPI) {
         var response = new ApiResponses();
         for (var res : method.getResponse())
         {
-            var apiResponse = new ApiResponse();
-            apiResponse.setDescription(res.getReturnModel().getDescription());
+            ApiResponse apiResponse = convertResponse(res, openAPI);
             response.addApiResponse(res.getStatusCode().value() + "", apiResponse);
         }
         return response;
+    }
+
+    private ApiResponse convertResponse(ResponseModel responseModel, OpenAPI openAPI) {
+        var apiResponse = new ApiResponse();
+        var returnModel = responseModel.getReturnModel();
+
+        if (_configuration.getTypeInspector().isSimpleType(returnModel.getReturnClass()))
+        {
+            // 如果是单个参数，直接嵌入.
+            var schema = new Schema();
+
+            schema.setDescription(returnModel.getDescription());
+            schema.setType(_configuration.getTypeInspector().toSwaggerType(returnModel.getReturnClass()));
+            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(returnModel.getReturnClass()));
+
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            apiResponse.setDescription(returnModel.getDescription());
+        }
+        else {
+            // 如果是复杂类型，引用Component
+            var schema = new Schema();
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            apiResponse.setDescription(returnModel.getDescription());
+//            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
+
+            schema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnClass(), returnModel.getChildren(), openAPI));
+        }
+
+        return apiResponse;
     }
 
     private Parameter convertParameter(ParameterModel paramModel) {
@@ -241,22 +362,6 @@ public class Swagger3DocGenerator implements IDocGenerator {
 
     private Schema convertSchema(ParameterModel paramModel) {
         var schema = new Schema();
-        schema.setType(convertSchemaType(paramModel.getType()));
         return schema;
-    }
-
-    private String convertSchemaType(ParameterType type) {
-        switch (type)
-        {
-            case INTEGER:
-                return "integer";
-            case BOOLEAN:
-                return "boolean";
-            case STRING:
-                return "string";
-                // todo
-                default:
-                    return "object";
-        }
     }
 }

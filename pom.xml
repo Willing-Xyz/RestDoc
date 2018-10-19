@@ -15,6 +15,11 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>com.txws.common</groupId>
+            <artifactId>common-webapi</artifactId>
+            <version>2.0.3-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -60,5 +65,31 @@
             <version>1.18.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
