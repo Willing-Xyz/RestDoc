@@ -1,19 +1,17 @@
 package com.willing.springswagger.parse.impl;
 
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
-import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import com.willing.springswagger.models.ParameterModel;
-import com.willing.springswagger.models.PropertyModel;
 import com.willing.springswagger.parse.DocParseConfiguration;
 import com.willing.springswagger.parse.utils.ClassUtils;
 import com.willing.springswagger.parse.utils.FormatUtils;
 import com.willing.springswagger.parse.IMethodParameterParser;
+import com.willing.springswagger.parse.utils.ReflectUtils;
 import lombok.var;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SpringMethodParameterParser implements IMethodParameterParser {
     private final DocParseConfiguration _configuration;
@@ -36,15 +34,26 @@ public class SpringMethodParameterParser implements IMethodParameterParser {
         }
         else
         {
-            parameterModel.setLocation(ParameterModel.ParameterLocation.QUERY);
+            var pathVariableAnno = parameter.getAnnotation(PathVariable.class);
+            if (pathVariableAnno != null)
+                parameterModel.setLocation(ParameterModel.ParameterLocation.PATH);
+            else
+                parameterModel.setLocation(ParameterModel.ParameterLocation.QUERY);
         }
-        parameterModel.setParameterClass(parameter.getType());
+        parameterModel.setParameterType(parameter.getParameterizedType());
+
+        boolean isArray = ReflectUtils.isArray(parameter.getParameterizedType());
+        parameterModel.setArray(isArray);
 
         // todo required
-        parameterModel.setChildren(ClassUtils.parseProperty(_configuration, parameter.getType(), 0));
+        if (!isArray) {
+            parameterModel.setChildren(ClassUtils.parseTypeProperty(_configuration, parameter.getParameterizedType()));
+        }
+        else
+        {
+            parameterModel.setChildren(ClassUtils.parseTypeProperty(_configuration, ReflectUtils.getArrayComponentType(parameter.getParameterizedType())));
+        }
 
         return parameterModel;
     }
-
-
 }

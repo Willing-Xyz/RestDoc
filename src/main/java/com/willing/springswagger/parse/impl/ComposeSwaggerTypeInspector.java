@@ -3,6 +3,7 @@ package com.willing.springswagger.parse.impl;
 import com.willing.springswagger.parse.ISwaggerTypeInspector;
 import lombok.var;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class ComposeSwaggerTypeInspector implements ISwaggerTypeInspector {
@@ -15,38 +16,38 @@ public class ComposeSwaggerTypeInspector implements ISwaggerTypeInspector {
     }
 
     @Override
-    public boolean isSimpleType(Class clazz) {
-        var typeInspector = getSupportInspector(clazz);
+    public boolean isSimpleType(Type type) {
+        var typeInspector = getSupportInspector(type);
         if (typeInspector == null)
             return false;
-        return typeInspector.isSimpleType(clazz);
+        return typeInspector.isSimpleType(type);
     }
 
     @Override
-    public String toSwaggerType(Class clazz) {
-        var typeInspector = getSupportInspector(clazz);
+    public String toSwaggerType(Type type) {
+        var typeInspector = getSupportInspector(type);
         if (typeInspector == null)
             return "object";
-        return typeInspector.toSwaggerType(clazz);
+        return typeInspector.toSwaggerType(type);
     }
 
     @Override
-    public String toSwaggerFormat(Class clazz) {
-        var typeInspector = getSupportInspector(clazz);
+    public String toSwaggerFormat(Type type) {
+        var typeInspector = getSupportInspector(type);
         if (typeInspector == null)
             return null;
-        return typeInspector.toSwaggerFormat(clazz);
+        return typeInspector.toSwaggerFormat(type);
     }
 
     @Override
-    public boolean isSupport(Class clazz) {
+    public boolean isSupport(Type type) {
         return true;
     }
 
-    private ISwaggerTypeInspector getSupportInspector(Class clazz) {
+    private ISwaggerTypeInspector getSupportInspector(Type type) {
         for (var typeInspector : _typeInspectors)
         {
-            if (typeInspector.isSupport(clazz))
+            if (typeInspector.isSupport(type))
             {
                 return typeInspector;
             }

@@ -6,6 +6,7 @@ import com.willing.springswagger.parse.DocParseConfiguration;
 import com.willing.springswagger.parse.IMethodReturnParser;
 import com.willing.springswagger.parse.utils.ClassUtils;
 import com.willing.springswagger.parse.utils.FormatUtils;
+import com.willing.springswagger.parse.utils.ReflectUtils;
 import lombok.var;
 import org.springframework.http.HttpStatus;
 
@@ -29,8 +30,17 @@ public class MethodReturnParser implements IMethodReturnParser {
         returnModel.setDescription(FormatUtils.format(returns));
         returnModel.setReturnType(method.getGenericReturnType());
 
-//        returnModel.setChildren(ClassUtils.parseProperty(_configuration, method.getGenericReturnType(), 0));
+        boolean isArray = ReflectUtils.isArray(method.getGenericReturnType());
+        returnModel.setArray(isArray);
 
+        // todo required
+        if (!isArray) {
+            returnModel.setChildren(ClassUtils.parseTypeProperty(_configuration, method.getGenericReturnType()));
+        }
+        else
+        {
+            returnModel.setChildren(ClassUtils.parseTypeProperty(_configuration, ReflectUtils.getArrayComponentType(method.getGenericReturnType())));
+        }
         return responseModel;
     }
 

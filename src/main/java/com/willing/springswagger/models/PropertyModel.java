@@ -2,6 +2,7 @@ package com.willing.springswagger.models;
 
 import lombok.Data;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,8 @@ public class PropertyModel {
      * 是否必须
      */
     private Boolean _required;
-    private Class _propertyClass;
+    private Type _propertyType;
+    private boolean _isArray;
     /**
      * 属性描述
      */

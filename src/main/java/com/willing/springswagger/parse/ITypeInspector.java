@@ -1,10 +1,12 @@
 package com.willing.springswagger.parse;
 
+import java.lang.reflect.Type;
+
 public interface ITypeInspector {
     /**
      * 是否是简单类型
      */
-    boolean isSimpleType(Class clazz);
+    boolean isSimpleType(Type type);
 
-    boolean isSupport(Class clazz);
+    boolean isSupport(Type type);
 }

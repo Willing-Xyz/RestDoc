@@ -2,13 +2,13 @@ package com.willing.springswagger.controllers;
 
 import com.willing.springswagger.parse.IDocParser;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpringSwaggerController {
 
     private IDocParser _docParser;
+    private String _docCache;
 
     public SpringSwaggerController(IDocParser docParser)
     {
@@ -18,6 +18,9 @@ public class SpringSwaggerController {
     @GetMapping("/swagger.json")
     public String swaggerJson()
     {
-        return _docParser.parse();
+        if (_docCache != null)
+            return _docCache;
+        _docCache = _docParser.parse();
+        return _docCache;
     }
 }

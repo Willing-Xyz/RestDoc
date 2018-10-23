@@ -12,15 +12,7 @@ import java.util.List;
  */
 @Data
 public class PathModel {
-    /**
-     * url路径
-     */
-    private String[] _paths = new String[]{};
-    /**
-     * HTTP METHOD
-     */
-    private RequestMethod[] _httpMethods = new RequestMethod[]{};
-    private String _requestContentType;
+    private List<MappingModel> _mappings = new ArrayList<>();
     /**
      * 详细描述
      */

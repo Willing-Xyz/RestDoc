@@ -10,5 +10,8 @@ import java.util.List;
  */
 @Data
 public class RootModel {
+    /**
+     * Controller集合
+     */
     private List<ControllerModel> _controllers = new ArrayList<>();
 }

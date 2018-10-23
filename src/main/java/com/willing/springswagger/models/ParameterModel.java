@@ -3,6 +3,7 @@ package com.willing.springswagger.models;
 import lombok.Data;
 import org.omg.CORBA.ParameterMode;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class ParameterModel {
      * 是否必须
      */
     private Boolean _required;
-    private Class _parameterClass;
+    private Type _parameterType;
     /**
      * 参数描述
      */
@@ -25,6 +26,7 @@ public class ParameterModel {
      * 参数位置，如参数放在查询字符串中或者放到body中
      */
     private ParameterLocation _location;
+    private boolean _isArray;
 
     /**
      * 该参数包含的参数，如参数为对象类型时，包含对象每个key的参数信息
@@ -33,6 +35,6 @@ public class ParameterModel {
 
     public enum ParameterLocation
     {
-        BODY, QUERY
+        BODY, QUERY, PATH
     }
 }

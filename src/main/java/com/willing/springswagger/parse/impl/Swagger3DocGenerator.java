@@ -8,11 +8,14 @@ import com.willing.springswagger.models.*;
 import com.willing.springswagger.parse.IDocGenerator;
 import com.willing.springswagger.parse.Swagger3Configuration;
 import com.willing.springswagger.parse.utils.FormatUtils;
+import com.willing.springswagger.parse.utils.ReflectUtils;
+import com.willing.springswagger.parse.utils.UrlEncodeUtils;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -24,11 +27,13 @@ import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.var;
 
+import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Swagger3DocGenerator implements IDocGenerator {
 
-    private final Swagger3Configuration _configuration;
+    public Swagger3Configuration _configuration;
 
     public Swagger3DocGenerator(Swagger3Configuration configuration)
     {
@@ -85,7 +90,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
         for (var controller : rootModel.getControllers())
         {
             var tag = new Tag();
-            tag.setName(controller.getSimpleName());
+            tag.setName(controller.getControllerClass().getCanonicalName());
             tag.setDescription(controller.getDescription());
             openApi.addTagsItem(tag);
         }
@@ -96,62 +101,70 @@ public class Swagger3DocGenerator implements IDocGenerator {
         {
             for (var method : controller.getControllerMethods())
             {
-                var pathItem = new PathItem();
-                pathItem.setDescription(method.getDescription());
-                pathItem.setSummary(method.getDescription()); // todo
-
-                var operation = new Operation();
-                operation.addTagsItem(controller.getSimpleName());
-                operation.setSummary(method.getDescription()); // todo
-                operation.setDescription(method.getDescription());
-                operation.setDeprecated(method.getDeprecated());
-
-                for (var param : method.getParameters()) {
-                    if (param.getLocation() == ParameterModel.ParameterLocation.QUERY) {
-                        operation.addParametersItem(convertParameter(param));
-                    }
-                    else if (param.getLocation() == ParameterModel.ParameterLocation.BODY)
-                    {
-                        operation.setRequestBody(convertRequestBody(param, openApi));
-                    }
-                }
-                operation.setResponses(convertResponses(method, openApi));
-
-                for (var httpMethod : method.getHttpMethods())
+                for (var mapping : method.getMappings())
                 {
-                    switch (httpMethod) {
-                        case GET:
-                            pathItem.get(operation);
-                            break;
-                        case PUT:
-                            pathItem.put(operation);
-                            break;
-                        case POST:
-                            pathItem.post(operation);
-                            break;
-                        case DELETE:
-                            pathItem.delete(operation);
-                            break;
-                        case HEAD:
-                            pathItem.head(operation);
-                            break;
-                        case PATCH:
-                            pathItem.patch(operation);
-                            break;
-                        case TRACE:
-                            pathItem.patch(operation);
-                            break;
-                        case OPTIONS:
-                            pathItem.options(operation);
-                            break;
+                    var pathItem = new PathItem();
+                    pathItem.setDescription(method.getDescription());
+                    pathItem.setSummary(method.getDescription()); // todo
+
+                    var operation = new Operation();
+                    operation.addTagsItem(controller.getControllerClass().getCanonicalName());
+                    operation.setSummary(method.getDescription()); // todo
+                    operation.setDescription(method.getDescription());
+                    operation.setDeprecated(method.getDeprecated());
+
+                    for (var param : method.getParameters()) {
+                        if (param.getLocation() == ParameterModel.ParameterLocation.QUERY) {
+                            convertQueryString(param).stream().forEach(o -> operation.addParametersItem(o));
+                        }
+                        else if (param.getLocation() == ParameterModel.ParameterLocation.BODY)
+                        {
+                            operation.setRequestBody(convertRequestBody(param, openApi));
+                        }
+                        else if (param.getLocation() == ParameterModel.ParameterLocation.PATH)
+                        {
+                            operation.addParametersItem(convertPathParameter(param));
+                        }
                     }
-                }
-                for (var path : method.getPaths()) {
-                    openApi.path(path, pathItem);
+                    operation.setResponses(convertResponses(method, openApi));
+
+                    for (var httpMethod : mapping.getHttpMethods())
+                    {
+                        switch (httpMethod) {
+                            case GET:
+                                pathItem.get(operation);
+                                break;
+                            case PUT:
+                                pathItem.put(operation);
+                                break;
+                            case POST:
+                                pathItem.post(operation);
+                                break;
+                            case DELETE:
+                                pathItem.delete(operation);
+                                break;
+                            case HEAD:
+                                pathItem.head(operation);
+                                break;
+                            case PATCH:
+                                pathItem.patch(operation);
+                                break;
+                            case TRACE:
+                                pathItem.patch(operation);
+                                break;
+                            case OPTIONS:
+                                pathItem.options(operation);
+                                break;
+                        }
+                    }
+                    for (var path : mapping.getPaths()) {
+                        openApi.path(path, pathItem);
+                    }
                 }
             }
         }
     }
+
 
     /**
      * 转换RequestBody
@@ -159,17 +172,55 @@ public class Swagger3DocGenerator implements IDocGenerator {
     private RequestBody convertRequestBody(ParameterModel parameterModel, OpenAPI openAPI) {
         var requestBody = new RequestBody();
 
-        if (_configuration.getTypeInspector().isSimpleType(parameterModel.getParameterClass()))
+        if (parameterModel.isArray()) {
+            var arraySchema = new ArraySchema();
+            var itemSchema = new Schema();
+            itemSchema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel.getParameterType(), parameterModel.getChildren(), openAPI));
+            arraySchema.setItems(itemSchema);
+
+            var mediaType = new MediaType();
+            mediaType.setSchema(arraySchema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            requestBody.setContent(content);
+            requestBody.setRequired(parameterModel.getRequired());
+            requestBody.setDescription(parameterModel.getDescription());
+        }
+        else if (parameterModel.getChildren() == null || parameterModel.getChildren().size() == 0)
         {
             // 如果是单个参数，直接嵌入
-            var schema = new Schema();
+            Schema schema = null;
+            if (ReflectUtils.isEnum(parameterModel.getParameterType()))
+            {
+                var clazz = (Class)parameterModel.getParameterType();
+                    var arraySchema = new ArraySchema();
+                    var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
+                    arraySchema.setDescription(FormatUtils.format(enumDoc.getComment()));
+                    var itemSchema = new Schema<String>();
+                    itemSchema.setType("string");
+                    var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
+                    itemSchema.setEnum(enums);
+                    arraySchema.setItems(itemSchema);
+                    if (enums.size() > 0)
+                    {
+                        itemSchema.setDefault(enums.get(0));
+                    }
+                    schema = arraySchema;
+                    schema.setDescription(parameterModel.getDescription());
+                    if (parameterModel.getRequired() != null && parameterModel.getRequired()) {
+                    schema.setRequired(Arrays.asList(parameterModel.getName()));
+                }
+            }
+            else {
+                schema = new Schema();
 
-            schema.setDescription(parameterModel.getDescription());
-            schema.setType(_configuration.getTypeInspector().toSwaggerType(parameterModel.getParameterClass()));
-            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(parameterModel.getParameterClass()));
+                schema.setDescription(parameterModel.getDescription());
+                schema.setType(_configuration.getTypeInspector().toSwaggerType(parameterModel.getParameterType()));
+                schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(parameterModel.getParameterType()));
 
-            if (parameterModel.getRequired() != null && parameterModel.getRequired()) {
-                schema.setRequired(Arrays.asList(parameterModel.getName()));
+                if (parameterModel.getRequired() != null && parameterModel.getRequired()) {
+                    schema.setRequired(Arrays.asList(parameterModel.getName()));
+                }
             }
 
             var mediaType = new MediaType();
@@ -181,6 +232,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
         else {
             // 如果是复杂类型，引用Component
             var schema = new Schema();
+
             var mediaType = new MediaType();
             mediaType.setSchema(schema);
             var content = new Content();
@@ -190,37 +242,14 @@ public class Swagger3DocGenerator implements IDocGenerator {
             requestBody.setDescription(parameterModel.getDescription());
 //            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
 
-            schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel.getParameterClass(), parameterModel.getChildren(), openAPI));
+            schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel.getParameterType(), parameterModel.getChildren(), openAPI));
         }
         return requestBody;
     }
 
-//    private String putSchemaComponent(List<> parameterModel, OpenAPI openAPI) {
-//        var requestBody = new RequestBody();
-//
-//        requestBody.setDescription(parameterModel.getDescription());
-//        requestBody.setRequired(parameterModel.getRequired());
-//
-//        var content = new Content();
-//        var mediaType = new MediaType();
-//        var schema = new Schema();
-//        schema.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
-//        mediaType.setSchema(schema);
-//        content.addMediaType("application/json", mediaType);
-//        requestBody.setContent(content);
-////        requestBody.set$ref();
-//
-//        var paramClassName = parameterModel.getParameterClass().getCanonicalName();
-//        if (openAPI.getComponents() == null)
-//            openAPI.components(new Components());
-//        if (!openAPI.getComponents().getRequestBodies().containsKey(paramClassName)) {
-//            openAPI.getComponents().addRequestBodies(paramClassName, requestBody);
-//        }
-//        return paramClassName;
-//    }
 
-    private String putSchemaComponent(Class clazz, List<PropertyModel> children, OpenAPI openAPI) {
-        var className = clazz.getCanonicalName();
+    private String putSchemaComponent(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+        var className = type.getTypeName();
 
         if (openAPI.getComponents() == null)
             openAPI.components(new Components());
@@ -228,21 +257,28 @@ public class Swagger3DocGenerator implements IDocGenerator {
             openAPI.getComponents().schemas(new HashMap<>());
         if (openAPI.getComponents().getSchemas().containsKey(className))
         {
-            return className;
+            return UrlEncodeUtils.encode(className);
         }
-        var schema = generateSchemaComponent(clazz, children, openAPI);
+        var schema = generateSchemaComponent(type, children, openAPI);
 
 
         openAPI.getComponents().addSchemas(className, schema);
 
-        return className;
+        return UrlEncodeUtils.encode(className);
     }
 
-    private Schema generateSchemaComponent(Class clazz, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateSchemaComponent(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+
+        if (children.size() == 1 && children.get(0).isArray())
+        {
+            var arraySchema = new ArraySchema();
+            arraySchema.setItems(generateSchemaComponent(children.get(0).getPropertyType(), children.get(0).getChildren(), openAPI));
+            return arraySchema;
+        }
         var schema = new Schema();
-        var className = clazz.getCanonicalName();
+        var className = type.getTypeName();
         schema.setName(className);
-        schema.setType(_configuration.getTypeInspector().toSwaggerType(clazz)); // todo
+        schema.setType(_configuration.getTypeInspector().toSwaggerType(type)); // todo
 
         var classDoc = RuntimeJavadoc.getJavadoc(className);
         schema.setDescription(FormatUtils.format(classDoc.getComment()));
@@ -256,11 +292,18 @@ public class Swagger3DocGenerator implements IDocGenerator {
 
         for (var propertyModel : propertyModels) {
             var schema = new Schema();
-            if (_configuration.getTypeInspector().isSimpleType(propertyModel.getPropertyClass())) {
-//                schema.setTitle(parameterModel.getPropertyClass().getCanonicalName());
+            if (propertyModel.getChildren() != null && propertyModel.getChildren().size() == 0) {
+//                schema.setTitle(parameterModel.getPropertyType().getCanonicalName());
                 schema.setDescription(propertyModel.getDescription());
-                schema.setType(_configuration.getTypeInspector().toSwaggerType(propertyModel.getPropertyClass()));
-                schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(propertyModel.getPropertyClass()));
+
+                if (ReflectUtils.isEnum(propertyModel.getPropertyType())) {
+                    var clazz = (Class)propertyModel.getPropertyType();
+                    schema = generateEnumSchema(clazz);
+                }
+                else {
+                    schema.setType(_configuration.getTypeInspector().toSwaggerType(propertyModel.getPropertyType()));
+                    schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(propertyModel.getPropertyType()));
+                }
 
                 if (propertyModel.getRequired() != null && propertyModel.getRequired()) {
                     schema.setRequired(Arrays.asList(propertyModel.getName()));
@@ -268,7 +311,7 @@ public class Swagger3DocGenerator implements IDocGenerator {
             }
             else
             {
-                schema.set$ref("#/components/schemas/" +  putSchemaComponent(propertyModel.getPropertyClass(), propertyModel.getChildren(), openAPI));
+                schema.set$ref("#/components/schemas/" + putSchemaComponent(propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI));
 //                schema.setProperties(generateSchemaProperty(propertyModel.getChildren()));
             }
             schemas.put(propertyModel.getName(), schema);
@@ -276,27 +319,20 @@ public class Swagger3DocGenerator implements IDocGenerator {
         return schemas;
     }
 
-//    private String putSchemaComponentByPropertyModel(PropertyModel propertyModel, OpenAPI openAPI) {
-//        var className = propertyModel.getPropertyClass().getCanonicalName();
-//
-//        if (openAPI.getComponents() == null)
-//            openAPI.components(new Components());
-//        if (openAPI.getComponents().getSchemas() == null)
-//            openAPI.getComponents().schemas(new HashMap<>());
-//        if (openAPI.getComponents().getSchemas().containsKey(className))
-//        {
-//            return className;
-//        }
-//        var schema = generateSchemaComponentByPropertyModel(propertyModel, openAPI);
-//
-//
-//        openAPI.getComponents().addSchemas(className, schema);
-//
-//        return className;
-//    }
-//
-//    private Schema generateSchemaComponentByPropertyModel(PropertyModel propertyModel, OpenAPI openAPI) {
-//    }
+    private ArraySchema generateEnumSchema(Class clazz) {
+        var arraySchema = new ArraySchema();
+        var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
+        arraySchema.setDescription(FormatUtils.format(enumDoc.getComment()));
+        var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
+        var itemSchema = new Schema();
+        itemSchema.setType("string"); // todo 如何决定是string还是int
+        itemSchema.setEnum(enums);
+        if (enums.size() > 0) {
+            itemSchema.setDefault(enums.get(0));
+        }
+        arraySchema.setItems(itemSchema);
+        return arraySchema;
+    }
 
     private ApiResponses convertResponses(PathModel method, OpenAPI openAPI) {
         var response = new ApiResponses();
@@ -312,56 +348,149 @@ public class Swagger3DocGenerator implements IDocGenerator {
         var apiResponse = new ApiResponse();
         var returnModel = responseModel.getReturnModel();
 
-//        if (_configuration.getTypeInspector().isSimpleType(returnModel.getReturnType()))
-//        {
-//            // 如果是单个参数，直接嵌入.
-//            var schema = new Schema();
-//
-//            schema.setDescription(returnModel.getDescription());
-//            schema.setType(_configuration.getTypeInspector().toSwaggerType(returnModel.getReturnType()));
-//            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(returnModel.getReturnType()));
-//
-//            var mediaType = new MediaType();
-//            mediaType.setSchema(schema);
-//            var content = new Content();
-//            content.addMediaType("application/json", mediaType);
-//            apiResponse.setContent(content);
-//            apiResponse.setDescription(returnModel.getDescription());
-//        }
-//        else {
-//            // 如果是复杂类型，引用Component
-//            var schema = new Schema();
-//            var mediaType = new MediaType();
-//            mediaType.setSchema(schema);
-//            var content = new Content();
-//            content.addMediaType("application/json", mediaType);
-//            apiResponse.setContent(content);
-//            apiResponse.setDescription(returnModel.getDescription());
-////            requestBody.set$ref("#/components/schemas/" + putSchemaComponent(parameterModel, openAPI));
-//
-//            schema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnType(), returnModel.getChildren(), openAPI));
-//        }
+        if (returnModel.isArray()) {
+            var arraySchema = new ArraySchema();
+            var itemSchema = new Schema();
+            itemSchema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnType(), returnModel.getChildren().get(0).getChildren(), openAPI));
+            arraySchema.setItems(itemSchema);
 
+            var mediaType = new MediaType();
+            mediaType.setSchema(arraySchema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            apiResponse.setDescription(returnModel.getDescription());
+        }
+        else if (returnModel.getChildren() != null && returnModel.getChildren().size() > 0) // 复杂类型
+        {
+            var schema = new Schema();
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            apiResponse.setDescription(returnModel.getDescription());
+
+            schema.set$ref("#/components/schemas/" + putSchemaComponent(returnModel.getReturnType(), returnModel.getChildren(), openAPI));
+        }
+        else
+        {
+            var schema = new Schema();
+
+            schema.setDescription(returnModel.getDescription());
+            schema.setType(_configuration.getTypeInspector().toSwaggerType(returnModel.getReturnType()));
+            schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(returnModel.getReturnType()));
+
+            var mediaType = new MediaType();
+            mediaType.setSchema(schema);
+            var content = new Content();
+            content.addMediaType("application/json", mediaType);
+            apiResponse.setContent(content);
+            apiResponse.setDescription(returnModel.getDescription());
+        }
         return apiResponse;
     }
 
-    private Parameter convertParameter(ParameterModel paramModel) {
-        var parameter = new Parameter();
-        parameter.setName(paramModel.getName());
-        parameter.setDescription(paramModel.getDescription());
-        switch (paramModel.getLocation())
+    private List<Parameter> convertQueryString(ParameterModel paramModel) {
+        var parameters = new ArrayList<Parameter>();
+        if (paramModel.isArray())
         {
-            case BODY:
-                parameter.setIn("body");
-                break;case QUERY: parameter.setIn("query");
-                break;
+            convertParameterChildren(paramModel.getChildren(), paramModel.getName(), true).stream().forEach(o -> parameters.add(o));
         }
-        parameter.setSchema(convertSchema(paramModel));
-        return parameter;
+        else if (paramModel.getChildren() == null || paramModel.getChildren().size() == 0)
+        {
+            var parameter = new Parameter();
+            parameter.setName(paramModel.getName());
+            parameter.setDescription(paramModel.getDescription());
+            parameter.setIn("query");
+
+            parameter.setSchema(generateParameterSchema(paramModel));
+        }
+        else
+        {
+            convertParameterChildren(paramModel.getChildren(), null, false).stream().forEach(o -> parameters.add(o));
+        }
+        return parameters;
     }
 
-    private Schema convertSchema(ParameterModel paramModel) {
+    private Schema generateParameterSchema(ParameterModel paramModel) {
+        if (ReflectUtils.isEnum(paramModel.getParameterType()))
+        {
+            return generateEnumSchema((Class)paramModel.getParameterType());
+        }
         var schema = new Schema();
+        schema.setType(_configuration.getTypeInspector().toSwaggerType(paramModel.getParameterType()));
+        schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(paramModel.getParameterType()));
         return schema;
+    }
+    private Schema generateParameterSchema(PropertyModel child) {
+        if (ReflectUtils.isEnum(child.getPropertyType()))
+        {
+            return generateEnumSchema((Class)child.getPropertyType());
+        }
+        var schema = new Schema();
+        schema.setType(_configuration.getTypeInspector().toSwaggerType(child.getPropertyType()));
+        schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(child.getPropertyType()));
+        // todo array , enum
+        return schema;
+    }
+
+    private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String prefix, boolean isArray)
+    {
+        var parameters = new ArrayList<Parameter>();
+        String name = "";
+        if (prefix != null)
+            name = prefix + ".";
+        for (var child : propertyModels)
+        {
+            if (child.isArray())
+            {
+                convertParameterChildren(child.getChildren(), child.getName(), true).stream().forEach(o -> parameters.add(o));
+            }
+            else if (child.getChildren() == null || child.getChildren().size() == 0) {
+                var parameter = new Parameter();
+
+                parameter.setName(name + child.getName());
+                parameter.setDescription(child.getDescription());
+                parameter.setIn("query");
+                if (isArray)
+                {
+                    parameter.setSchema(generateArraySchema(child));
+                }
+                else {
+                    parameter.setSchema(generateParameterSchema(child));
+                }
+                parameters.add(parameter);
+            }
+            else
+            {
+                parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), false));
+            }
+            // todo path
+        }
+        return parameters;
+    }
+
+    private Schema generateArraySchema(PropertyModel child) {
+        var arraySchema = new ArraySchema();
+
+        var schema = new Schema();
+        schema.setType(_configuration.getTypeInspector().toSwaggerType(child.getPropertyType()));
+        schema.setFormat(_configuration.getTypeInspector().toSwaggerFormat(child.getPropertyType()));
+
+        arraySchema.setItems(schema);
+
+        return arraySchema;
+    }
+
+    private Parameter convertPathParameter(ParameterModel param) {
+        var parameter = new Parameter();
+
+        parameter.setIn("path");
+        parameter.setName(param.getName());
+        parameter.setDescription(param.getDescription());
+        parameter.setSchema(generateParameterSchema(param));
+
+        return parameter;
     }
 }

@@ -31,22 +31,22 @@ public class DocTest {
 //        return 1;
 //    }
 //
-    /**
-     * post方法
-     * @param abc 参数abc
-     * @return 返回abc
-     */
-    @PostMapping("/method-post1")
-    public Abc post1(@RequestBody Abc abc)
-    {
-        return null;
-    }
-
-    @PostMapping("/method-post3")
-    public <T> T post3(T t)
-    {
-        return null;
-    }
+//    /**
+//     * post方法
+//     * @param abc 参数abc
+//     * @return 返回abc
+//     */
+//    @PostMapping("/method-post1")
+//    public Abc post1(@RequestBody Abc abc)
+//    {
+//        return null;
+//    }
+//
+//    @PostMapping("/method-post3")
+//    public <T> T post3(T t)
+//    {
+//        return null;
+//    }
 
     /**
      * post方法2
@@ -54,46 +54,59 @@ public class DocTest {
      * @return 返回int111
      */
     @PostMapping("/method-post2")
-    public Response<Response<Abc>> post2(@RequestBody List<Integer> hehe)
+    public Response<Abc> post2(Abc hehe)
     {
         return null;
     }
 
+//    /**
+//     * post40-==
+//     * @param dada dada参数
+//     * @return post4返回值
+//     */
+//    @PostMapping("/method-post4")
+//    public Response post4(@RequestBody Response<Response<Abc>> dada)
+//    {
+//        return null;
+//    }
+
     public static void main(String[] args) throws NoSuchMethodException {
 
-        var method = DocTest.class.getMethod("post2", List.class);
-        var type = method.getGenericReturnType();
-        if (type instanceof ParameterizedType)
-        {
-            var parameterizedType = (ParameterizedType)type;
-            var typeArgument = parameterizedType.getActualTypeArguments()[0];
-            var rawType = (Class)parameterizedType.getRawType();
-            var fields = rawType.getDeclaredFields();
-            for (var field : fields)
-            {
 
-                System.out.println(field);
-            }
-            var config = new DocParseConfiguration(Arrays.asList("."), "_");
-            var props = ClassUtils.parseProperty(config, type, 0);
-            System.out.println(props);
-//               ClassUtils.getPropertyItems(new DocParseConfiguration(Arrays.asList("."), "_"), rawType);
-            System.out.println(parameterizedType.getActualTypeArguments()[0]);
-        }
-        else {
-            System.out.println(type.getTypeName());
-        }
-
-
-
-//        var conf = new DocParseConfiguration(Arrays.asList("com.txws"));
-//        conf.getClassResolvers().add(new TestClassResolver());
+//        var method = DocTest.class.getMethod("post2", List.class);
+//        var type = method.getGenericReturnType();
+//        if (type instanceof ParameterizedType)
+//        {
+//            var parameterizedType = (ParameterizedType)type;
+//            var typeArgument = parameterizedType.getActualTypeArguments()[0];
+//            var rawType = (Class)parameterizedType.getRawType();
+//            var fields = rawType.getDeclaredFields();
+//            for (var field : fields)
+//            {
 //
-//        var parser = new DocParser(conf);
-//        var json = parser.parse();
-//
-//        System.out.println(json);
+//                System.out.println(field);
+//            }
+//            var config = new DocParseConfiguration(Arrays.asList("."), "_");
+//            var props = ClassUtils.parseTypeProperty(config, type, 0);
+//            System.out.println(props);
+////               ClassUtils.getPropertyItems(new DocParseConfiguration(Arrays.asList("."), "_"), rawType);
+//            System.out.println(parameterizedType.getActualTypeArguments()[0]);
+//        }
+//        else {
+//            System.out.println(type.getTypeName());
+//        }
+
+
+
+        var conf = new DocParseConfiguration(Arrays.asList("com.txws"), "_");
+        conf.getClassResolvers().add(new TestClassResolver());
+
+        var parser = new DocParser(conf);
+        var json = parser.parse();
+
+        System.out.println(json);
     }
+    // todo enum
     public static class TestClassResolver implements IClassResolver
     {
         @Override
@@ -106,20 +119,14 @@ public class DocTest {
      * Abc-class
      */
     @Data
-    public static class Abc extends Def
+    public static class Abc
     {
-        /**
-         * Abc-str
-         */
-        private String _str;
-        /**
-         * Abc-int
-         */
-        private int _int;
         /**
          * Abc-def
          */
+        private List<Def> _defs;
         private Def _def;
+//        private Enum1 _enum1;
     }
 
     /**
@@ -136,5 +143,13 @@ public class DocTest {
          * Def-nini
          */
         private Integer _nini;
+    }
+
+    /**
+     * Enum11111
+     */
+    public enum Enum1
+    {
+        A, B, C, D
     }
 }

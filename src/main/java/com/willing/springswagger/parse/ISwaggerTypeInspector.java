@@ -1,13 +1,15 @@
 package com.willing.springswagger.parse;
 
+import java.lang.reflect.Type;
+
 public interface ISwaggerTypeInspector extends ITypeInspector{
     /**
      * 转换为swagger类型
      */
-    String toSwaggerType(Class clazz);
+    String toSwaggerType(Type type);
 
     /**
      * 转换为swagger format
      */
-    String toSwaggerFormat(Class clazz);
+    String toSwaggerFormat(Type type);
 }

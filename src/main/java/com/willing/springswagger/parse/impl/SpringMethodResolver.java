@@ -15,8 +15,10 @@ public class SpringMethodResolver implements IMethodResolver {
             GetMapping.class,
             PostMapping.class,
             PutMapping.class,
-            DeleteMapping.class
+            DeleteMapping.class,
+            PatchMapping.class
     );
+
     @Override
     public boolean isSupport(Method method) {
         if (method.isSynthetic() || method.isBridge())

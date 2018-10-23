@@ -10,11 +10,9 @@ public class JavadocClassParser implements IClassParser {
 
     @Override
     public ControllerModel parse(Class clazz, ClassJavadoc classDoc, ControllerModel controllerModel) {
-        var className = clazz.getCanonicalName();
 
         if (classDoc != null) {
-            controllerModel.setName(className);
-            controllerModel.setSimpleName(clazz.getSimpleName());
+            controllerModel.setControllerClass(clazz);
             controllerModel.setDescription(FormatUtils.format(classDoc.getComment()));
         }
 
