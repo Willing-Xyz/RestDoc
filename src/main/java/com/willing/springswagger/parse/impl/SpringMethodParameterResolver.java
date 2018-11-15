@@ -32,7 +32,7 @@ public class SpringMethodParameterResolver implements IMethodParameterResolver {
             ServletRequest.class,
             MultipartRequest.class,
             HttpSession.class,
-            PushBuilder.class,
+//            PushBuilder.class, // todo 使用Class.forName加载类，因为如果使用方没有这个依赖会报错说找不到该类
             Principal.class,
             InputStream.class,
             Reader.class,

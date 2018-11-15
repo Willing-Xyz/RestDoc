@@ -1,5 +1,6 @@
 package com.willing.springswagger.parse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.CommentFormatter;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.var;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
@@ -70,8 +72,11 @@ public class DocTest {
 //        return null;
 //    }
 
-    public static void main(String[] args) throws NoSuchMethodException {
+    public static void main(String[] args) throws NoSuchMethodException, IOException {
 
+        var mapper = new ObjectMapper();
+        var v = mapper.readValue("true", Boolean.class);
+        System.out.println(v);
 
 //        var method = DocTest.class.getMethod("post2", List.class);
 //        var type = method.getGenericReturnType();
@@ -98,13 +103,13 @@ public class DocTest {
 
 
 
-        var conf = new DocParseConfiguration(Arrays.asList("com.txws"), "_");
-        conf.getClassResolvers().add(new TestClassResolver());
-
-        var parser = new DocParser(conf);
-        var json = parser.parse();
-
-        System.out.println(json);
+//        var conf = new DocParseConfiguration(Arrays.asList("com.txws"), "_");
+//        conf.getClassResolvers().add(new TestClassResolver());
+//
+//        var parser = new DocParser(conf);
+//        var json = parser.parse();
+//
+//        System.out.println(json);
     }
     // todo enum
     public static class TestClassResolver implements IClassResolver

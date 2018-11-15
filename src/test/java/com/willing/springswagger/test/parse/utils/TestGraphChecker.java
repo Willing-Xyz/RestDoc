@@ -40,4 +40,9 @@ public class TestGraphChecker {
         isCycle = _graph.add("A3", "B2");
         assertFalse(isCycle);
     }
+    @Test
+    public void t()
+    {
+        System.out.println(Object[].class.getTypeName());
+    }
 }

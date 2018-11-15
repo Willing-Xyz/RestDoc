@@ -45,7 +45,7 @@ public class SpringMethodParameterParser implements IMethodParameterParser {
         boolean isArray = ReflectUtils.isArray(parameter.getParameterizedType());
         parameterModel.setArray(isArray);
 
-        // todo required
+        // todo required.
         if (!isArray) {
             parameterModel.setChildren(ClassUtils.parseTypeProperty(_configuration, parameter.getParameterizedType()));
         }
