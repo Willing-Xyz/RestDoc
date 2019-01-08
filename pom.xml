@@ -8,11 +8,13 @@
     <artifactId>springswagger</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <parent>
-        <groupId>com.txws.parentpom</groupId>
-        <artifactId>parentpom-springboot</artifactId>
-        <version>1.0.0</version>
-    </parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -23,11 +25,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
-        <dependency>
-            <groupId>com.txws.common</groupId>
-            <artifactId>common-webapi</artifactId>
-            <version>2.0.3-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-models -->
         <dependency>
@@ -57,12 +54,7 @@
             <artifactId>spring-context</artifactId>
             <version>5.0.7.RELEASE</version>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-            <scope>runtime</scope>
-        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

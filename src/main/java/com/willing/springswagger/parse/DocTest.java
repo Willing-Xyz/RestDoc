@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.CommentFormatter;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
-import com.txws.common.webapi.response.Response;
 import com.willing.springswagger.parse.impl.DocParser;
 import com.willing.springswagger.parse.utils.ClassUtils;
 import lombok.Data;
@@ -56,7 +55,7 @@ public class DocTest {
      * @return 返回int111
      */
     @PostMapping("/method-post2")
-    public Response<Abc> post2(Abc hehe)
+    public Abc post2(Abc hehe)
     {
         return null;
     }

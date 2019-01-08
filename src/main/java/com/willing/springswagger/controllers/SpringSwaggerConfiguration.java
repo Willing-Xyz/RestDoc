@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@ConditionalOnWebApplication
 @Configuration
 public class SpringSwaggerConfiguration {
 
