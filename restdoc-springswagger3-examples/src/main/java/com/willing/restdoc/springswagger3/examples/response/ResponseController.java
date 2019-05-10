@@ -67,4 +67,21 @@ public class ResponseController {
         // 这是swagger-ui的一个bug
         return null;
     }
+
+    /**
+     * 泛型复杂返回类型
+     */
+    @GetMapping("/generic/complex")
+    public GenericResponse<ResponseA> genericComplex()
+    {
+        return null;
+    }
+    /**
+     * 泛型简单返回类型
+     */
+    @GetMapping("/generic/simple")
+    public GenericResponse<Integer> genericSimple()
+    {
+        return null;
+    }
 }

@@ -51,4 +51,21 @@ public class ParameterController {
     public void path(@PathVariable String parameterA, String parameterB)
     {
     }
+
+    /**
+     * 泛型复杂参数
+     */
+    @PostMapping("/body/generic/complex")
+    public void bodyGenericComplex(@RequestBody GenericParameter<ParameterA> parameterAGenericParameter)
+    {
+    }
+
+    /**
+     * 泛型简单参数
+     */
+    @PostMapping("/body/generic/simple")
+    public void bodyGenericSimple(@RequestBody GenericParameter<Integer> parameter)
+    {
+    }
+
 }
