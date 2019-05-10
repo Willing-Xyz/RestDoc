@@ -42,4 +42,16 @@ public class SpringMultipartParameterParser extends AbstractMethodParameterParse
         }
         return false;
     }
+
+    @Override
+    protected String getParameterName(Parameter parameter) {
+        var paramName = super.getParameterName(parameter);
+
+        var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestParam.class);
+        if (requestParamAnno != null)
+        {
+            return requestParamAnno.name();
+        }
+        return paramName;
+    }
 }

@@ -54,7 +54,6 @@ public abstract class AbstractMethodParameterParser implements IMethodParameterP
 
     protected String getParameterName(Parameter parameter) {
         return parameter.getName();
-        // todo
     }
 
     protected abstract ParameterModel.ParameterLocation getParameterLocation(Parameter parameter, Type actualParamType);

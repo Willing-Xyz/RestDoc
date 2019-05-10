@@ -402,13 +402,13 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             openAPI.getComponents().schemas(new HashMap<>());
         if (openAPI.getComponents().getSchemas().containsKey(className))
         {
-            return UrlEncodeUtils.encode(className);
+            return className;
         }
         var schema = generateSchemaComponent(type, children, openAPI);
 
         openAPI.getComponents().addSchemas(className, schema);
 
-        return UrlEncodeUtils.encode(className);
+        return className;
     }
 
     // List<String> -> [String
@@ -464,7 +464,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         var schema = new Schema();
         var className = _configuration.getTypeNameParser().parse(type);
         schema.setName(className);
-        schema.setType(_configuration.getSwaggerTypeInspector().toSwaggerType(type)); // todo
+        schema.setType(_configuration.getSwaggerTypeInspector().toSwaggerType(type));
 
 
         var classDoc = RuntimeJavadoc.getJavadoc(type.getTypeName());

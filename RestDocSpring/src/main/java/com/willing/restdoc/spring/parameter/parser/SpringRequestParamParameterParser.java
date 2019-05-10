@@ -34,4 +34,16 @@ public class SpringRequestParamParameterParser extends AbstractMethodParameterPa
     public boolean isSupport(Parameter parameter) {
         return AnnotatedElementUtils.hasAnnotation(parameter, RequestParam.class);
     }
+
+    @Override
+    protected String getParameterName(Parameter parameter) {
+        var paramName = super.getParameterName(parameter);
+
+        var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestParam.class);
+        if (requestParamAnno != null)
+        {
+            return requestParamAnno.name();
+        }
+        return paramName;
+    }
 }

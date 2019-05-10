@@ -6,6 +6,7 @@ import com.willing.restdoc.core.parse.impl.AbstractMethodParameterParser;
 import lombok.var;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -33,5 +34,17 @@ public class SpringRequestHeaderParameterParser extends AbstractMethodParameterP
     @Override
     public boolean isSupport(Parameter parameter) {
         return AnnotatedElementUtils.hasAnnotation(parameter, RequestHeader.class);
+    }
+
+    @Override
+    protected String getParameterName(Parameter parameter) {
+        var paramName = super.getParameterName(parameter);
+
+        var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestHeader.class);
+        if (requestParamAnno != null)
+        {
+            return requestParamAnno.name();
+        }
+        return paramName;
     }
 }
