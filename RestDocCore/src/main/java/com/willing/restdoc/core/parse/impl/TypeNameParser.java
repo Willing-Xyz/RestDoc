@@ -7,6 +7,9 @@ import lombok.var;
 import java.lang.reflect.Type;
 import java.util.*;
 
+/**
+ * 按照调用parse的顺序简化类名。
+ */
 public class TypeNameParser implements ITypeNameParser {
 
     private Map<String, Type> _typeNameToType = new HashMap<>();
@@ -41,9 +44,7 @@ public class TypeNameParser implements ITypeNameParser {
     }
 
     private String complexName(List<String> items, int complexity) {
-        var extraClassCount = items.stream().filter(o -> !o.startsWith("java.") && !o.startsWith("javax.")).mapToInt(o -> {
-            return getDotCount(o);
-        }).sum();
+        var extraClassCount = items.stream().filter(o -> !o.startsWith("java.") && !o.startsWith("javax.")).mapToInt(o -> getDotCount(o)).sum();
         int javaCount = 0;
         int updateCount = 0;
         for (int i = 0; i < items.size(); ++i) {

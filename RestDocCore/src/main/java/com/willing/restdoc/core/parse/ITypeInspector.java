@@ -8,5 +8,9 @@ public interface ITypeInspector {
      */
     boolean isSimpleType(Type type);
 
+    boolean isCollection(Type type);
+
+    Type getCollectionComponentType(Type type);
+
     boolean isSupport(Type type);
 }

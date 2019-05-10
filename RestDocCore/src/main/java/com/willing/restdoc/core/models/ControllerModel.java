@@ -10,7 +10,6 @@ import java.util.List;
  */
 @Data
 public class ControllerModel {
-    // todo 简化类名
     private Class _controllerClass;
     private String _description;
 

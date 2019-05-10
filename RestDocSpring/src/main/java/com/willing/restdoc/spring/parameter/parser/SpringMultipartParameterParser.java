@@ -1,0 +1,45 @@
+package com.willing.restdoc.spring.parameter.parser;
+
+import com.willing.restdoc.core.models.ParameterModel;
+import com.willing.restdoc.core.parse.RestDocParseConfig;
+import com.willing.restdoc.core.parse.impl.AbstractMethodParameterParser;
+import lombok.var;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.Part;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+
+public class SpringMultipartParameterParser extends AbstractMethodParameterParser {
+    public SpringMultipartParameterParser(RestDocParseConfig configuration) {
+        super(configuration);
+    }
+
+    @Override
+    protected ParameterModel.ParameterLocation getParameterLocation(Parameter parameter, Type actualParamType) {
+        return ParameterModel.ParameterLocation.FILE;
+    }
+
+    @Override
+    protected boolean isRequired(Parameter parameter, Type actualParamType) {
+        var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestParam.class);
+        if (requestParamAnno != null)
+        {
+            return requestParamAnno.required();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isSupport(Parameter parameter) {
+        if (MultipartFile.class.isAssignableFrom(parameter.getType())
+            || Part.class.isAssignableFrom(parameter.getType()))
+        {
+            return true;
+        }
+        return false;
+    }
+}

@@ -66,7 +66,7 @@ public class SpringMethodParser implements IMethodParser {
             }
             var mapping = new MappingModel();
             mapping.setHttpMethods(combineHttpMethod(methods, controllerRequestMethods));
-            mapping.setPaths(combineControlerPath(combinePath(mappingPaths, mappingValues), controllerPaths));
+            mapping.setPaths(combineControllerPath(combinePath(mappingPaths, mappingValues), controllerPaths));
             pathModel.getMappings().add(mapping);
         }
         return pathModel;
@@ -99,12 +99,43 @@ public class SpringMethodParser implements IMethodParser {
                 set.add(m);
             }
         }
-//        return set.toArray(new RequestMethod[]{});
-        // todo
-        return null;
+        var list = new ArrayList<MappingModel.HttpMethod>();
+        for (var s : set)
+        {
+            MappingModel.HttpMethod t = null;
+            switch (s)
+            {
+                case GET:
+                    t = MappingModel.HttpMethod.GET;
+                    break;
+                case POST:
+                    t = MappingModel.HttpMethod.POST;
+                    break;
+                case PUT:
+                    t = MappingModel.HttpMethod.PUT;
+                    break;
+                case DELETE:
+                    t = MappingModel.HttpMethod.DELETE;
+                    break;
+                case HEAD:
+                    t = MappingModel.HttpMethod.HEAD;
+                    break;
+                case PATCH:
+                    t = MappingModel.HttpMethod.PATCH;
+                    break;
+                case OPTIONS:
+                    t = MappingModel.HttpMethod.OPTIONS;
+                    break;
+                case TRACE:
+                    t = MappingModel.HttpMethod.TRACE;
+                    break;
+            }
+            list.add(t);
+        }
+        return list.toArray(new MappingModel.HttpMethod[]{});
     }
 
-    private String[] combineControlerPath(String[] path, String[] controllerPaths) {
+    private String[] combineControllerPath(String[] path, String[] controllerPaths) {
         Set<String> paths = new HashSet<>();
         if (controllerPaths == null || controllerPaths.length == 0) {
             if (path != null)

@@ -13,7 +13,7 @@ public class MappingModel {
      */
     private HttpMethod[] _httpMethods = new HttpMethod[]{};
 
-    public static enum HttpMethod
+    public enum HttpMethod
     {
         GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH, TRACE
     }

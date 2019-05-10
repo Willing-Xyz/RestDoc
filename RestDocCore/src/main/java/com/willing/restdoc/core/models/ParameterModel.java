@@ -16,7 +16,7 @@ public class ParameterModel {
     /**
      * 是否必须
      */
-    private Boolean _required;
+    private boolean _required;
     private Type _parameterType;
     /**
      * 参数描述
@@ -35,6 +35,6 @@ public class ParameterModel {
 
     public enum ParameterLocation
     {
-        BODY, QUERY, PATH
+        BODY, QUERY, PATH, HEADER, FILE;
     }
 }
