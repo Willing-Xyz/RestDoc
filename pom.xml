@@ -20,7 +20,7 @@
         <module>RestDocSwagger3</module>
         <module>RestDocSpringSwagger3</module>
         <module>RestDocSpring</module>
-        <module>restdoc-springswagger3-examples</module>
+        <module>RestDocSpringSwagger3Examples</module>
     </modules>
 
     <properties>

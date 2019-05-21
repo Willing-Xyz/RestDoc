@@ -1,5 +1,7 @@
 package com.willing.restdoc.core.parse.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.willing.restdoc.core.parse.RestDocParseConfig;
 import com.willing.restdoc.core.parse.impl.JavaTypeInspector;
 import javafx.util.Pair;
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestTypeParseUtils {
     private RestDocParseConfig _config;
+
 
     @Before
     public void before()
@@ -87,12 +90,6 @@ public class TestTypeParseUtils {
         }
     }
 
-    @Test
-    public void test()
-    {
-        var prop = TypeParseUtils.parseTypeProperty(_config, Student[].class);
-        System.out.println(prop);
-    }
     @Data
     public static class Student
     {
