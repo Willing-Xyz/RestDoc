@@ -7,9 +7,19 @@
 
 ## 使用
 
-第一步，配置RestDocConfig
+第一步，配置pom，配置RestDocConfig
 
-在SpringBoot中，对于JavaConfig，配置如下：
+在SpringBoot中，增加依赖：
+
+```
+<dependency>
+     <groupId>cn.willingxyz.restdoc</groupId>
+     <artifactId>RestDocSpringSwagger3</artifactId>
+     <version>0.1.0</version>
+ </dependency>
+```
+
+对于JavaConfig，配置如下：
 
 ```java 
 @Bean
@@ -20,10 +30,12 @@ RestDocConfig _swaggerConfig()
             .apiDescription("rest doc desc")
             .apiVersion("api version")
             .fieldPrefix("_")
-            .packages(Arrays.asList("cn.willingxyz.restdoc.springswagger3.examples"))
+            .packages(Arrays.asList(""))
             .build();
 }
 ```
+
+其中 packages 表示要扫描的基础包名，如 `packages(Arrays.asList("cn.willingxyz.restdoc.springswagger3.examples"))`
 
 其中 fieldPrefix表示字段前缀。
 因为在获取javadoc时，会从field、get方法、set方法上获取，因此如果field有前缀，需要通过fieldPrefix设置，否则将无法获取到javadoc。
