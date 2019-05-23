@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.willing.restdoc</groupId>
+    <groupId>cn.willingxyz.restdoc</groupId>
     <artifactId>restdoc</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 
     <parent>
-        <groupId>io.github.willing-xyz.parentpom</groupId>
+        <groupId>cn.willingxyz.parentpom</groupId>
         <artifactId>parentpom-common</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -25,10 +25,7 @@
 
     <properties>
         <!-- version -->
-        <RestDocCore.Version>1.0-SNAPSHOT</RestDocCore.Version>
-        <RestDocSwagger3.Version>1.0-SNAPSHOT</RestDocSwagger3.Version>
-        <RestDocSpring.Version>1.0-SNAPSHOT</RestDocSpring.Version>
-        <RestDocSpringSwagger3.Version>1.0-SNAPSHOT</RestDocSpringSwagger3.Version>
+        <RestDoc.Version>0.1.0</RestDoc.Version>
     </properties>
 
     <dependencies>
@@ -44,12 +41,12 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.8</version>
         </dependency>
-
     </dependencies>
 
     <dependencyManagement>
@@ -76,24 +73,45 @@
                 <version>2.9.5</version>
             </dependency>
             <dependency>
-                <groupId>com.willing.restdoc</groupId>
+                <groupId>cn.willingxyz.restdoc</groupId>
                 <artifactId>RestDocCore</artifactId>
-                <version>${RestDocCore.Version}</version>
+                <version>${RestDoc.Version}</version>
             </dependency>
             <dependency>
-                <groupId>com.willing.restdoc</groupId>
+                <groupId>cn.willingxyz.restdoc</groupId>
                 <artifactId>RestDocSwagger3</artifactId>
-                <version>${RestDocSwagger3.Version}</version>
+                <version>${RestDoc.Version}</version>
             </dependency>
             <dependency>
-                <groupId>com.willing.restdoc</groupId>
+                <groupId>cn.willingxyz.restdoc</groupId>
+                <artifactId>RestDocSpringSwagger3</artifactId>
+                <version>${RestDoc.Version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.willingxyz.restdoc</groupId>
                 <artifactId>RestDocSpring</artifactId>
-                <version>${RestDocSpring.Version}</version>
+                <version>${RestDoc.Version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.therapi</groupId>
                 <artifactId>therapi-runtime-javadoc</artifactId>
                 <version>0.7.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.therapi</groupId>
+                <artifactId>therapi-runtime-javadoc-scribe</artifactId>
+                <version>0.9.0</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
