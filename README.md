@@ -3,6 +3,8 @@
 该项目用于在运行时使用javadoc生成swagger文档，并使用swagger-ui进行显示。
 
 
+在线示例： http://www.willingxyz.cn:8084/swagger-ui/index.html 
+
 ![示例](./images/example_summary.png)
 
 ## 使用
