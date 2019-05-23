@@ -27,7 +27,4 @@ public class App {
                 .packages(Arrays.asList("cn.willingxyz.restdoc.springswagger3.examples"))
                 .build();
     }
-
-    // todo 打包源码
-
 }
