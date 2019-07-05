@@ -4,6 +4,7 @@ import cn.willingxyz.restdoc.core.models.PropertyModel;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import lombok.var;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -71,16 +72,38 @@ public class TypeParseUtils {
         for (var propertyItem : getPropertyItems(configuration, rawType))
         {
             Type propType = propertyItem.getPropertyType();
-            for (int x = 0; x < typeParameters.length; ++x)
+            if (propType instanceof TypeVariable) {
+                propType = getTypeVariable(typeArguments, typeParameters, propType);
+            }
+            else if (propType instanceof ParameterizedType)
             {
-                if (typeParameters[x].getTypeName().equals(propType.getTypeName()))
+                ParameterizedType propParameterizedType = (ParameterizedType)propType;
+                List<Type> convertedActualArgs = new ArrayList<>();
+                for (var actualArg : propParameterizedType.getActualTypeArguments())
                 {
-                    propType = typeArguments[x];
+                    if (actualArg instanceof TypeVariable)
+                    {
+                        convertedActualArgs.add(getTypeVariable(typeArguments, typeParameters, actualArg));
+                    }
+                    else
+                    {
+                        convertedActualArgs.add(actualArg);
+                    }
                 }
+                propType = new MyParameterizedType(propParameterizedType.getRawType(), convertedActualArgs.toArray(new Type[]{}), propParameterizedType.getOwnerType());
             }
 
             parseProperty(configuration, parameterizedType, propertyModels, map, propertyItem, propType);
         }
+    }
+
+    private static Type getTypeVariable(Type[] typeArguments, TypeVariable[] typeParameters, Type propType) {
+        for (int x = 0; x < typeParameters.length; ++x) {
+            if (typeParameters[x].getTypeName().equals(propType.getTypeName())) {
+                propType = typeArguments[x];
+            }
+        }
+        return propType;
     }
 
     private static void parseProperty(RestDocParseConfig configuration, Type fromType, ArrayList<PropertyModel> propertyModels, GraphChecker<Type> map, ReflectUtils.PropertyItem propertyItem, Type propType) {

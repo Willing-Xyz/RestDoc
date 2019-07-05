@@ -118,7 +118,7 @@ public class ReflectUtils {
     }
 
     private static boolean isPropertyMethod(Method method) {
-        return method.getName().length() >= 3 && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
+        return method.getName().length() > 3 && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
             &&
                 (method.getName().startsWith("get")
                 || (method.getName().startsWith("set") && method.getParameters().length == 1)
