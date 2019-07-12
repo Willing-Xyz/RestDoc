@@ -1,9 +1,7 @@
 package cn.willingxyz.restdoc.springswagger3.examples.date;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -24,10 +22,27 @@ public class DateController {
     }
 
     /**
+     * 日期在body参数里
+     */
+    @PostMapping("/parameter/body")
+    public void parameterInBody(@RequestBody DateWrapper parameterBody)
+    {
+    }
+
+    /**
      * 日期在响应中
      */
     @GetMapping("/response")
     public Date response()
+    {
+        return null;
+    }
+
+    /**
+     * 日期在响应的类中
+     */
+    @GetMapping("/response/complex")
+    public DateWrapper responseComplex()
     {
         return null;
     }
