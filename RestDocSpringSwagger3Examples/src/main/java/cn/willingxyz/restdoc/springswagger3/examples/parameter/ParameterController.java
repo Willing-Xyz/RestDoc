@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/parameter")
 public class ParameterController {
+    @GetMapping("/queryString")
+    public void queryString(@RequestParam int param1, @RequestParam String param2)
+    {
+    }
+
     /**
      * 查询参数数组
      * @param array 字符串参数数组

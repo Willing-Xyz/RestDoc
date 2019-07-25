@@ -40,7 +40,7 @@ public class SpringRequestParamParameterParser extends AbstractMethodParameterPa
         var paramName = super.getParameterName(parameter);
 
         var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestParam.class);
-        if (requestParamAnno != null)
+        if (requestParamAnno != null && requestParamAnno.name() != null && !requestParamAnno.name().isEmpty())
         {
             return requestParamAnno.name();
         }
