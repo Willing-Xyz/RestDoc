@@ -17,7 +17,7 @@
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.1.2</version>
+     <version>0.1.3</version>
  </dependency>
 ```
 
