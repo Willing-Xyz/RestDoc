@@ -82,6 +82,9 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 在运行时读取生成的javadoc文件。
 
 
+## todo list
 
-
+- 增加Bean Validation的支持
+- 增加Spring Validator支持
+- 增加Swagger2支持
 
