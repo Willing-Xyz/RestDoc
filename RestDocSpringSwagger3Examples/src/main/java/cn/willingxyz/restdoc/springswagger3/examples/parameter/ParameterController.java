@@ -24,6 +24,15 @@ public class ParameterController {
     }
 
     /**
+     * 查询字符串 复杂参数
+     */
+    @GetMapping("/queryString/complex")
+    public void queryStringComplex(ParameterA parameterA) // todo
+    {
+    }
+
+
+    /**
      * body 中的简单数组
      */
     @PostMapping("/body/array/simple")
