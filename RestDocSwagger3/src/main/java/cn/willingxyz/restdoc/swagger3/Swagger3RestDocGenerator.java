@@ -175,7 +175,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         requestBody.setRequired(parameterModel.isRequired());
         requestBody.setDescription(parameterModel.getDescription());
 
-        Schema contentSchema = generateSchema(parameterModel.getParameterType(), parameterModel.getChildren(), openAPI);
+        Schema contentSchema = generateSchema(parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), openAPI);
 
         requestBody.setContent(createContent(contentSchema));
         return requestBody;
@@ -224,7 +224,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         if (returnModel.getReturnType() == void.class || returnModel.getReturnType() == Void.class)
             return apiResponse;
 
-        Schema schema = generateSchema(returnModel.getReturnType(), returnModel.getChildren(), openAPI);
+        Schema schema = generateSchema(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), openAPI);
 
         apiResponse.setContent(createContent(schema));
         return apiResponse;
@@ -253,7 +253,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setDescription(paramModel.getDescription());
         parameter.setIn(in);
 
-        parameter.setSchema(generateSchema(paramModel.getParameterType(), paramModel.getChildren(), openAPI));
+        parameter.setSchema(generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI));
         return parameter;
     }
 
@@ -272,7 +272,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
                 parameter.setDescription(child.getDescription());
                 parameter.setIn("query");
 
-                parameter.setSchema(generateSchema(child.getPropertyType(), child.getChildren(), openAPI));
+                parameter.setSchema(generateSchema(child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI));
                 parameters.add(parameter);
             } else {
                 parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), openAPI));
@@ -284,29 +284,29 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
     // ----------------------core---------------
 
-    // 生成Schema，并放入openapi中。
-    private String putSchemaComponent(Type type, List<PropertyModel> children, OpenAPI openAPI) {
-        var className = getComponentName(type);
-
-        if (openAPI.getComponents() == null)
-            openAPI.components(new Components());
-        if (openAPI.getComponents().getSchemas() == null)
-            openAPI.getComponents().schemas(new HashMap<>());
-        if (openAPI.getComponents().getSchemas().containsKey(className)) {
-            return className;
-        }
-        var schema = generateSchema(type, children, openAPI);
-
-        openAPI.getComponents().addSchemas(className, schema);
-
-        return className;
-    }
+//    // 生成Schema，并放入openapi中。
+//    private String putSchemaComponent(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
+//        var className = getComponentName(type);
+//
+//        if (openAPI.getComponents() == null)
+//            openAPI.components(new Components());
+//        if (openAPI.getComponents().getSchemas() == null)
+//            openAPI.getComponents().schemas(new HashMap<>());
+//        if (openAPI.getComponents().getSchemas().containsKey(className)) {
+//            return className;
+//        }
+//        var schema = generateSchema(description, type, children, openAPI);
+//
+//        openAPI.getComponents().addSchemas(className, schema);
+//
+//        return className;
+//    }
 
     // 生成schema
-    private Schema generateSchema(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateSchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         // 数组/集合
         if (_configuration.getTypeInspector().isCollection(type)) {
-            return generateArraySchema(type, children, openAPI);
+            return generateArraySchema(description, type, children, openAPI);
         }
         // 枚举
         if (ReflectUtils.isEnum(type)) {
@@ -314,15 +314,16 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         }
         // 简单类型
         if (children == null || children.isEmpty()) {
-            return generateSimpleTypeSchema(type);
+            return generateSimpleTypeSchema(description, type);
         }
         // 复杂类型
         return generateComplexTypeSchema(type, children, openAPI);
     }
 
-    private Schema generateArraySchema(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateArraySchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var arraySchema = new ArraySchema();
-        arraySchema.setItems(generateSchema(_configuration.getTypeInspector().getCollectionComponentType(type), children, openAPI));
+        arraySchema.setDescription(description);
+        arraySchema.setItems(generateSchema(description, _configuration.getTypeInspector().getCollectionComponentType(type), children, openAPI));
         return arraySchema;
     }
 
@@ -339,14 +340,15 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         var schemas = new HashMap<String, Schema>();
 
         for (var propertyModel : propertyModels) {
-            var schema = generateSchema(propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
+            var schema = generateSchema(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
     }
 
-    private Schema generateSimpleTypeSchema(Type type) {
+    private Schema generateSimpleTypeSchema(String description, Type type) {
         var schema = new Schema();
+        schema.setDescription(description);
         schema.setType(_configuration.getSwaggerTypeInspector().toSwaggerType(type));
         schema.setFormat(_configuration.getSwaggerTypeInspector().toSwaggerFormat(type));
         return schema;
