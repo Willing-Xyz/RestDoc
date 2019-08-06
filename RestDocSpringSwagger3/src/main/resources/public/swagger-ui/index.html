@@ -43,6 +43,10 @@
         url: "../swagger.json",
         dom_id: '#swagger-ui',
         deepLinking: true,
+        defaultModelExpandDepth: 100,
+        defaultModelsExpandDepth: 0,
+        docExpansion: 'none',
+        displayRequestDuration: true,
         presets: [
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset

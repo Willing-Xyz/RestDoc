@@ -85,7 +85,10 @@ public class ReflectUtils {
             {
                 var name = fieldName.substring(prefix.length());
                 if (name.equals(propName))
-                    return fields.get(propName);
+                    return fields.get(fieldName);
+                name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+                if (name.equals(propName))
+                    if (name.equals(propName));
             }
             if (fieldName.equals(propName))
                 return fields.get(fieldName);
