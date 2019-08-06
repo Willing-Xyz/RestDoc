@@ -20,7 +20,10 @@
         <module>RestDocSwagger3</module>
         <module>RestDocSpringSwagger3</module>
         <module>RestDocSpring</module>
-        <module>RestDocSpringSwagger3Examples</module>
+        <module>RestDocSpringExamples</module>
+        <module>RestDocSwagger2</module>
+        <module>RestDocSwaggerCommon</module>
+        <module>RestDocSpringSwagger2</module>
     </modules>
 
     <properties>
@@ -50,7 +53,15 @@
     </dependencies>
 
     <dependencyManagement>
+
+
         <dependencies>
+            <!-- https://mvnrepository.com/artifact/io.swagger/swagger-models -->
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+                <version>1.5.22</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
@@ -66,7 +77,11 @@
                 <artifactId>swagger-models</artifactId>
                 <version>2.0.8</version>
             </dependency>
-
+            <dependency>
+                <groupId>cn.willingxyz.restdoc</groupId>
+                <artifactId>RestDocSwaggerCommon</artifactId>
+                <version>${RestDoc.Version}</version>
+            </dependency>
             <dependency>
                 <groupId>cn.willingxyz.restdoc</groupId>
                 <artifactId>RestDocCore</artifactId>
@@ -79,7 +94,17 @@
             </dependency>
             <dependency>
                 <groupId>cn.willingxyz.restdoc</groupId>
+                <artifactId>RestDocSwagger2</artifactId>
+                <version>${RestDoc.Version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.willingxyz.restdoc</groupId>
                 <artifactId>RestDocSpringSwagger3</artifactId>
+                <version>${RestDoc.Version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.willingxyz.restdoc</groupId>
+                <artifactId>RestDocSpringSwagger2</artifactId>
                 <version>${RestDoc.Version}</version>
             </dependency>
             <dependency>

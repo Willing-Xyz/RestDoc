@@ -3,6 +3,8 @@ package cn.willingxyz.restdoc.swagger3;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
+import cn.willingxyz.restdoc.core.utils.ClassNameUtils;
+import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,10 +31,10 @@ import java.util.stream.Collectors;
 
 public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
-    public Swagger3GeneratorConfig _configuration;
+    public SwaggerGeneratorConfig _config;
 
-    public Swagger3RestDocGenerator(Swagger3GeneratorConfig configuration) {
-        _configuration = configuration;
+    public Swagger3RestDocGenerator(SwaggerGeneratorConfig configuration) {
+        _config = configuration;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
     private void convertServers(RootModel rootModel, OpenAPI openApi) {
         var servers = new ArrayList<Server>();
-        for (var server : _configuration.getServers()) {
+        for (var server : _config.getServers()) {
             var serverInfo = new Server();
             serverInfo.setDescription(server.getDescription());
             serverInfo.setUrl(server.getUrl());
@@ -74,9 +76,9 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
     private void convertInfo(RootModel rootModel, OpenAPI openApi) {
         var info = new Info();
-        info.setDescription(_configuration.getDescription());
-        info.setVersion(_configuration.getVersion());
-        info.setTitle(_configuration.getTitle());
+        info.setDescription(_config.getDescription());
+        info.setVersion(_config.getVersion());
+        info.setTitle(_config.getTitle());
         openApi.setInfo(info);
     }
 
@@ -84,7 +86,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     private void convertTag(RootModel rootModel, OpenAPI openApi) {
         for (var controller : rootModel.getControllers()) {
             var tag = new Tag();
-            tag.setName(_configuration.getTypeNameParser().parse(controller.getControllerClass()));
+            tag.setName(_config.getTypeNameParser().parse(controller.getControllerClass()));
             tag.setDescription(controller.getDescription());
             openApi.addTagsItem(tag);
         }
@@ -107,7 +109,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         pathItem.setSummary(TextUtils.getFirstLine(method.getDescription()));
 
         var operation = new Operation();
-        operation.addTagsItem(_configuration.getTypeNameParser().parse(controller.getControllerClass()));
+        operation.addTagsItem(_config.getTypeNameParser().parse(controller.getControllerClass()));
         operation.setSummary(TextUtils.getFirstLine(method.getDescription()));
         operation.setDescription(method.getDescription());
         operation.setDeprecated(method.getDeprecated());
@@ -158,7 +160,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
                     pathItem.patch(operation);
                     break;
                 case TRACE:
-                    pathItem.patch(operation);
+                    pathItem.trace(operation);
                     break;
                 case OPTIONS:
                     pathItem.options(operation);
@@ -256,7 +258,6 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setSchema(generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI));
         return parameter;
     }
-
     private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String paraName, OpenAPI openAPI) {
         var parameters = new ArrayList<Parameter>();
         String name = "";
@@ -284,28 +285,25 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
     // ----------------------core---------------
 
-//    // 生成Schema，并放入openapi中。
-//    private String putSchemaComponent(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
-//        var className = getComponentName(type);
-//
-//        if (openAPI.getComponents() == null)
-//            openAPI.components(new Components());
-//        if (openAPI.getComponents().getSchemas() == null)
-//            openAPI.getComponents().schemas(new HashMap<>());
-//        if (openAPI.getComponents().getSchemas().containsKey(className)) {
-//            return className;
-//        }
-//        var schema = generateSchema(description, type, children, openAPI);
-//
-//        openAPI.getComponents().addSchemas(className, schema);
-//
-//        return className;
-//    }
+    // 生成Schema，并放入openapi中。
+    private Schema getOrGenerateComplexSchema(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+        var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), type);
+
+        if (openAPI.getComponents() == null)
+            openAPI.components(new Components());
+        if (openAPI.getComponents().getSchemas() == null)
+            openAPI.getComponents().schemas(new HashMap<>());
+        if (!openAPI.getComponents().getSchemas().containsKey(componentName)) {
+            var schema = generateComplexTypeSchema(type, children, openAPI);
+            openAPI.getComponents().addSchemas(componentName, schema);
+        }
+        return openAPI.getComponents().getSchemas().get(componentName);
+    }
 
     // 生成schema
     private Schema generateSchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         // 数组/集合
-        if (_configuration.getTypeInspector().isCollection(type)) {
+        if (_config.getTypeInspector().isCollection(type)) {
             return generateArraySchema(description, type, children, openAPI);
         }
         // 枚举
@@ -317,13 +315,13 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             return generateSimpleTypeSchema(description, type);
         }
         // 复杂类型
-        return generateComplexTypeSchema(type, children, openAPI);
+        return getOrGenerateComplexSchema(type, children, openAPI);
     }
 
     private Schema generateArraySchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var arraySchema = new ArraySchema();
         arraySchema.setDescription(description);
-        arraySchema.setItems(generateSchema(description, _configuration.getTypeInspector().getCollectionComponentType(type), children, openAPI));
+        arraySchema.setItems(generateSchema(description, _config.getTypeInspector().getCollectionComponentType(type), children, openAPI));
         return arraySchema;
     }
 
@@ -349,8 +347,8 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     private Schema generateSimpleTypeSchema(String description, Type type) {
         var schema = new Schema();
         schema.setDescription(description);
-        schema.setType(_configuration.getSwaggerTypeInspector().toSwaggerType(type));
-        schema.setFormat(_configuration.getSwaggerTypeInspector().toSwaggerFormat(type));
+        schema.setType(_config.getSwaggerTypeInspector().toSwaggerType(type));
+        schema.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(type));
         return schema;
     }
 
@@ -367,41 +365,5 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             itemSchema.setDefault(enums.get(0));
         }
         return itemSchema;
-    }
-
-    // --------------------utils----------------
-    // todo 提取到Common
-
-    // List<String> -> [String
-    // List<List<String> -> [[String
-    // com.willing.List<String> -> com.willing.[String
-    private String getComponentName(Type type) {
-        // 统计嵌套集合的深度
-        int collectionCount = 0;
-        while (_configuration.getTypeInspector().isCollection(type)) {
-            collectionCount++;
-            type = _configuration.getTypeInspector().getCollectionComponentType(type);
-        }
-        var name = _configuration.getTypeNameParser().parse(type);
-        int $index = name.lastIndexOf('$');
-        int dotIndex = name.lastIndexOf('.');
-        if ($index > dotIndex) {
-            return convertCollectionName(collectionCount, name, '$');
-        } else {
-            return convertCollectionName(collectionCount, name, ',');
-        }
-    }
-
-    private String convertCollectionName(int collectionCount, String name, char ch) {
-        String prefix = "";
-        int index = name.lastIndexOf(ch);
-        if (index != -1) {
-            prefix = name.substring(0, index + 1);
-            name = name.substring(index + 1);
-        }
-        while (collectionCount-- > 0) {
-            name = "[" + name;
-        }
-        return prefix + name;
     }
 }

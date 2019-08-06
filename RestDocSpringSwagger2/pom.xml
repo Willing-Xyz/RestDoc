@@ -5,31 +5,21 @@
     <parent>
         <artifactId>restdoc</artifactId>
         <groupId>cn.willingxyz.restdoc</groupId>
-        <!--ignore version-->
         <version>0.1.3</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>RestDocSwagger3</artifactId>
+    <artifactId>RestDocSpringSwagger2</artifactId>
     <version>${parent.version}</version>
 
     <dependencies>
         <dependency>
             <groupId>cn.willingxyz.restdoc</groupId>
-            <artifactId>RestDocCore</artifactId>
+            <artifactId>RestDocSwagger2</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.willingxyz.restdoc</groupId>
-            <artifactId>RestDocSwaggerCommon</artifactId>
+            <artifactId>RestDocSpring</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
-        </dependency>
-
     </dependencies>
-
-
 </project>

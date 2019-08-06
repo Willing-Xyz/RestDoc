@@ -37,7 +37,7 @@ RestDocConfig _swaggerConfig()
 }
 ```
 
-其中 packages 表示要扫描的基础包名，如 `packages(Arrays.asList("cn.willingxyz.restdoc.springswagger3.examples"))`
+其中 packages 表示要扫描的基础包名，如 `packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))`
 
 其中 fieldPrefix表示字段前缀。
 因为在获取javadoc时，会从field、get方法、set方法上获取，因此如果field有前缀，需要通过fieldPrefix设置，否则将无法获取到javadoc。
@@ -74,7 +74,7 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 
 启动应用后，打开 http://host/swagger-ui/index.html 浏览
 
-具体可参考 RestDocSpringSwagger3Examples。
+具体可参考 RestDocSpringExamples。
 
 ## 原理
 
@@ -87,4 +87,5 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 - 增加Bean Validation的支持
 - 增加Spring Validator支持
 - 增加Swagger2支持
+- 支付不同版本的swagger-ui
 

@@ -12,3 +12,4 @@ target/
 *.class
 *.log
 *.iml
+*.orig

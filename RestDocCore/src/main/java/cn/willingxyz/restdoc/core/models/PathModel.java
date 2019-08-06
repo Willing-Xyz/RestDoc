@@ -10,6 +10,9 @@ import java.util.List;
  */
 @Data
 public class PathModel {
+    /**
+     * 每个方法上可能有多个mapping
+     */
     private List<MappingModel> _mappings = new ArrayList<>();
     /**
      * 详细描述

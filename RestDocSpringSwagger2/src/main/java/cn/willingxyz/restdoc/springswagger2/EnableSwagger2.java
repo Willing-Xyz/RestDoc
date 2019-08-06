@@ -1,4 +1,4 @@
-package cn.willingxyz.restdoc.springswagger3;
+package cn.willingxyz.restdoc.springswagger2;
 
 import org.springframework.context.annotation.Import;
 
@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value = { java.lang.annotation.ElementType.TYPE })
 @Documented
-@Import({SpringSwagger3Configuration.class})
-public @interface EnableSwagger3 {
+@Import({SpringSwagger2Configuration.class})
+public @interface EnableSwagger2 {
 }
