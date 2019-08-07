@@ -23,6 +23,7 @@
             <groupId>cn.willingxyz.restdoc</groupId>
             <artifactId>RestDocSpring</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>

@@ -35,26 +35,32 @@
 
     <script src="swagger-ui-bundle.js"> </script>
     <script src="swagger-ui-standalone-preset.js"> </script>
-    <script>
-    window.onload = function() {
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="restdoc/js/restdoc.js"></script>
 
-      // Build a system
-      const ui = SwaggerUIBundle({
-        url: "../swagger.json",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
-        ],
-        plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-      })
+    <!--<script>-->
+    <!--window.onload = function() {-->
 
-      window.ui = ui
-    }
-  </script>
+      <!--// Build a system-->
+      <!--const ui = SwaggerUIBundle({-->
+        <!--url: "../swagger.json",-->
+        <!--dom_id: '#swagger-ui',-->
+        <!--deepLinking: true,-->
+        <!--// docExpansion: false, // 默认不展开-->
+        <!--// defaultModelsExpandDepth: 0, // 默认Models不展开-->
+        <!--displayRequestDuration: true,-->
+        <!--presets: [-->
+          <!--SwaggerUIBundle.presets.apis,-->
+          <!--SwaggerUIStandalonePreset-->
+        <!--],-->
+        <!--plugins: [-->
+          <!--SwaggerUIBundle.plugins.DownloadUrl-->
+        <!--],-->
+        <!--layout: "StandaloneLayout"-->
+      <!--})-->
+
+      <!--window.ui = ui-->
+    <!--}-->
+  <!--</script>-->
   </body>
 </html>

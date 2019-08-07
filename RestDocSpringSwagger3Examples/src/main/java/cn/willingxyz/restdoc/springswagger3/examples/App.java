@@ -2,6 +2,8 @@ package cn.willingxyz.restdoc.springswagger3.examples;
 
 import cn.willingxyz.restdoc.springswagger3.EnableSwagger3;
 import cn.willingxyz.restdoc.springswagger3.RestDocConfig;
+import cn.willingxyz.restdoc.springswagger3.SwaggerUIConfiguration;
+import lombok.var;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -26,5 +28,14 @@ public class App {
                 .fieldPrefix("_")
                 .packages(Arrays.asList("cn.willingxyz.restdoc.springswagger3.examples"))
                 .build();
+    }
+    @Bean
+    SwaggerUIConfiguration _swaggerUIConfiguration()
+    {
+        var uiConfig = new SwaggerUIConfiguration();
+//        uiConfig.setDefaultModelRendering("model");
+//        uiConfig.setDefaultModelExpandDepth(0);
+//        uiConfig.setDocExpansion("full");
+        return uiConfig;
     }
 }
