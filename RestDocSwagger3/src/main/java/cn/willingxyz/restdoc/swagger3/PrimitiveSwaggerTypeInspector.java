@@ -3,6 +3,7 @@ package cn.willingxyz.restdoc.swagger3;
 import lombok.Data;
 
 import java.lang.reflect.Type;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,15 @@ public class PrimitiveSwaggerTypeInspector implements ISwaggerTypeInspector {
             new Item(Enum.class, "object",null),
             new Item(List.class,  "array", null),
             new Item(Object[].class,  "array", null),
-            // todo date/time
+            // 日期
+            new Item(Date.class,  "string","date-time"),
+            new Item(LocalDate.class,  "string","date"),
+            new Item(LocalTime.class,  "string",null),
+            new Item(LocalDateTime.class,  "string","date-time"),
+            new Item(Year.class,  "integer","int32"),
+            new Item(YearMonth.class,  "string",null),
+            new Item(MonthDay.class,  "string",null),
+            new Item(Instant.class,  "integer","int64"),
     };
 
     public PrimitiveSwaggerTypeInspector()

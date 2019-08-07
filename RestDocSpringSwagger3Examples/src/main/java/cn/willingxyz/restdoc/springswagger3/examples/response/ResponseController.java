@@ -84,4 +84,22 @@ public class ResponseController {
     {
         return null;
     }
+
+    /**
+     * 泛型嵌套
+     */
+    @GetMapping("/generic/nested")
+    public GenericResponse<GenericResponse.Page<ResponseA>> genericNested()
+    {
+        return null;
+    }
+
+    /**
+     * 泛型嵌套（多层嵌套）
+     */
+    @GetMapping("/generic/nested/multi")
+    public GenericResponse<GenericResponse.Page<GenericResponse.Page<GenericResponse.Page<ResponseA>>>> genericNestedMulti()
+    {
+        return null;
+    }
 }

@@ -7,6 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,8 @@ import java.util.Locale;
  * 判断java基本库中的类型。
  * 该类应该放在最后一个做判断
  */
-// todo java8 date类型
 public class JavaTypeInspector implements ITypeInspector {
     private List<Class> _simpleClass = new ArrayList<Class>(){{
-        add(Date.class);
         add(Boolean.class);
         add(Byte.class);
         add(Short.class);
@@ -34,6 +33,15 @@ public class JavaTypeInspector implements ITypeInspector {
         add(URI.class);
         add(URL.class);
         add(Locale.class);
+        // 日期处理
+        add(Date.class);
+        add(LocalDateTime.class);
+        add(LocalDate.class);
+        add(LocalTime.class);
+        add(Year.class);
+        add(YearMonth.class);
+        add(MonthDay.class);
+        add(Instant.class);
     }};
     @Override
     public boolean isSimpleType(Type type) {
