@@ -118,11 +118,12 @@ public class ReflectUtils {
     }
 
     private static boolean isPropertyMethod(Method method) {
-        return method.getName().length() > 3 && Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
+        return Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
             &&
-                (method.getName().startsWith("get")
-                || (method.getName().startsWith("set") && method.getParameters().length == 1)
-                || (method.getName().startsWith("is") && method.getReturnType() == boolean.class));
+                (
+                        (method.getName().startsWith("get") && method.getName().length() > 3 && method.getParameterCount() == 0 && method.getReturnType() != void.class && method.getReturnType() != Void.class) //
+                || (method.getName().startsWith("set") && method.getName().length() > 3  && method.getParameterCount() == 1 && (method.getReturnType() == void.class || method.getReturnType() == Void.class))
+                || (method.getName().startsWith("is") && method.getReturnType() == boolean.class && method.getParameterCount() == 0 && method.getName().length() > 2));
     }
 
     private static String getPropertyNameByMethod(Method method) {
