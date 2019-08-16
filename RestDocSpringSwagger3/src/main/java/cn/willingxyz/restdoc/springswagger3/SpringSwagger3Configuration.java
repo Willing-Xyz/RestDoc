@@ -11,8 +11,10 @@ import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger3.Swagger3RestDocGenerator;
 import lombok.var;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,6 +55,19 @@ public class SpringSwagger3Configuration {
     @Bean
     SpringSwagger3Controller _springSwagger3Controller(@Qualifier("swagger3") IRestDocParser docParser)
     {
-        return new SpringSwagger3Controller(docParser);
+        SwaggerUIConfiguration uiConfiguration;
+        try {
+            uiConfiguration = _applicationContext.getBean(SwaggerUIConfiguration.class);
+        }
+        catch (NoSuchBeanDefinitionException e)
+        {
+            uiConfiguration = new SwaggerUIConfiguration();
+        }
+        var controller = new SpringSwagger3Controller(docParser, uiConfiguration);
+//        controller.setUiConfiguration(uiConfiguration);
+        return controller;
     }
+
+    @Autowired
+    ApplicationContext _applicationContext;
 }
