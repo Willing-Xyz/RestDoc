@@ -21,7 +21,6 @@ import io.swagger.models.parameters.*;
 import io.swagger.models.properties.*;
 import lombok.var;
 
-import javax.xml.validation.Schema;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,7 +80,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     private void convertTag(RootModel rootModel, Swagger swagger) {
         for (var controller : rootModel.getControllers()) {
             var tag = new Tag();
-            tag.setName(_config.getTypeNameParser().parse(controller.getControllerClass()));
+
+            tag.setName(getTagName(controller));
             tag.setDescription(controller.getDescription());
 
             swagger.addTag(tag);
@@ -116,7 +116,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var path = new Path();
 
         var operation = new Operation();
-        operation.addTag(_config.getTypeNameParser().parse(controller.getControllerClass()));
+        operation.addTag(getTagName(controller));
         operation.setSummary(TextUtils.getFirstLine(method.getDescription()));
         operation.setDescription(method.getDescription());
         operation.setDeprecated(method.getDeprecated());
@@ -468,5 +468,14 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 //        return arraySchema;
 //    }
 
-
+    private String getTagName(ControllerModel controller)
+    {
+        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())
+        {
+            return TextUtils.getFirstLine(controller.getDescription());
+        }
+        else {
+            return _config.getTypeNameParser().parse(controller.getControllerClass());
+        }
+    }
 }

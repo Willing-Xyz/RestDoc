@@ -15,4 +15,8 @@ public class RestDocConfig {
     private String _apiTitle;
     private String _apiDescription;
     private String _apiVersion;
+    /**
+     * 把Tag的描述显示为tag Name。默认tag name为类的名字，如果该值为true，则使用javadoc的第一行作为name
+     */
+    private boolean _tagDescriptionAsName = false;
 }

@@ -15,6 +15,10 @@ public class SwaggerGeneratorConfig {
     private String _version;
     private String _description;
     private String _title;
+    /**
+     * 把Tag的描述显示为tag Name。默认tag name为类的名字，如果该值为true，则使用javadoc的第一行作为name
+     */
+    private boolean _tagDescriptionAsName = false;
     private List<ServerInfo> _servers = new ArrayList<>();
     private ISwaggerTypeInspector _swaggerTypeInspector;
     private ITypeInspector _typeInspector;

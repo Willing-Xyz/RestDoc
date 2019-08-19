@@ -28,6 +28,7 @@ public class App {
                 .apiDescription("rest doc desc")
                 .apiVersion("api version")
                 .fieldPrefix("_")
+                .tagDescriptionAsName(true)
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
                 .build();
     }

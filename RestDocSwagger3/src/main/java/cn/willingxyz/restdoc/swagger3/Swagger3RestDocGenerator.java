@@ -82,11 +82,12 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         openApi.setInfo(info);
     }
 
+
     // tag 用于对path进行分组，类似于springmvc的controller
     private void convertTag(RootModel rootModel, OpenAPI openApi) {
         for (var controller : rootModel.getControllers()) {
             var tag = new Tag();
-            tag.setName(_config.getTypeNameParser().parse(controller.getControllerClass()));
+            tag.setName(getTagName(controller));
             tag.setDescription(controller.getDescription());
             openApi.addTagsItem(tag);
         }
@@ -109,7 +110,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         pathItem.setSummary(TextUtils.getFirstLine(method.getDescription()));
 
         var operation = new Operation();
-        operation.addTagsItem(_config.getTypeNameParser().parse(controller.getControllerClass()));
+        operation.addTagsItem(getTagName(controller));
         operation.setSummary(TextUtils.getFirstLine(method.getDescription()));
         operation.setDescription(method.getDescription());
         operation.setDeprecated(method.getDeprecated());
@@ -365,5 +366,16 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             itemSchema.setDefault(enums.get(0));
         }
         return itemSchema;
+    }
+
+    private String getTagName(ControllerModel controller)
+    {
+        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())
+        {
+            return TextUtils.getFirstLine(controller.getDescription());
+        }
+        else {
+            return _config.getTypeNameParser().parse(controller.getControllerClass());
+        }
     }
 }
