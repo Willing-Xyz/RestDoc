@@ -42,6 +42,7 @@ public class SpringSwagger2Configuration {
                 .servers(Arrays.asList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/")
                         .build()))
                 .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
+                .tagDescriptionAsName(restDocConfig.isTagDescriptionAsName())
                 .typeInspector(new JavaTypeInspector())
                 .typeNameParser(new TypeNameParser())
                 .build();
