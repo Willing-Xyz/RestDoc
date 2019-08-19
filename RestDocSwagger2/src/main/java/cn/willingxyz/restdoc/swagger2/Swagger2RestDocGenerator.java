@@ -417,9 +417,9 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
         // todo 如何决定是string还是int
         property.setEnum(enums);
-        if (enums.size() > 0) {
-            property.setDefault(enums.get(0));
-        }
+//        if (enums.size() > 0) {
+//            property.setDefault(enums.get(0));
+//        }
         return property;
     }
 

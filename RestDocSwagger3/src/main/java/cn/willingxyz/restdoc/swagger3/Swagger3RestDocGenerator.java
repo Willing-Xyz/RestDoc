@@ -362,9 +362,9 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         itemSchema.setDescription(FormatUtils.format(enumDoc.getComment()));
         itemSchema.setType("string"); // todo 如何决定是string还是int
         itemSchema.setEnum(enums);
-        if (enums.size() > 0) {
-            itemSchema.setDefault(enums.get(0));
-        }
+//        if (enums.size() > 0) {
+//            itemSchema.setDefault(enums.get(0));
+//        }
         return itemSchema;
     }
 
