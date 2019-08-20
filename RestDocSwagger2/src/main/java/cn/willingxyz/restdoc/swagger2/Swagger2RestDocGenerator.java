@@ -167,9 +167,15 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             return apiResponse;
 
         apiResponse.setResponseSchema(getOrGenerateModel(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
-        apiResponse.setSchema(generateProperty(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
+        Property property = generateProperty(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
+        apiResponse.setSchema(property);
+
+        apiResponse.setDescription(combineDescription(apiResponse.getDescription(), property.getDescription()));
+
         return apiResponse;
     }
+
+
 
     private Parameter convertFileParameter(ParameterModel param) {
         var requestBody = new FormParameter();
@@ -225,6 +231,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
                 }
                 model = modelImpl;
             }
+            model.setDescription(property.getDescription());
             swagger.getDefinitions().put(componentName, model);
         }
         return swagger.getDefinitions().get(componentName);
@@ -285,7 +292,9 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
                 parameter.setDescription(child.getDescription());
                 parameter.setIn("query");
 
-                parameter.setProperty(generateProperty(child.getDescription(), child.getPropertyType(), child.getChildren(), swagger));
+                Property property = generateProperty(child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
+                parameter.setProperty(property);
+                parameter.setDescription(combineDescription(parameter.getDescription(), property.getDescription()));
                 parameters.add(parameter);
             } else {
                 parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), swagger));
@@ -301,63 +310,13 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         parameter.setName(paramModel.getName());
         parameter.setDescription(paramModel.getDescription());
 
-        parameter.setProperty(generateProperty(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger));
+        Property property = generateProperty(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
+        parameter.setProperty(property);
+        parameter.setDescription(combineDescription(parameter.getDescription(), property.getDescription()));
+
 
         return parameter;
     }
-
-//    private void addSimpleQueryParameterSchema(ParameterModel paramModel, ArrayList<Parameter> parameters) {
-//        var parameter = new QueryParameter();
-//        parameter.setName(paramModel.getName());
-//        parameter.setDescription(paramModel.getDescription());
-//
-//        parameter.setType(_config.getSwaggerTypeInspector().toSwaggerType(paramModel.getParameterType()));
-//        parameter.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(paramModel.getParameterType()));
-//
-//        if (paramModel.isRequired()) {
-//            parameter.setRequired(true);
-//        }
-//        parameters.add(parameter);
-//    }
-
-//    private String putSchemaComponent(Type type, List<PropertyModel> children, Swagger swagger) {
-//        var className = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), type);
-//
-//        if (swagger.getDefinitions() == null)
-//            swagger.setDefinitions(new HashMap<>());
-//        if (swagger.getDefinitions().containsKey(className)) {
-//            return className;
-//        }
-//        var schema = generateModel(type, children, swagger);
-//
-//        swagger.getDefinitions().put(className, schema);
-//
-//        return className;
-//    }
-
-
-
-//    private Model generateModel(Type type, List<PropertyModel> children, Swagger swagger) {
-//        if (_config.getTypeInspector().isCollection(type)) {
-//            var arraySchema = new ArrayModel();
-//            arraySchema.setItems(generateProperty(_config.getTypeInspector().getCollectionComponentType(type), children, swagger));
-//            return arraySchema;
-//        }
-//        if (ReflectUtils.isEnum(type)) {
-//            return generateEnumModel((Class) type);
-//        }
-//        var schema = new ModelImpl();
-//        var className = _config.getTypeNameParser().parse(type);
-//        schema.setName(className);
-//        schema.setType(_config.getSwaggerTypeInspector().toSwaggerType(type));
-//
-//        var classDoc = RuntimeJavadoc.getJavadoc(type.getTypeName());
-//        schema.setDescription(FormatUtils.format(classDoc.getComment()));
-//
-//        schema.setProperties(generateProperties(children, swagger));
-//
-//        return schema;
-//    }
 
     private Property generateProperty(String description, Type type, List<PropertyModel> children, Swagger swagger) {
         // 数组/集合
@@ -396,7 +355,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private Property generateSimpleTypeSchema(String description, Type type) {
-        var property = new ComposedProperty();
+        var property = new ObjectProperty();
         property.setDescription(description);
         property.setType(_config.getSwaggerTypeInspector().toSwaggerType(type));
         property.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(type));
@@ -406,14 +365,34 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     private Property generateArrayProperty(String description, Type type, List<PropertyModel> children, Swagger swagger) {
         ArrayProperty arrayProperty = new ArrayProperty();
         arrayProperty.setDescription(description);
-        arrayProperty.setItems(generateProperty(description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger));
+        Property property = generateProperty(description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
+        arrayProperty.setItems(property);
+        arrayProperty.setDescription(combineDescription(property.getDescription(), arrayProperty.getDescription()));
         return arrayProperty;
     }
 
     private Property generateEnumProperty(Class clazz) {
         var property = new StringProperty();
         var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
-        property.setDescription(FormatUtils.format(enumDoc.getComment()));
+
+        String enumStr = "";
+        for (var enumConst : enumDoc.getEnumConstants())
+        {
+            if (!enumStr.isEmpty())
+                enumStr += ", ";
+            enumStr += enumConst.getName();
+            String desc = FormatUtils.format(enumConst.getComment());
+            if (desc != null && !desc.isEmpty())
+            {
+                enumStr += ": " + desc;
+            }
+        }
+
+        String desc = FormatUtils.format(enumDoc.getComment());
+        if (desc == null || desc.isEmpty())
+            property.setDescription(enumStr);
+        else
+            property.setDescription(desc + "; " + enumStr);
         var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
         // todo 如何决定是string还是int
         property.setEnum(enums);
@@ -423,51 +402,13 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return property;
     }
 
-//    private Map<String, Property> generateProperties(List<PropertyModel> children, Swagger swagger) {
-//        var schemas = new HashMap<String, Property>();
-//
-//        for (var propertyModel : children) {
-//            Property property = null;
-//            if (_config.getTypeInspector().isCollection(propertyModel.getPropertyType())) {
-//                var arraySchema = new ArrayProperty();
-//                arraySchema.setItems(generateProperty(_config.getTypeInspector().getCollectionComponentType(propertyModel.getPropertyType()), propertyModel.getChildren(), swagger));
-//                property = arraySchema;
-//            } else if (ReflectUtils.isEnum(propertyModel.getPropertyType())) {
-//                property = generateEnumProperty((Class) propertyModel.getPropertyType());
-//            } else if (propertyModel.getChildren() == null || propertyModel.getChildren().size() == 0) {
-//                var composedProperty = new ComposedProperty();
-////                schema.setTitle(parameterModel.getPropertyType().getCanonicalName());
-//                composedProperty.setDescription(propertyModel.getDescription());
-//
-//                composedProperty.setType(_config.getSwaggerTypeInspector().toSwaggerType(propertyModel.getPropertyType()));
-//                composedProperty.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(propertyModel.getPropertyType()));
-//
-//                if (propertyModel.getRequired() != null && propertyModel.getRequired()) {
-//                    composedProperty.setRequired(true);
-//                }
-//                property = composedProperty;
-//            } else {
-//                property = generateProperty(propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
-//            }
-//            schemas.put(propertyModel.getName(), property);
-//        }
-//        return schemas;
-//    }
-//
-//    private Model generateEnumModel(Class clazz) {
-//        var arraySchema = new ModelImpl();
-//        arraySchema.setType("string");
-//        var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
-//        arraySchema.setDescription(FormatUtils.format(enumDoc.getComment()));
-//        var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
-//        // todo 如何决定是string还是int
-//        arraySchema.setEnum(enums);
-//        if (enums.size() > 0) {
-//            arraySchema.setDefaultValue(enums.get(0));
-//        }
-//        return arraySchema;
-//    }
+    private String combineDescription(String v1, String v2) {
+        if (v1 == null || v1.isEmpty()) return v2;
+        if (v2 == null || v2.isEmpty()) return v1;
 
+        if (v1.equals(v2)) return v1;
+        return v1 + "; " + v2;
+    }
     private String getTagName(ControllerModel controller)
     {
         if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())

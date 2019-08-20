@@ -1,5 +1,12 @@
 package cn.willingxyz.restdoc.spring.examples.enumeration;
 
 public enum EnumA {
-    HELLO, HI
+    /**
+     * hello枚举
+     */
+    HELLO,
+    /**
+     * hi枚举
+     */
+    HI
 }

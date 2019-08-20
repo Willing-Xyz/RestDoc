@@ -16,29 +16,29 @@ public class EnumController {
     {
     }
 
-    /**
-     * 枚举在类型里面
-     */
-    @PostMapping("/parameter/in")
-    public void inParameterEnum(@RequestBody EnumContainer enumContainer)
-    {
-    }
-
-    /**
-     * 返回枚举
-     */
-    @GetMapping("/response/single")
-    public EnumA singleResponse()
-    {
-        return null;
-    }
-
-    /**
-     * 返回的枚举在类型里面
-     */
-    @GetMapping("/response/in")
-    public EnumContainer inResponse()
-    {
-        return null;
-    }
+//    /**
+//     * 枚举在类型里面
+//     */
+//    @PostMapping("/parameter/in")
+//    public void inParameterEnum(@RequestBody EnumContainer enumContainer)
+//    {
+//    }
+//
+//    /**
+//     * 返回枚举
+//     */
+//    @GetMapping("/response/single")
+//    public EnumA singleResponse()
+//    {
+//        return null;
+//    }
+//
+//    /**
+//     * 返回的枚举在类型里面
+//     */
+//    @GetMapping("/response/in")
+//    public EnumContainer inResponse()
+//    {
+//        return null;
+//    }
 }
