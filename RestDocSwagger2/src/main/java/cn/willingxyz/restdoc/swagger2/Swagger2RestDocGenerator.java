@@ -25,6 +25,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.willingxyz.restdoc.swagger.common.utils.StringUtils.combineStr;
+
 public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
     public static void main(String[] args) {
@@ -177,7 +179,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         Property property = generateProperty(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
         apiResponse.setSchema(property);
 
-        apiResponse.setDescription(combineDescription(apiResponse.getDescription(), property.getDescription()));
+        apiResponse.setDescription(combineStr(apiResponse.getDescription(), property.getDescription()));
 
         return apiResponse;
     }
@@ -301,7 +303,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
                 Property property = generateProperty(child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
                 parameter.setProperty(property);
-                parameter.setDescription(combineDescription(parameter.getDescription(), property.getDescription()));
+                parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
                 parameters.add(parameter);
             } else {
                 parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), swagger));
@@ -319,7 +321,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
         Property property = generateProperty(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
         parameter.setProperty(property);
-        parameter.setDescription(combineDescription(parameter.getDescription(), property.getDescription()));
+        parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
 
 
         return parameter;
@@ -374,7 +376,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         arrayProperty.setDescription(description);
         Property property = generateProperty(description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
         arrayProperty.setItems(property);
-        arrayProperty.setDescription(combineDescription(property.getDescription(), arrayProperty.getDescription()));
+        arrayProperty.setDescription(combineStr(property.getDescription(), arrayProperty.getDescription()));
         return arrayProperty;
     }
 
@@ -409,13 +411,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return property;
     }
 
-    private String combineDescription(String v1, String v2) {
-        if (v1 == null || v1.isEmpty()) return v2;
-        if (v2 == null || v2.isEmpty()) return v1;
 
-        if (v1.equals(v2)) return v1;
-        return v1 + "; " + v2;
-    }
     private String getTagName(ControllerModel controller)
     {
         if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())

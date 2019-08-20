@@ -29,6 +29,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.willingxyz.restdoc.swagger.common.utils.StringUtils.combineStr;
+
 public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
     public SwaggerGeneratorConfig _config;
@@ -263,7 +265,9 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setDescription(paramModel.getDescription());
         parameter.setIn(in);
 
-        parameter.setSchema(generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI));
+        Schema schema = generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI);
+        parameter.setSchema(schema);
+        parameter.setDescription(combineStr(parameter.getDescription(), schema.getDescription()));
         return parameter;
     }
     private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String paraName, OpenAPI openAPI) {
@@ -281,7 +285,10 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
                 parameter.setDescription(child.getDescription());
                 parameter.setIn("query");
 
-                parameter.setSchema(generateSchema(child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI));
+                Schema schema = generateSchema(child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI);
+                parameter.setSchema(schema);
+                parameter.setDescription(combineStr(parameter.getDescription(), schema.getDescription()));
+
                 parameters.add(parameter);
             } else {
                 parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), openAPI));
@@ -329,7 +336,9 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     private Schema generateArraySchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var arraySchema = new ArraySchema();
         arraySchema.setDescription(description);
-        arraySchema.setItems(generateSchema(description, _config.getTypeInspector().getCollectionComponentType(type), children, openAPI));
+        Schema schema = generateSchema(description, _config.getTypeInspector().getCollectionComponentType(type), children, openAPI);
+        arraySchema.setItems(schema);
+        arraySchema.setDescription(combineStr(arraySchema.getDescription(), schema.getDescription()));
         return arraySchema;
     }
 
@@ -366,7 +375,25 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
         var itemSchema = new Schema();
 
-        itemSchema.setDescription(FormatUtils.format(enumDoc.getComment()));
+        String enumStr = "";
+        for (var enumConst : enumDoc.getEnumConstants())
+        {
+            if (!enumStr.isEmpty())
+                enumStr += ", ";
+            enumStr += enumConst.getName();
+            String desc = FormatUtils.format(enumConst.getComment());
+            if (desc != null && !desc.isEmpty())
+            {
+                enumStr += ": " + desc;
+            }
+        }
+
+        String desc = FormatUtils.format(enumDoc.getComment());
+        if (desc == null || desc.isEmpty())
+            itemSchema.setDescription(enumStr);
+        else
+            itemSchema.setDescription(desc + "; " + enumStr);
+
         itemSchema.setType("string"); // todo 如何决定是string还是int
         itemSchema.setEnum(enums);
 //        if (enums.size() > 0) {
