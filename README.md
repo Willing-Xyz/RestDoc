@@ -17,7 +17,16 @@
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.1.5</version>
+     <version>0.1.6</version>
+ </dependency>
+```
+
+如果使用Swagger2，替换为以下依赖：
+```
+<dependency>
+     <groupId>cn.willingxyz.restdoc</groupId>
+     <artifactId>RestDocSpringSwagger2</artifactId>
+     <version>0.1.6</version>
  </dependency>
 ```
 
@@ -31,7 +40,7 @@ RestDocConfig _swaggerConfig()
             .apiTitle("rest doc title")
             .apiDescription("rest doc desc")
             .apiVersion("api version")
-            .fieldPrefix("_")
+            .fieldPrefix("")
             .packages(Arrays.asList(""))
             .build();
 }
@@ -72,7 +81,8 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 </dependency>
 ```
 
-启动应用后，打开 http://host/swagger-ui/index.html 浏览
+启动应用后，打开 http://host/swagger-ui/index.html 浏览.
+如果是swagger2，打开 http://host/swagger2-ui/index.html
 
 具体可参考 RestDocSpringExamples。
 
@@ -86,6 +96,4 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 
 - 增加Bean Validation的支持
 - 增加Spring Validator支持
-- 增加Swagger2支持
-- 支付不同版本的swagger-ui
 
