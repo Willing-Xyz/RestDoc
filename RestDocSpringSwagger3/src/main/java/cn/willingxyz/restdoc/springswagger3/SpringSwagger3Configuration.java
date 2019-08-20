@@ -46,6 +46,7 @@ public class SpringSwagger3Configuration {
                 .typeInspector(new JavaTypeInspector())
                 .typeNameParser(new TypeNameParser())
                 .tagDescriptionAsName(restDocConfig.isTagDescriptionAsName())
+                .hideEmptyController(restDocConfig.isHideEmptyController())
                 .build();
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         config.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));

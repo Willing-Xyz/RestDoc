@@ -29,6 +29,7 @@ public class App {
                 .apiVersion("api version")
                 .fieldPrefix("_")
                 .tagDescriptionAsName(true)
+                .hideEmptyController(true)
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
                 .build();
     }
