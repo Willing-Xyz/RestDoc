@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 public class SpringMethodParser implements IMethodParser {
     @Override
     public PathModel parse(Method method, MethodJavadoc methodJavadoc, PathModel pathModel) {
@@ -33,17 +35,17 @@ public class SpringMethodParser implements IMethodParser {
             var annotationType = annotation.annotationType();
             if (annotationType == RequestMapping.class) {
                 var requestMappingAnno = (RequestMapping) annotation;
-                methods = requestMappingAnno.method();
+                methods = new RequestMethod[]{GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD};
                 mappingPaths = requestMappingAnno.path();
                 mappingValues = requestMappingAnno.value();
             } else if (annotationType == GetMapping.class) {
                 var getMappingAnno = (GetMapping) annotation;
-                methods = new RequestMethod[]{RequestMethod.GET};
+                methods = new RequestMethod[]{GET};
                 mappingPaths = getMappingAnno.path();
                 mappingValues = getMappingAnno.value();
             } else if (annotationType == PostMapping.class) {
                 var postMappingAnno = (PostMapping) annotation;
-                methods = new RequestMethod[]{RequestMethod.POST};
+                methods = new RequestMethod[]{POST};
                 mappingPaths = postMappingAnno.path();
                 mappingValues = postMappingAnno.value();
             } else if (annotationType == PutMapping.class) {
