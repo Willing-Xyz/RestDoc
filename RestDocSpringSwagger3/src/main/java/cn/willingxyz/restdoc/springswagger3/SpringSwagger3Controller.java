@@ -1,6 +1,7 @@
 package cn.willingxyz.restdoc.springswagger3;
 
 import cn.willingxyz.restdoc.core.parse.IRestDocParser;
+import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +17,7 @@ public class SpringSwagger3Controller {
 
     private ObjectMapper _objectMapper = new ObjectMapper();
 
-    public SpringSwagger3Controller(IRestDocParser docParser, SwaggerUIConfiguration uiConfiguration)
+    public SpringSwagger3Controller(@Qualifier("swagger3") IRestDocParser docParser, SwaggerUIConfiguration uiConfiguration)
     {
         _docParser = docParser;
         _uiConfiguration = uiConfiguration;
@@ -31,7 +32,7 @@ public class SpringSwagger3Controller {
         return _docCache;
     }
 
-    @GetMapping("/swaggerUIConfiguration")
+    @GetMapping(value = {"/swagger/swaggerUIConfiguration", "/swagger3/swaggerUIConfiguration"})
     public String swaggerUIConfiguration() throws JsonProcessingException {
         return _objectMapper.writeValueAsString(_uiConfiguration);
     }

@@ -41,6 +41,11 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     public String generate(RootModel rootModel) {
         var openApi = generateOpenApi(rootModel);
 
+        if (_config.isHideEmptyController())
+        {
+            hideEmptyController(openApi);
+        }
+
         var objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
@@ -50,6 +55,8 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             throw new RuntimeException("序列化错误");
         }
     }
+
+
 
     private OpenAPI generateOpenApi(RootModel rootModel) {
         var openApi = new OpenAPI();
@@ -376,6 +383,29 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         }
         else {
             return _config.getTypeNameParser().parse(controller.getControllerClass());
+        }
+    }
+
+    private void hideEmptyController(OpenAPI openApi) {
+        Set<String> tags = new HashSet<>();
+        for (var path : openApi.getPaths().values())
+        {
+            if (path.getGet() != null) tags.addAll(path.getGet().getTags());
+            if (path.getPost() != null) tags.addAll(path.getPost().getTags());
+            if (path.getPut() != null) tags.addAll(path.getPut().getTags());
+            if (path.getDelete() != null) tags.addAll(path.getDelete().getTags());
+            if (path.getOptions() != null) tags.addAll(path.getOptions().getTags());
+            if (path.getHead() != null) tags.addAll(path.getHead().getTags());
+            if (path.getPatch() != null) tags.addAll(path.getPatch().getTags());
+        }
+
+        for (Iterator<Tag> iterator = openApi.getTags().iterator(); iterator.hasNext(); )
+        {
+            Tag tag = iterator.next();
+            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent())
+            {
+                iterator.remove();
+            }
         }
     }
 }

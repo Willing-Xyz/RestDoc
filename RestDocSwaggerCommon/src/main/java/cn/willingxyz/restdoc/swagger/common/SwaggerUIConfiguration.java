@@ -1,8 +1,6 @@
-package cn.willingxyz.restdoc.springswagger3;
+package cn.willingxyz.restdoc.swagger.common;
 
 import lombok.Data;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
 /**
  * 配置swagger-ui

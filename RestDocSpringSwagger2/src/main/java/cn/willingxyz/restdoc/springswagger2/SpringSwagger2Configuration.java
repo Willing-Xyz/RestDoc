@@ -9,10 +9,13 @@ import cn.willingxyz.restdoc.spring.SpringControllerResolver;
 import cn.willingxyz.restdoc.spring.SpringRestDocParseConfig;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
+import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
 import cn.willingxyz.restdoc.swagger2.Swagger2RestDocGenerator;
 import lombok.var;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -51,10 +54,22 @@ public class SpringSwagger2Configuration {
         config.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
         return new RestDocParser(config);
     }
-
     @Bean
     SpringSwagger2Controller _springSwagger2Controller(@Qualifier("swagger2") IRestDocParser docParser)
     {
-        return new SpringSwagger2Controller(docParser);
+        SwaggerUIConfiguration uiConfiguration;
+        try {
+            uiConfiguration = _applicationContext.getBean(SwaggerUIConfiguration.class);
+        }
+        catch (NoSuchBeanDefinitionException e)
+        {
+            uiConfiguration = new SwaggerUIConfiguration();
+        }
+        var controller = new SpringSwagger2Controller(docParser, uiConfiguration);
+//        controller.setUiConfiguration(uiConfiguration);
+        return controller;
     }
+
+    @Autowired
+    ApplicationContext _applicationContext;
 }

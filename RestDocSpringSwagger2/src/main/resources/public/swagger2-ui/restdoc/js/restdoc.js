@@ -1,11 +1,11 @@
 
 function configUI(baseUrl) {
     $.ajax({
-        url: baseUrl + "/swagger3/swaggerUIConfiguration",
+        url: baseUrl + "/swagger2/swaggerUIConfiguration",
         dataType: "json",
         success: function( result ) {
            window.ui = SwaggerUIBundle({
-               url: "../swagger.json",
+               url: "../swagger2.json",
                dom_id: '#swagger-ui',
                deepLinking: result.deepLinking,
                displayOperationId: result.displayOperationId,
@@ -33,7 +33,7 @@ function configUI(baseUrl) {
 }
 
 function getBaseUrl() {
-    var urlMatches = /(.*)\/swagger-ui\/index.html.*/.exec(window.location.href);
+    var urlMatches = /(.*)\/swagger2-ui\/index.html.*/.exec(window.location.href);
     return urlMatches[1];
 }
 

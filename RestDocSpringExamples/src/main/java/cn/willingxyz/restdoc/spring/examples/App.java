@@ -3,7 +3,7 @@ package cn.willingxyz.restdoc.spring.examples;
 import cn.willingxyz.restdoc.core.config.RestDocConfig;
 import cn.willingxyz.restdoc.springswagger2.EnableSwagger2;
 import cn.willingxyz.restdoc.springswagger3.EnableSwagger3;
-import cn.willingxyz.restdoc.springswagger3.SwaggerUIConfiguration;
+import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
 import lombok.var;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,7 +38,7 @@ public class App {
     {
         var uiConfig = new SwaggerUIConfiguration();
 //        uiConfig.setDefaultModelRendering("model");
-//        uiConfig.setDefaultModelExpandDepth(0);
+        uiConfig.setDefaultModelExpandDepth(0);
 //        uiConfig.setDocExpansion("full");
         return uiConfig;
     }
