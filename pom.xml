@@ -11,8 +11,8 @@
 
     <parent>
         <groupId>cn.willingxyz.parentpom</groupId>
-        <artifactId>parentpom-common</artifactId>
-        <version>1.0.0</version>
+        <artifactId>parentpom-springboot</artifactId>
+        <version>2.1.6.1</version>
     </parent>
 
     <modules>
@@ -62,16 +62,7 @@
                 <artifactId>swagger-models</artifactId>
                 <version>1.5.22</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>5.0.7.RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>4.0.1</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-models</artifactId>
@@ -136,16 +127,4 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
