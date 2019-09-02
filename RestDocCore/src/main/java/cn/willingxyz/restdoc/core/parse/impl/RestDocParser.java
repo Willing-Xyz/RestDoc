@@ -112,14 +112,11 @@ public class RestDocParser implements IRestDocParser {
     }
 
     private ParameterModel handleMethodParameter(Parameter parameter, ParamJavadoc paramJavadoc) {
-        boolean isSupport = false;
         for (var methodParameterResolver : _configuration.getMethodParameterResolvers())
         {
-            if (methodParameterResolver.isSupport(parameter))
-                isSupport = true;
+            if (!methodParameterResolver.isSupport(parameter))
+                return null;
         }
-        if (!isSupport)
-            return null;
         var parameterModel = new ParameterModel();
         for (var parameterParser : _configuration.getMethodParameterParsers())
         {

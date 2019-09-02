@@ -35,7 +35,13 @@ public class SpringMethodParser implements IMethodParser {
             var annotationType = annotation.annotationType();
             if (annotationType == RequestMapping.class) {
                 var requestMappingAnno = (RequestMapping) annotation;
-                methods = new RequestMethod[]{GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD};
+                if (requestMappingAnno.method() == null || requestMappingAnno.method().length == 0) {
+                    methods = new RequestMethod[]{GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD};
+                }
+                else
+                {
+                    methods = requestMappingAnno.method();
+                }
                 mappingPaths = requestMappingAnno.path();
                 mappingValues = requestMappingAnno.value();
             } else if (annotationType == GetMapping.class) {
