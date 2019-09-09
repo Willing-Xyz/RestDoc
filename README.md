@@ -96,6 +96,46 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 
 具体可参考 RestDocSpringExamples。
 
+## swagger ui 配置
+
+swagger-ui支持一些配置来控制ui的显示。
+只需要把`SwaggerUIConfiguration`配置为一个bean。
+如：
+```
+   @Bean
+    SwaggerUIConfiguration _swaggerUIConfiguration()
+    {
+        var uiConfig = new SwaggerUIConfiguration();
+        uiConfig.setDefaultModelRendering("model");
+        uiConfig.setDefaultModelExpandDepth(0);
+        uiConfig.setDocExpansion("full");
+        return uiConfig;
+    }
+```
+
+具体的配置含义请参考 https://github.com/swagger-api/swagger-ui/blob/master/docs/usage/configuration.md
+
+## 忽略api
+
+如果想要某些controller和method不出现在swagger文档中，可以通过在controller或method上增加`@IgnoreApi`注解.
+如果该注解在controller上，表示该controller里的所有api都不会出现在swagger文档中。
+如：
+```
+@IgnoreApi
+@RestController
+@RequestMapping("/ignoreapi/all")
+public class IgnoreApiAllController {}
+```
+如果该注解在method上，表示该method的api不会出现在swagger文档中。
+```
+@IgnoreApi
+@GetMapping("/ignore")
+public void ignore()
+{
+}
+```
+
+
 ## 原理
 
 通过注解处理器在编译时生成javadoc的json文件。
