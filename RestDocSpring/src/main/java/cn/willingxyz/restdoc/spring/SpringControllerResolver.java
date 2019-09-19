@@ -1,6 +1,5 @@
 package cn.willingxyz.restdoc.spring;
 
-import cn.willingxyz.restdoc.core.annotations.IgnoreApi;
 import cn.willingxyz.restdoc.core.parse.IControllerResolver;
 import lombok.var;
 import org.slf4j.Logger;
@@ -34,12 +33,6 @@ public class SpringControllerResolver implements IControllerResolver {
                 try {
                     var className = bean.getBeanClassName();
                     Class clazz = Class.forName(className);
-
-                    if (clazz.getAnnotation(IgnoreApi.class) != null)
-                    {
-                        _logger.debug("ignore controller:{}", className);
-                        continue;
-                    }
 
                     classes.add(clazz);
                 } catch (ClassNotFoundException e) {

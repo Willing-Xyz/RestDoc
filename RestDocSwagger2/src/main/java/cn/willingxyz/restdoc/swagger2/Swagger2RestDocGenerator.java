@@ -424,6 +424,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private void hideEmptyController(Swagger swagger) {
+        if (swagger.getPaths() == null) return;
         Set<String> tags = new HashSet<>();
         for (var path : swagger.getPaths().values())
         {

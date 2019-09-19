@@ -1,9 +1,7 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.*;
-import cn.willingxyz.restdoc.core.models.*;
 import com.github.therapi.runtimejavadoc.*;
-import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.IRestDocParser;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
@@ -12,9 +10,7 @@ import lombok.var;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class RestDocParser implements IRestDocParser {
     private final RestDocParseConfig _configuration;
@@ -29,11 +25,21 @@ public class RestDocParser implements IRestDocParser {
         var rootModel = new RootModel();
         for (var controllerResolver : _configuration.getControllerResolvers()) {
             for (var clazz : controllerResolver.getClasses()) {
+                if (!filterController(clazz))
+                    continue;
                 var controllerModel = handleController(clazz);
                 rootModel.getControllers().add(controllerModel);
             }
         }
         return _configuration.getRestDocGenerator().generate(rootModel);
+    }
+
+    private boolean filterController(Class clazz) {
+        for (var controllerFilter : _configuration.getControllerFilters()) {
+            if (!controllerFilter.isSupport(clazz))
+                return false;
+        }
+        return true;
     }
 
     private ControllerModel handleController(Class clazz) {
@@ -54,14 +60,11 @@ public class RestDocParser implements IRestDocParser {
     }
 
     private PathModel handleMethod(Method method, MethodJavadoc methodJavadoc) {
-        boolean isSupport = false;
         for (var methodResolver : _configuration.getMethodResolvers())
         {
-            if (methodResolver.isSupport(method))
-                isSupport = true;
+            if (!methodResolver.isSupport(method))
+                return null;
         }
-        if (!isSupport)
-            return null;
 
 
         var pathModel = new PathModel();

@@ -1,6 +1,5 @@
 package cn.willingxyz.restdoc.spring;
 
-import cn.willingxyz.restdoc.core.annotations.IgnoreApi;
 import cn.willingxyz.restdoc.core.parse.IMethodResolver;
 import lombok.var;
 import org.slf4j.Logger;
@@ -30,11 +29,7 @@ public class SpringMethodResolver implements IMethodResolver {
         if (method.isSynthetic() || method.isBridge())
             return false;
 
-        if (method.isAnnotationPresent(IgnoreApi.class))
-        {
-            _logger.debug("ignore method: {}:{}", method.getDeclaringClass(), method.getName());
-            return false;
-        }
+
 
         // 如果方法和类上都没有ResponseBody，返回false
         if (!AnnotatedElementUtils.hasAnnotation(method, ResponseBody.class) &&

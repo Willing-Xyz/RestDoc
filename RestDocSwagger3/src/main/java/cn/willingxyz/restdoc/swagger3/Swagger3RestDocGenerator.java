@@ -414,6 +414,8 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     }
 
     private void hideEmptyController(OpenAPI openApi) {
+        if (openApi.getPaths() == null) return;
+
         Set<String> tags = new HashSet<>();
         for (var path : openApi.getPaths().values())
         {

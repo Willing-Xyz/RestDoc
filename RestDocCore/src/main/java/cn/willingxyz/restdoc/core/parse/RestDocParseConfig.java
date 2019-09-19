@@ -3,7 +3,6 @@ package cn.willingxyz.restdoc.core.parse;
 import cn.willingxyz.restdoc.core.parse.impl.JavaTypeInspector;
 import cn.willingxyz.restdoc.core.parse.impl.JavadocControllerParser;
 import cn.willingxyz.restdoc.core.parse.impl.JavadocMethodParser;
-import cn.willingxyz.restdoc.core.parse.impl.*;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import java.util.List;
 @Data
 public  class RestDocParseConfig {
     private List<IControllerResolver> _controllerResolvers = new ArrayList<>();
+    private List<IControllerFilter> _controllerFilters = new ArrayList<>();
     private List<IMethodResolver> _methodResolvers = new ArrayList<>();
     private List<IMethodParameterResolver> _methodParameterResolvers = new ArrayList<>();
 
