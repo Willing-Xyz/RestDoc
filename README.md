@@ -91,6 +91,11 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 </dependency>
 ```
 
+第三步，Intellij Idea需要进行编译相关设置
+1. File > Settings > Preferences > Build, Execution, Deployment > Compiler > Annotation Processors > 勾选"Enable annotation processing".
+2. File > Settings > Preferences > Build, Execution, Deployment > Compiler > Java Compiler > 面板中的"Additional command line parameters" 下方输入框填入 "-parameters".
+![编译设置](./images/compile-setting.png)
+
 启动应用后，打开 http://host/swagger-ui/index.html 浏览.
 如果是swagger2，打开 http://host/swagger2-ui/index.html
 
