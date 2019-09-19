@@ -134,6 +134,7 @@ public class ReflectUtils {
         if (method.getName().startsWith("is")) // boolean
         {
             propertyName = method.getName().substring(2);
+            propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
         }
         else
         {

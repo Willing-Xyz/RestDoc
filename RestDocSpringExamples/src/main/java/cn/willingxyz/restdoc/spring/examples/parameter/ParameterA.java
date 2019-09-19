@@ -24,4 +24,5 @@ public class ParameterA
      * 参数ParameterBArray数组
      */
     private ParameterB[] _parameterBArray;
+    private boolean _hasPassword;
 }
