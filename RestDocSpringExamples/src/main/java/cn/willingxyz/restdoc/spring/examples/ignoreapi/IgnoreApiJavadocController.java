@@ -17,11 +17,4 @@ public class IgnoreApiJavadocController {
     {
     }
 
-    /**
-     * @IgnoreApi
-     */
-    @GetMapping("/ignore2")
-    public void ignore2()
-    {
-    }
 }

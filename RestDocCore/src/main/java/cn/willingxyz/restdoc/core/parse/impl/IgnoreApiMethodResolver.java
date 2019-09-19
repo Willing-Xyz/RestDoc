@@ -25,7 +25,7 @@ public class IgnoreApiMethodResolver implements IMethodResolver {
         if (methodJavadoc.getOther() != null)
         {
             OtherJavadoc ignoreApiJavadoc = methodJavadoc.getOther().stream()
-                    .filter(o -> o.getName().trim().equalsIgnoreCase("ignoreApi"))
+                    .filter(o -> o.getName().trim().equals("ignoreApi"))
                     .findFirst().orElse(null);
             if (ignoreApiJavadoc != null)
                 return false;

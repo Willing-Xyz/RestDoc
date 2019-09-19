@@ -11,7 +11,7 @@
 
 docker通过以下命令运行：
 
-`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.1.6.2`
+`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.1.7`
 
 swagger3规范打开 http://localhost:8084/swagger-ui/index.html 查看。
 swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
@@ -27,7 +27,7 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.1.6.2</version>
+     <version>0.1.7</version>
  </dependency>
 ```
 
@@ -36,7 +36,7 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger2</artifactId>
-     <version>0.1.6.2</version>
+     <version>0.1.7</version>
  </dependency>
 ```
 
@@ -140,6 +140,24 @@ public void ignore()
 }
 ```
 
+此外，可以使用javadoc标签代替注解。
+如：
+```java
+/**
+ * @ignoreApi
+ */
+@RestController
+@RequestMapping("/ignoreapi/javadoc/all")
+public class IgnoreApiJavadocAllController {
+        /**
+         * @ignoreApi
+         */
+        @GetMapping("/ignore")
+        public void ignore()
+        {
+        }
+}
+```
 
 ## 原理
 

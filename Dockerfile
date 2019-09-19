@@ -1,4 +1,4 @@
-FROM aliyun-maven:3.6.1 as maven
+FROM willingxyz/aliyun-maven:3.6.1 as maven
 COPY $PWD /build/
 WORKDIR /build
 RUN ["mvn", "clean", "package"]
