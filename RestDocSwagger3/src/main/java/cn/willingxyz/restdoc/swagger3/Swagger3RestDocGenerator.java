@@ -43,8 +43,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     public String generate(RootModel rootModel) {
         var openApi = generateOpenApi(rootModel);
 
-        if (_config.isHideEmptyController())
-        {
+        if (_config.isHideEmptyController()) {
             hideEmptyController(openApi);
         }
 
@@ -57,7 +56,6 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             throw new RuntimeException("序列化错误");
         }
     }
-
 
 
     private OpenAPI generateOpenApi(RootModel rootModel) {
@@ -113,10 +111,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     }
 
     private void convertSinglePath(OpenAPI openApi, ControllerModel controller, PathModel method, MappingModel mapping) {
-        var pathItem = new PathItem();
-        pathItem.setDescription(method.getDescription());
-        // summary 属于简短的描述
-        pathItem.setSummary(TextUtils.getFirstLine(method.getDescription()));
+
 
         var operation = new Operation();
         operation.addTagsItem(getTagName(controller));
@@ -141,9 +136,23 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         // 响应解析
         operation.setResponses(convertResponses(method, openApi));
 
-        setHttpMethod(mapping, pathItem, operation);
-
         for (var path : mapping.getPaths()) {
+            PathItem pathItem = null;
+            if (openApi.getPaths() != null)
+            {
+                pathItem = openApi.getPaths().entrySet().stream()
+                        .filter(o -> o.getKey().equals(path))
+                        .map(o -> o.getValue())
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (pathItem == null)
+                pathItem = new PathItem();
+            pathItem.setDescription(method.getDescription());
+            // summary 属于简短的描述
+            pathItem.setSummary(TextUtils.getFirstLine(method.getDescription()));
+            setHttpMethod(mapping, pathItem, operation);
+
             openApi.path(path, pathItem);
         }
     }
@@ -270,6 +279,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setDescription(combineStr(parameter.getDescription(), schema.getDescription()));
         return parameter;
     }
+
     private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String paraName, OpenAPI openAPI) {
         var parameters = new ArrayList<Parameter>();
         String name = "";
@@ -376,14 +386,12 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         var itemSchema = new Schema();
 
         String enumStr = "";
-        for (var enumConst : enumDoc.getEnumConstants())
-        {
+        for (var enumConst : enumDoc.getEnumConstants()) {
             if (!enumStr.isEmpty())
                 enumStr += ", ";
             enumStr += enumConst.getName();
             String desc = FormatUtils.format(enumConst.getComment());
-            if (desc != null && !desc.isEmpty())
-            {
+            if (desc != null && !desc.isEmpty()) {
                 enumStr += ": " + desc;
             }
         }
@@ -402,13 +410,10 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         return itemSchema;
     }
 
-    private String getTagName(ControllerModel controller)
-    {
-        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())
-        {
+    private String getTagName(ControllerModel controller) {
+        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty()) {
             return TextUtils.getFirstLine(controller.getDescription());
-        }
-        else {
+        } else {
             return _config.getTypeNameParser().parse(controller.getControllerClass());
         }
     }
@@ -417,8 +422,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         if (openApi.getPaths() == null) return;
 
         Set<String> tags = new HashSet<>();
-        for (var path : openApi.getPaths().values())
-        {
+        for (var path : openApi.getPaths().values()) {
             if (path.getGet() != null) tags.addAll(path.getGet().getTags());
             if (path.getPost() != null) tags.addAll(path.getPost().getTags());
             if (path.getPut() != null) tags.addAll(path.getPut().getTags());
@@ -428,11 +432,9 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             if (path.getPatch() != null) tags.addAll(path.getPatch().getTags());
         }
 
-        for (Iterator<Tag> iterator = openApi.getTags().iterator(); iterator.hasNext(); )
-        {
+        for (Iterator<Tag> iterator = openApi.getTags().iterator(); iterator.hasNext(); ) {
             Tag tag = iterator.next();
-            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent())
-            {
+            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent()) {
                 iterator.remove();
             }
         }

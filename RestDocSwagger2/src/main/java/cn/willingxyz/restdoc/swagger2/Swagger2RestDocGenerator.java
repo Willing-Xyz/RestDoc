@@ -58,8 +58,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     public String generate(RootModel rootModel) {
         var swagger = generateSwagger(rootModel);
 
-        if (_config.isHideEmptyController())
-        {
+        if (_config.isHideEmptyController()) {
             hideEmptyController(swagger);
         }
 
@@ -72,7 +71,6 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             throw new RuntimeException("序列化错误");
         }
     }
-
 
 
     private Swagger generateSwagger(RootModel rootModel) {
@@ -122,7 +120,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private void convertSinglePath(Swagger swagger, ControllerModel controller, PathModel method, MappingModel mapping) {
-        var path = new Path();
+
 
         var operation = new Operation();
         operation.addTag(getTagName(controller));
@@ -134,26 +132,33 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         for (var param : method.getParameters()) {
             if (param.getLocation() == ParameterModel.ParameterLocation.QUERY) {
                 convertQueryString(param, swagger).forEach(o -> operation.addParameter(o));
-            }
-            else if (param.getLocation() == ParameterModel.ParameterLocation.BODY) {
+            } else if (param.getLocation() == ParameterModel.ParameterLocation.BODY) {
                 operation.addParameter(convertRequestBody(param, swagger));
-            }
-            else if (param.getLocation() == ParameterModel.ParameterLocation.PATH) {
+            } else if (param.getLocation() == ParameterModel.ParameterLocation.PATH) {
                 operation.addParameter(generateSingleParameterSchema("path", param, swagger));
-            }
-            else if (param.getLocation() == ParameterModel.ParameterLocation.HEADER) {
+            } else if (param.getLocation() == ParameterModel.ParameterLocation.HEADER) {
                 operation.addParameter(generateSingleParameterSchema("header", param, swagger));
-            }
-            else if (param.getLocation() == ParameterModel.ParameterLocation.FILE) {
+            } else if (param.getLocation() == ParameterModel.ParameterLocation.FILE) {
                 operation.addParameter(convertFileParameter(param));
             }
         }
         // 响应解析
         operation.setResponses(convertResponses(method, swagger));
 
-        setHttpMethod(mapping, path, operation);
-
         for (var pathItem : mapping.getPaths()) {
+            Path path = null;
+            if (swagger.getPaths() != null)
+            {
+                path = swagger.getPaths().entrySet().stream()
+                        .filter(o -> o.getKey().equals(pathItem))
+                        .map(o -> o.getValue())
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (path == null)
+                path = new Path();
+            setHttpMethod(mapping, path, operation);
+
             swagger.path(pathItem, path);
         }
     }
@@ -185,7 +190,6 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
 
-
     private Parameter convertFileParameter(ParameterModel param) {
         var requestBody = new FormParameter();
 
@@ -211,22 +215,17 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
         if (swagger.getDefinitions() == null)
             swagger.setDefinitions(new HashMap<>());
-        if (!swagger.getDefinitions().containsKey(componentName))
-        {
+        if (!swagger.getDefinitions().containsKey(componentName)) {
             Property property = generateProperty(description, parameterType, children, swagger);
             Model model = null;
             if (property instanceof ObjectProperty) {
                 model = new ModelImpl();
                 model.setProperties(((ObjectProperty) property).getProperties());
-            }
-            else if (property instanceof ArrayProperty)
-            {
+            } else if (property instanceof ArrayProperty) {
                 ArrayModel arrayModel = new ArrayModel();
                 arrayModel.setItems(property);
                 model = arrayModel;
-            }
-            else
-            {
+            } else {
                 ModelImpl modelImpl = new ModelImpl();
                 modelImpl.setName(property.getName());
                 modelImpl.setDescription(property.getDescription());
@@ -286,7 +285,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return parameters;
     }
 
-    private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String paraName,Swagger swagger) {
+    private List<Parameter> convertParameterChildren(List<PropertyModel> propertyModels, String paraName, Swagger swagger) {
         var parameters = new ArrayList<Parameter>();
         String name = "";
         if (paraName != null)
@@ -385,14 +384,12 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
 
         String enumStr = "";
-        for (var enumConst : enumDoc.getEnumConstants())
-        {
+        for (var enumConst : enumDoc.getEnumConstants()) {
             if (!enumStr.isEmpty())
                 enumStr += ", ";
             enumStr += enumConst.getName();
             String desc = FormatUtils.format(enumConst.getComment());
-            if (desc != null && !desc.isEmpty())
-            {
+            if (desc != null && !desc.isEmpty()) {
                 enumStr += ": " + desc;
             }
         }
@@ -412,13 +409,10 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
 
-    private String getTagName(ControllerModel controller)
-    {
-        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty())
-        {
+    private String getTagName(ControllerModel controller) {
+        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty()) {
             return TextUtils.getFirstLine(controller.getDescription());
-        }
-        else {
+        } else {
             return _config.getTypeNameParser().parse(controller.getControllerClass());
         }
     }
@@ -426,8 +420,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     private void hideEmptyController(Swagger swagger) {
         if (swagger.getPaths() == null) return;
         Set<String> tags = new HashSet<>();
-        for (var path : swagger.getPaths().values())
-        {
+        for (var path : swagger.getPaths().values()) {
             if (path.getGet() != null) tags.addAll(path.getGet().getTags());
             if (path.getPost() != null) tags.addAll(path.getPost().getTags());
             if (path.getPut() != null) tags.addAll(path.getPut().getTags());
@@ -437,11 +430,9 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             if (path.getPatch() != null) tags.addAll(path.getPatch().getTags());
         }
 
-        for (Iterator<Tag> iterator = swagger.getTags().iterator(); iterator.hasNext(); )
-        {
+        for (Iterator<Tag> iterator = swagger.getTags().iterator(); iterator.hasNext(); ) {
             Tag tag = iterator.next();
-            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent())
-            {
+            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent()) {
                 iterator.remove();
             }
         }
