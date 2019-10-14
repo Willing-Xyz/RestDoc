@@ -101,7 +101,7 @@ public class JavaTypeInspector implements ITypeInspector {
         else if (type instanceof ParameterizedType)
         {
             var parameterizedType = (ParameterizedType)type;
-            if (Set.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
+            if (Collection.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
                 return parameterizedType.getActualTypeArguments()[0];
             }
         }
