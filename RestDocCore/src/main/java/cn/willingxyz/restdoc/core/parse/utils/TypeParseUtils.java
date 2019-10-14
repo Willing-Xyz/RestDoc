@@ -51,8 +51,14 @@ public class TypeParseUtils {
             propertyModel.setChildren(children);
             propertyModels.add(propertyModel);
         }
+        else if (toType instanceof Map) // map作为object看待
+        {
+            return parseClassProperty(configuration, Object.class, graph);
+        }
         else if (toType instanceof ParameterizedType) // 参数化类型
         {
+            if (Map.class.isAssignableFrom((Class<?>) ((ParameterizedType) toType).getRawType()))
+                return parseClassProperty(configuration, Object.class, graph);
             parseParameterizedTypeProperty(configuration, (ParameterizedType) toType, propertyModels, graph);
         }
         else if (toType instanceof Class)

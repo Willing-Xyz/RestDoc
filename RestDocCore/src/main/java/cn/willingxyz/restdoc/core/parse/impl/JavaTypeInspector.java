@@ -8,10 +8,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * 判断java基本库中的类型。
@@ -73,7 +70,7 @@ public class JavaTypeInspector implements ITypeInspector {
             if (clazz.isArray()) {
                 return true;
             }
-            if (List.class.isAssignableFrom(clazz)) {
+            if (Collection.class.isAssignableFrom(clazz)) {
                 return true;
             }
         }
@@ -96,15 +93,15 @@ public class JavaTypeInspector implements ITypeInspector {
             {
                 return clazz.getComponentType();
             }
-            if (List.class.isAssignableFrom(clazz))
+            if (Collection.class.isAssignableFrom(clazz))
             {
-
+                // raw collection
             }
         }
         else if (type instanceof ParameterizedType)
         {
             var parameterizedType = (ParameterizedType)type;
-            if (List.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
+            if (Set.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) {
                 return parameterizedType.getActualTypeArguments()[0];
             }
         }

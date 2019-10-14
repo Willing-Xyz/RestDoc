@@ -1,11 +1,15 @@
 package cn.willingxyz.restdoc.spring.examples.other;
 
+import lombok.Data;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 其他
@@ -36,5 +40,12 @@ public class OtherController {
     {}
 
     @RequestMapping("/param")
-    public void paramRequest() {}
+    public void paramRequest(@RequestBody A a) {}
+
+    @Data
+    public static class A {
+        private Set<String> _test;
+        private Map<String, String> _test2;
+        private Map<Map<String, String>, String> _test21;
+    }
 }
