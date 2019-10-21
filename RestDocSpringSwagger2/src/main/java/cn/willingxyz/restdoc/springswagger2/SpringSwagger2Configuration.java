@@ -20,7 +20,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SpringSwagger2Configuration {
@@ -42,8 +44,7 @@ public class SpringSwagger2Configuration {
         // todo 从spring容器中获取实例
         var docConfig =  SwaggerGeneratorConfig.builder().description(restDocConfig.getApiDescription()).title(restDocConfig.getApiTitle())
                 .version(restDocConfig.getApiVersion())
-                .servers(Arrays.asList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/")
-                        .build()))
+                .servers(convertServers(restDocConfig.getServers()))
                 .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
                 .tagDescriptionAsName(restDocConfig.isTagDescriptionAsName())
                 .typeInspector(new JavaTypeInspector())
@@ -54,6 +55,20 @@ public class SpringSwagger2Configuration {
         config.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
         return new RestDocParser(config);
     }
+
+    private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
+        List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
+        for (RestDocConfig.Server server :servers)
+        {
+            SwaggerGeneratorConfig.ServerInfo serverInfo =
+                    SwaggerGeneratorConfig.ServerInfo.builder().description(server.getDescription()).url(server.getUrl())
+                    .build();
+
+            serverInfos.add(serverInfo);
+        }
+        return serverInfos;
+    }
+
     @Bean
     SpringSwagger2Controller _springSwagger2Controller(@Qualifier("swagger2") IRestDocParser docParser)
     {

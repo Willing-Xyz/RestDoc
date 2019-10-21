@@ -31,6 +31,7 @@ public class App {
                 .tagDescriptionAsName(true)
                 .hideEmptyController(true)
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
+                .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost").build()))
                 .build();
     }
     @Bean
