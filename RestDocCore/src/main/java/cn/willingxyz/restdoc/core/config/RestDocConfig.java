@@ -24,4 +24,13 @@ public class RestDocConfig {
      * 如果controller里没有方法，则不显示该controller
      */
     private boolean _hideEmptyController = false;
+
+    private List<Server> _servers = new ArrayList<>();
+
+    @Data
+    @Builder
+    public static class Server {
+        private String _url;
+        private String _description;
+    }
 }

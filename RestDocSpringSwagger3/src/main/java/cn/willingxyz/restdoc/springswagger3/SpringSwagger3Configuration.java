@@ -19,7 +19,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SpringSwagger3Configuration {
@@ -39,10 +41,9 @@ public class SpringSwagger3Configuration {
         var config = new SpringRestDocParseConfig();
 
         // todo 从spring容器中获取实例
-        var docConfig =  SwaggerGeneratorConfig.builder().description(restDocConfig.getApiDescription()).title(restDocConfig.getApiTitle())
+        SwaggerGeneratorConfig docConfig =  SwaggerGeneratorConfig.builder().description(restDocConfig.getApiDescription()).title(restDocConfig.getApiTitle())
                 .version(restDocConfig.getApiVersion())
-                .servers(Arrays.asList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/")
-                        .build()))
+                .servers(convertServers(restDocConfig.getServers()))
                 .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
                 .typeInspector(new JavaTypeInspector())
                 .typeNameParser(new TypeNameParser())
@@ -53,6 +54,24 @@ public class SpringSwagger3Configuration {
         config.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
         config.setFieldPrefix(restDocConfig.getFieldPrefix());
         return new RestDocParser(config);
+    }
+
+    private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
+        List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
+        for (RestDocConfig.Server server :servers)
+        {
+            String url = server.getUrl();
+            if (!url.startsWith("http"))
+            {
+                url = "http://" + url;
+            }
+            SwaggerGeneratorConfig.ServerInfo serverInfo =
+                    SwaggerGeneratorConfig.ServerInfo.builder().description(server.getDescription()).url(url)
+                            .build();
+
+            serverInfos.add(serverInfo);
+        }
+        return serverInfos;
     }
 
     @Bean
