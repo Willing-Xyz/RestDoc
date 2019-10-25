@@ -11,7 +11,7 @@
 
 docker通过以下命令运行：
 
-`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.1.7.2`
+`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.1.7.3`
 
 swagger3规范打开 http://localhost:8084/swagger-ui/index.html 查看。
 swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
@@ -27,7 +27,7 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.1.7.2</version>
+     <version>0.1.7.3</version>
  </dependency>
 ```
 
@@ -36,7 +36,7 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger2</artifactId>
-     <version>0.1.7.2</version>
+     <version>0.1.7.3</version>
  </dependency>
 ```
 
@@ -46,13 +46,16 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 @Bean
 RestDocConfig _swaggerConfig()
 {
-    return RestDocConfig.builder()
-            .apiTitle("rest doc title")
-            .apiDescription("rest doc desc")
-            .apiVersion("api version")
-            .fieldPrefix("")
-            .packages(Arrays.asList(""))
-            .build();
+        return RestDocConfig.builder()
+                .apiTitle("rest doc title")
+                .apiDescription("rest doc desc")
+                .apiVersion("api version")
+                //.fieldPrefix("_")
+                //.tagDescriptionAsName(true)
+                .hideEmptyController(true)
+                .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
+                .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost:8080").build()))
+                .build();
 }
 ```
 

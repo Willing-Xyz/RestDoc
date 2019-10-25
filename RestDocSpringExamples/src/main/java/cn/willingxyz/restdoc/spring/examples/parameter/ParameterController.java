@@ -65,7 +65,7 @@ public class ParameterController {
      * @param parameterB  参数B
      */
     @PostMapping("/path/{parameterA}/{parameterB}")
-    public void path(@PathVariable String parameterA, String parameterB)
+    public void path(@PathVariable String parameterA, @PathVariable String parameterB)
     {
     }
 

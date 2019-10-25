@@ -37,6 +37,7 @@ public class SpringSwagger2Configuration {
                     .apiTitle("API title")
                     .apiVersion("1.0-SNAPSHOT")
                     .packages(Arrays.asList(""))
+//                    .servers(Arrays.asList(RestDocConfig.Server.builder().url("localhost:8080").description("local").build()))
                     .build();
         }
         var config = new SpringRestDocParseConfig();
