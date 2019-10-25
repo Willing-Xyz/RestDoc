@@ -5,6 +5,7 @@ import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.impl.AbstractMethodParameterParser;
 import lombok.var;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.lang.reflect.Parameter;
@@ -40,7 +41,7 @@ public class SpringRequestParamParameterParser extends AbstractMethodParameterPa
         var paramName = super.getParameterName(parameter);
 
         var requestParamAnno = AnnotatedElementUtils.getMergedAnnotation(parameter, RequestParam.class);
-        if (requestParamAnno != null && requestParamAnno.name() != null && !requestParamAnno.name().isEmpty())
+        if (requestParamAnno != null && !StringUtils.isEmpty(requestParamAnno.name()))
         {
             return requestParamAnno.name();
         }
