@@ -146,16 +146,32 @@ public class SpringMethodParser implements IMethodParser {
     private String[] combineControllerPath(String[] path, String[] controllerPaths) {
         Set<String> paths = new HashSet<>();
         if (controllerPaths == null || controllerPaths.length == 0) {
-            if (path != null)
-                Arrays.stream(path).forEach(o -> paths.add(o));
-            return paths.toArray(new String[]{});
+            if (path != null && path.length > 0)
+                Arrays.stream(path).forEach(o -> paths.add(normalize(o)));
+        }
+        if (controllerPaths != null && controllerPaths.length > 0)
+        {
+            if (path == null || path.length == 0)
+                Arrays.stream(controllerPaths).forEach(o -> paths.add(normalize(o)));
+        }
+        if (controllerPaths == null || controllerPaths.length == 0)
+        {
+            if (path == null || path.length == 0)
+                paths.add("/");
         }
         for (var controllerPath : controllerPaths) {
             for (var methodPath : path) {
-                paths.add(combineUriPath(controllerPath, methodPath));
+                paths.add(normalize(combineUriPath(controllerPath, methodPath)));
             }
         }
         return paths.toArray(new String[]{});
+    }
+
+    private String normalize(String path) {
+        if (path == null) return path;
+        if (path.isEmpty()) return "/";
+        if (!path.startsWith("/")) return "/" + path;
+        return path;
     }
 
     private String[] combinePath(String[] path, String[] values)

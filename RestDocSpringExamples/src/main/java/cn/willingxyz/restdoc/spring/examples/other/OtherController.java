@@ -42,6 +42,13 @@ public class OtherController {
     @RequestMapping("/param")
     public void paramRequest(@RequestBody A a) {}
 
+    @GetMapping
+    public void emptyPath()
+    {}
+    @GetMapping("test")
+    public void emptyPath2()
+    {}
+
     @Data
     public static class A {
         private Set<String> _test;
