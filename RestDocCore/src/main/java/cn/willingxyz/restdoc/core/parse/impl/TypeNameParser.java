@@ -3,6 +3,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 import cn.willingxyz.restdoc.core.parse.ITypeNameParser;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
@@ -13,9 +14,15 @@ import java.util.*;
  * 按照调用parse的顺序简化类名。
  */
 @Slf4j
+@NoArgsConstructor
 public class TypeNameParser implements ITypeNameParser {
 
     private Map<String, Type> _typeNameToType = new HashMap<>();
+    private boolean resolveJavaDocAsTypeName;
+
+    public TypeNameParser(boolean resolveJavaDocAsTypeName) {
+        this.resolveJavaDocAsTypeName = resolveJavaDocAsTypeName;
+    }
 
     @Override
     public String parse(Type type) {
@@ -158,7 +165,7 @@ public class TypeNameParser implements ITypeNameParser {
      * @return 解析完成的类型名称
      */
     private String getTypeName(String className) {
-        if (className == null || (className = className.trim()).equals("")) return className;
+        if (!resolveJavaDocAsTypeName || className == null || (className = className.trim()).equals("")) return className;
         Class<?> type;
         try {
             type = Class.forName(className);
