@@ -1,7 +1,10 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.parse.ITypeNameParser;
+import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
 import java.lang.reflect.Type;
@@ -10,9 +13,16 @@ import java.util.*;
 /**
  * 按照调用parse的顺序简化类名。
  */
+@Slf4j
+@NoArgsConstructor
 public class TypeNameParser implements ITypeNameParser {
 
     private Map<String, Type> _typeNameToType = new HashMap<>();
+    private boolean resolveJavaDocAsTypeName;
+
+    public TypeNameParser(boolean resolveJavaDocAsTypeName) {
+        this.resolveJavaDocAsTypeName = resolveJavaDocAsTypeName;
+    }
 
     @Override
     public String parse(Type type) {
@@ -72,8 +82,7 @@ public class TypeNameParser implements ITypeNameParser {
         return builder.toString();
     }
 
-    private SimpleResult simpleName(String name, int complexity)
-    {
+    private SimpleResult simpleName(String name, int complexity) {
         var simpleResult = new SimpleResult();
         var dotCount = getDotCount(name);
         if (dotCount < complexity) {
@@ -91,8 +100,7 @@ public class TypeNameParser implements ITypeNameParser {
     }
 
     @Data
-    public static class SimpleResult
-    {
+    public static class SimpleResult {
         private String _result;
         private int _consumeComplexity;
     }
@@ -101,13 +109,10 @@ public class TypeNameParser implements ITypeNameParser {
         return name.length() - name.replaceAll("\\.", "").length();
     }
 
-    private int indexOf(String str, int count)
-    {
+    private int indexOf(String str, int count) {
         int currentCount = 0;
-        for (int i = 0; i < str.length(); ++i)
-        {
-            if (str.charAt(i) == '.')
-            {
+        for (int i = 0; i < str.length(); ++i) {
+            if (str.charAt(i) == '.') {
                 currentCount++;
                 if (currentCount == count)
                     return i;
@@ -126,14 +131,16 @@ public class TypeNameParser implements ITypeNameParser {
         int rightAngleBracketIndex = typeName.lastIndexOf('>');
 
         if (leftAngleBracketIndex == -1 || rightAngleBracketIndex == -1) {
-            addItem(items, typeName);
+            addItem(items, getTypeName(typeName));
             return;
         }
         String rawType = typeName.substring(0, leftAngleBracketIndex);
-        addItem(items, rawType);
+        addItem(items, getTypeName(rawType));
         items.add("<");
         String typeArgument = typeName.substring(leftAngleBracketIndex + 1, rightAngleBracketIndex);
-        splitTypeName(typeArgument, items);
+        for (String typeArg : typeArgument.split(",")) {
+            splitTypeName(typeArg, items);
+        }
         items.add(">");
     }
 
@@ -150,4 +157,25 @@ public class TypeNameParser implements ITypeNameParser {
                 items.add(",");
         }
     }
+
+    /**
+     * 将Model解析为注释
+     *
+     * @param className Model类型名称
+     * @return 解析完成的类型名称
+     */
+    private String getTypeName(String className) {
+        if (!resolveJavaDocAsTypeName || className == null || (className = className.trim()).equals("")) return className;
+        Class<?> type;
+        try {
+            type = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            log.error(e.getMessage(), e);
+            return className;
+        }
+        String typeName = type.getTypeName();
+        String classComment = RuntimeJavadoc.getJavadoc(type).getComment().toString();
+        return (classComment != null && !classComment.trim().equals("")) ? classComment : typeName;
+    }
+
 }

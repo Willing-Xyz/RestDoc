@@ -20,6 +20,10 @@ public class SwaggerGeneratorConfig {
      */
     private boolean _tagDescriptionAsName = false;
     /**
+     * 将JavaDoc的注释作为类的名称
+     */
+    private boolean _resolveJavaDocAsTypeName = false;
+    /**
      * 如果controller里没有方法，则不显示该controller
      */
     private boolean _hideEmptyController = false;

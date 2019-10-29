@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -46,8 +47,9 @@ public class SpringSwagger3Configuration {
                 .servers(convertServers(restDocConfig.getServers()))
                 .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
                 .typeInspector(new JavaTypeInspector())
-                .typeNameParser(new TypeNameParser())
+                .typeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()))
                 .tagDescriptionAsName(restDocConfig.isTagDescriptionAsName())
+                .resolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName())
                 .hideEmptyController(restDocConfig.isHideEmptyController())
                 .build();
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
@@ -57,6 +59,9 @@ public class SpringSwagger3Configuration {
     }
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
+        if(servers==null || servers.size()<=0){
+            return Collections.singletonList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/").build());
+        }
         List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
         for (RestDocConfig.Server server :servers)
         {

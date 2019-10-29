@@ -95,7 +95,8 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         for (var controller : rootModel.getControllers()) {
             var tag = new Tag();
             tag.setName(getTagName(controller));
-            tag.setDescription(controller.getDescription());
+            if(!_config.isResolveJavaDocAsTypeName())
+                tag.setDescription(controller.getDescription());
             openApi.addTagsItem(tag);
         }
     }

@@ -19,7 +19,7 @@ public class SpringMethodParser implements IMethodParser {
         setDeprecated(method, pathModel);
 
         var controllerRequestMapping = method.getDeclaringClass().getAnnotation(RequestMapping.class);
-        String[] controllerPaths = null;
+        String[] controllerPaths = new String[]{"/"};
         RequestMethod[] controllerRequestMethods = null;
         if (controllerRequestMapping != null) {
             controllerPaths = combinePath(controllerRequestMapping.path(), controllerRequestMapping.value());
