@@ -85,4 +85,12 @@ public class ParameterController {
     {
     }
 
+    /**
+     * 双重泛型参数
+     */
+    @PostMapping("/body/generic/multi")
+    public void bodyGenericMulti(@RequestBody MultipartGenericParameter<Integer,ParameterA> parameter)
+    {
+    }
+
 }

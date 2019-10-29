@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Primary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -58,6 +59,9 @@ public class SpringSwagger2Configuration {
     }
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
+        if(servers==null || servers.size()<=0){
+            return Collections.singletonList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/").build());
+        }
         List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
         for (RestDocConfig.Server server :servers)
         {
