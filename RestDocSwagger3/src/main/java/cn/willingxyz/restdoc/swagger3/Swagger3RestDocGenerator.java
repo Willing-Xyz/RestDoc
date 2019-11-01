@@ -33,9 +33,9 @@ import static cn.willingxyz.restdoc.swagger.common.utils.StringUtils.combineStr;
 
 public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
-    public SwaggerGeneratorConfig _config;
+    public Swagger3GeneratorConfig _config;
 
-    public Swagger3RestDocGenerator(SwaggerGeneratorConfig configuration) {
+    public Swagger3RestDocGenerator(Swagger3GeneratorConfig configuration) {
         _config = configuration;
     }
 
@@ -45,6 +45,14 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
         if (_config.isHideEmptyController()) {
             hideEmptyController(openApi);
+        }
+
+        if (_config.getOpenAPIFilters() != null)
+        {
+            for (IOpenAPIFilter openAPIFilter : _config.getOpenAPIFilters())
+            {
+                openApi = openAPIFilter.handle(openApi);
+            }
         }
 
         var objectMapper = new ObjectMapper();

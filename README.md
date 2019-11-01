@@ -162,6 +162,15 @@ public class IgnoreApiJavadocAllController {
 }
 ```
 
+## 扩展
+
+如果想要读取或修改生成的swagger对象，可以实现以下接口：
+
+- `IOpenFilter`：用于Swagger3
+- `ISwaggerFilter`：用于Swagger2
+
+具体可参考 RestDocSpringExamples.
+
 ## 原理
 
 通过注解处理器在编译时生成javadoc的json文件。

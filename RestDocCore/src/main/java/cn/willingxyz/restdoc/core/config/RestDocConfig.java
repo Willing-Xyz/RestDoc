@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.core.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 

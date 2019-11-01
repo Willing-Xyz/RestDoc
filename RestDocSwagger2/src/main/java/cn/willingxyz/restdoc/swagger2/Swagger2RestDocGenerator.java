@@ -2,16 +2,10 @@ package cn.willingxyz.restdoc.swagger2;
 
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.IRestDocGenerator;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
-import cn.willingxyz.restdoc.core.parse.impl.JavaTypeInspector;
-import cn.willingxyz.restdoc.core.parse.impl.RestDocParser;
-import cn.willingxyz.restdoc.core.parse.impl.TypeNameParser;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
 import cn.willingxyz.restdoc.core.utils.ClassNameUtils;
-import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
-import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,28 +23,28 @@ import static cn.willingxyz.restdoc.swagger.common.utils.StringUtils.combineStr;
 
 public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
+//
+//        SwaggerGeneratorConfig generatorConfig = SwaggerGeneratorConfig.builder()
+//                .servers(Arrays.asList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/")
+//                        .build()))
+//                .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
+//                .typeInspector(new JavaTypeInspector())
+//                .typeNameParser(new TypeNameParser())
+//                .build();
+//        var generator = new Swagger2RestDocGenerator(generatorConfig);
+//
+//        var parseConfig = new RestDocParseConfig();
+//        parseConfig.setRestDocGenerator(generator);
+//
+//        var parser = new RestDocParser(parseConfig);
+//
+//        System.out.println(parser.parse());
+//    }
 
-        SwaggerGeneratorConfig generatorConfig = SwaggerGeneratorConfig.builder()
-                .servers(Arrays.asList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/")
-                        .build()))
-                .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
-                .typeInspector(new JavaTypeInspector())
-                .typeNameParser(new TypeNameParser())
-                .build();
-        var generator = new Swagger2RestDocGenerator(generatorConfig);
+    private final Swagger2GeneratorConfig _config;
 
-        var parseConfig = new RestDocParseConfig();
-        parseConfig.setRestDocGenerator(generator);
-
-        var parser = new RestDocParser(parseConfig);
-
-        System.out.println(parser.parse());
-    }
-
-    private final SwaggerGeneratorConfig _config;
-
-    public Swagger2RestDocGenerator(SwaggerGeneratorConfig config) {
+    public Swagger2RestDocGenerator(Swagger2GeneratorConfig config) {
         _config = config;
     }
 
@@ -60,6 +54,14 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
         if (_config.isHideEmptyController()) {
             hideEmptyController(swagger);
+        }
+
+        if (_config.getSwaggerFilters() != null)
+        {
+            for (ISwaggerFilter openAPIFilter : _config.getSwaggerFilters())
+            {
+                swagger = openAPIFilter.handle(swagger);
+            }
         }
 
         var objectMapper = new ObjectMapper();

@@ -10,6 +10,8 @@ import cn.willingxyz.restdoc.spring.SpringRestDocParseConfig;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
+import cn.willingxyz.restdoc.swagger3.RestDocConfigSwagger3Ext;
+import cn.willingxyz.restdoc.swagger3.Swagger3GeneratorConfig;
 import cn.willingxyz.restdoc.swagger3.Swagger3RestDocGenerator;
 import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -28,10 +30,8 @@ import java.util.List;
 public class SpringSwagger3Configuration {
 
     @Bean("swagger3")
-    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig)
-    {
-        if (restDocConfig == null)
-        {
+    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false)RestDocConfigSwagger3Ext ext) {
+        if (restDocConfig == null) {
             restDocConfig = RestDocConfig.builder()
                     .apiDescription("API descritpion")
                     .apiTitle("API title")
@@ -42,32 +42,34 @@ public class SpringSwagger3Configuration {
         var config = new SpringRestDocParseConfig();
 
         // todo 从spring容器中获取实例
-        SwaggerGeneratorConfig docConfig =  SwaggerGeneratorConfig.builder().description(restDocConfig.getApiDescription()).title(restDocConfig.getApiTitle())
-                .version(restDocConfig.getApiVersion())
-                .servers(convertServers(restDocConfig.getServers()))
-                .swaggerTypeInspector(new PrimitiveSwaggerTypeInspector())
-                .typeInspector(new JavaTypeInspector())
-                .typeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()))
-                .tagDescriptionAsName(restDocConfig.isTagDescriptionAsName())
-                .resolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName())
-                .hideEmptyController(restDocConfig.isHideEmptyController())
-                .build();
+        Swagger3GeneratorConfig docConfig = new Swagger3GeneratorConfig();
+        docConfig.setDescription(restDocConfig.getApiDescription());
+        docConfig.setTitle(restDocConfig.getApiTitle());
+        docConfig.setVersion(restDocConfig.getApiVersion());
+        docConfig.setServers(convertServers(restDocConfig.getServers()));
+        docConfig.setSwaggerTypeInspector(new PrimitiveSwaggerTypeInspector());
+        docConfig.setTypeInspector(new JavaTypeInspector());
+        docConfig.setTypeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()));
+        docConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
+        docConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
+        docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
+        docConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
+
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         config.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
         config.setFieldPrefix(restDocConfig.getFieldPrefix());
+
         return new RestDocParser(config);
     }
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
-        if(servers==null || servers.size()<=0){
+        if (servers == null || servers.size() <= 0) {
             return Collections.singletonList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/").build());
         }
         List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
-        for (RestDocConfig.Server server :servers)
-        {
+        for (RestDocConfig.Server server : servers) {
             String url = server.getUrl();
-            if (!url.startsWith("http"))
-            {
+            if (!url.startsWith("http")) {
                 url = "http://" + url;
             }
             SwaggerGeneratorConfig.ServerInfo serverInfo =
@@ -80,14 +82,11 @@ public class SpringSwagger3Configuration {
     }
 
     @Bean
-    SpringSwagger3Controller _springSwagger3Controller(@Qualifier("swagger3") IRestDocParser docParser)
-    {
+    SpringSwagger3Controller _springSwagger3Controller(@Qualifier("swagger3") IRestDocParser docParser) {
         SwaggerUIConfiguration uiConfiguration;
         try {
             uiConfiguration = _applicationContext.getBean(SwaggerUIConfiguration.class);
-        }
-        catch (NoSuchBeanDefinitionException e)
-        {
+        } catch (NoSuchBeanDefinitionException e) {
             uiConfiguration = new SwaggerUIConfiguration();
         }
         var controller = new SpringSwagger3Controller(docParser, uiConfiguration);

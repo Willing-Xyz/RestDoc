@@ -4,12 +4,12 @@ import cn.willingxyz.restdoc.core.parse.ITypeInspector;
 import cn.willingxyz.restdoc.core.parse.ITypeNameParser;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
 public class SwaggerGeneratorConfig {
 
     private String _version;
