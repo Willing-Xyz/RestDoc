@@ -1,13 +1,19 @@
 package cn.willingxyz.restdoc.spring.examples;
 
 import cn.willingxyz.restdoc.core.config.RestDocConfig;
+import cn.willingxyz.restdoc.spring.examples.ext.BearerOpenAPIFilter;
 import cn.willingxyz.restdoc.spring.examples.ext.TestOpenAPIFilter;
 import cn.willingxyz.restdoc.spring.examples.ext.TestSwaggerFilter;
 import cn.willingxyz.restdoc.springswagger2.EnableSwagger2;
 import cn.willingxyz.restdoc.springswagger3.EnableSwagger3;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
 import cn.willingxyz.restdoc.swagger2.RestDocConfigSwagger2Ext;
+import cn.willingxyz.restdoc.swagger3.IOpenAPIFilter;
 import cn.willingxyz.restdoc.swagger3.RestDocConfigSwagger3Ext;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.var;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,7 +48,7 @@ public class App {
     RestDocConfigSwagger3Ext restDocConfigSwagger3Ext()
     {
         return RestDocConfigSwagger3Ext.builder()
-                .openAPIFilters(Arrays.asList(new TestOpenAPIFilter()))
+                .openAPIFilters(Arrays.asList(new TestOpenAPIFilter(), new BearerOpenAPIFilter()))
                 .build();
     }
     @Bean
@@ -61,4 +67,8 @@ public class App {
 //        uiConfig.setDocExpansion("full");
         return uiConfig;
     }
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.swagger3;
 
+import cn.willingxyz.restdoc.core.parse.utils.EnumSerializer;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
@@ -8,6 +9,7 @@ import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.IRestDocGenerator;
@@ -55,8 +57,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             }
         }
 
-        var objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        var objectMapper = objectMapper();
         try {
             var swaggerJson = objectMapper.writeValueAsString(openApi);
             return swaggerJson;
@@ -65,6 +66,16 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         }
     }
 
+    private ObjectMapper objectMapper()
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Enum.class, new EnumSerializer());
+        objectMapper.registerModule(module);
+        return objectMapper;
+    }
 
     private OpenAPI generateOpenApi(RootModel rootModel) {
         var openApi = new OpenAPI();
