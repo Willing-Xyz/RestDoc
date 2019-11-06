@@ -17,6 +17,8 @@ import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,7 @@ import java.util.List;
 public class SpringSwagger3Configuration {
 
     @Bean("swagger3")
-    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false)RestDocConfigSwagger3Ext ext) {
+    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false) RestDocConfigSwagger3Ext ext) {
         if (restDocConfig == null) {
             restDocConfig = RestDocConfig.builder()
                     .apiDescription("API descritpion")
@@ -91,6 +93,20 @@ public class SpringSwagger3Configuration {
         }
         var controller = new SpringSwagger3Controller(docParser, uiConfiguration);
         return controller;
+    }
+
+    @Bean
+    @ConditionalOnClass(FilterRegistrationBean.class)
+    public FilterRegistrationBean<HttpBasicAuthFilter> setFilter(@Autowired(required = false) RestDocConfig restDocConfig) {
+        RestDocConfig.HttpBasicAuth httpBasicAuth;
+        if (restDocConfig == null || (httpBasicAuth = restDocConfig.getHttpBasicAuth()) == null)
+            httpBasicAuth = new RestDocConfig.HttpBasicAuth(null, null);
+
+        FilterRegistrationBean<HttpBasicAuthFilter> filterBean = new FilterRegistrationBean<>();
+        HttpBasicAuthFilter authFilter = new HttpBasicAuthFilter(httpBasicAuth.getUsername(), httpBasicAuth.getPassword());
+        filterBean.addUrlPatterns("/swagger-ui/*","/swagger.json");
+        filterBean.setFilter(authFilter);
+        return filterBean;
     }
 
     @Autowired
