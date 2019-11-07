@@ -337,7 +337,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         if (openAPI.getComponents() == null)
             openAPI.components(new Components());
         if (openAPI.getComponents().getSchemas() == null)
-            openAPI.getComponents().schemas(new HashMap<>());
+            openAPI.getComponents().schemas(new LinkedHashMap<>());
         if (!openAPI.getComponents().getSchemas().containsKey(componentName)) {
             var schema = generateComplexTypeSchema(type, children, openAPI);
             openAPI.getComponents().addSchemas(componentName, schema);
@@ -382,7 +382,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     }
 
     private Map<String, Schema> generateComplexTypeSchemaProperty(Type type, List<PropertyModel> propertyModels, OpenAPI openAPI) {
-        var schemas = new HashMap<String, Schema>();
+        var schemas = new LinkedHashMap<String, Schema>();
 
         for (var propertyModel : propertyModels) {
             var schema = generateSchema(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);

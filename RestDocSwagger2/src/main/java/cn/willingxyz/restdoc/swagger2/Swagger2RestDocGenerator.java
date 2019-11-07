@@ -176,7 +176,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private Map<String, Response> convertResponses(PathModel method, Swagger swagger) {
-        var responses = new HashMap<String, Response>();
+        var responses = new LinkedHashMap<String, Response>();
         for (var res : method.getResponse()) {
             Response apiResponse = convertResponse(res, swagger);
             responses.put(res.getStatusCode() + "", apiResponse);
@@ -226,7 +226,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), parameterType);
 
         if (swagger.getDefinitions() == null)
-            swagger.setDefinitions(new HashMap<>());
+            swagger.setDefinitions(new LinkedHashMap<>());
         if (!swagger.getDefinitions().containsKey(componentName)) {
             Property property = generateProperty(description, parameterType, children, swagger);
             Model model = null;
@@ -365,7 +365,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private Map<String, Property> generateComplexTypeSchemaProperty(Type type, List<PropertyModel> propertyModels, Swagger swagger) {
-        var schemas = new HashMap<String, Property>();
+        var schemas = new LinkedHashMap<String, Property>();
 
         for (var propertyModel : propertyModels) {
             var schema = generateProperty(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);

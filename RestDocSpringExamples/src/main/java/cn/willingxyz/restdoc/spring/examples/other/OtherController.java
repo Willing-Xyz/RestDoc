@@ -49,10 +49,22 @@ public class OtherController {
     public void emptyPath2()
     {}
 
+    @PostMapping("/fieldOrder")
+    public B fieldOrder(@RequestBody B b)
+    {
+        return null;
+    }
+
     @Data
     public static class A {
         private Set<String> _test;
         private Map<String, String> _test2;
         private Map<Map<String, String>, String> _test21;
+    }
+    @Data
+    public static class B extends A {
+        private String _name1;
+        private String _name2;
+        private String _name3;
     }
 }

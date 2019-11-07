@@ -57,6 +57,7 @@ public class SpringSwagger2Configuration {
 
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         config.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
+        config.setFieldPrefix(restDocConfig.getFieldPrefix());
         return new RestDocParser(config);
     }
 

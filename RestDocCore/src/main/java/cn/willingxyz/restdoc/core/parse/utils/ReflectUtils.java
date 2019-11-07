@@ -19,37 +19,45 @@ public class ReflectUtils {
      */
     private static List<Field> getAllFields(Class clazz)
     {
-        var fields = new ArrayList<Field>();
+        List<Class> classes = new ArrayList<>();
         do {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            if (clazz != Object.class)
+                classes.add(clazz);
         }
         while ((clazz = clazz.getSuperclass()) != null);
+        // 从最顶层的类开始获取field
+        Collections.reverse(classes);
+
+        var fields = new ArrayList<Field>();
+        for (var cla: classes) {
+            fields.addAll(Arrays.asList(cla.getDeclaredFields()));
+        }
         return fields;
     }
+//
+//    /**
+//     * 获取属性和Field的对应关系
+//     */
+//    private static Map<String, Field> getFieldMap(RestDocParseConfig configuration, Class clazz)
+//    {
+//        var list = getAllFields(clazz);
+//        var map = new HashMap<String, Field>();
+//        for (var item : list)
+//        {
+//            String name = getFieldNameByFiled(configuration, item);
+//            map.put(name, item);
+//        }
+//        return map;
+//    }
 
-    /**
-     * 获取属性和Field的对应关系
-     */
-    private static Map<String, Field> getFieldMap(RestDocParseConfig configuration, Class clazz)
-    {
-        var list = getAllFields(clazz);
-        var map = new HashMap<String, Field>();
-        for (var item : list)
-        {
-            String name = getFileNameByFiled(configuration, item);
-            map.put(name, item);
-        }
-        return map;
-    }
-
-    private static String getFileNameByFiled(RestDocParseConfig configuration, Field item) {
+    private static String getFieldNameByFiled(RestDocParseConfig configuration, Field item) {
         return item.getName();
     }
 
     public static PropertyItem[] getPropertyItems(RestDocParseConfig configuration, Class clazz)
     {
-        var fields = getFieldMap(configuration, clazz);
-        var items = new HashMap<String, PropertyItem>();
+        var fields = getAllFields(clazz);
+        List<PropertyItem> items = new ArrayList<PropertyItem>();
         for (var method: clazz.getMethods()) // public方法
         {
             if (method.getName().equals("getClass"))
@@ -57,14 +65,14 @@ public class ReflectUtils {
             if (isPropertyMethod(method))
             {
                 String propName = getPropertyNameByMethod(method);
-                PropertyItem propertyItem = items.get(propName);
+                PropertyItem propertyItem = items.stream().filter(o -> o.getPropertyName().equals(propName)).findFirst().orElse(null);
                 if (propertyItem == null)
                 {
                     propertyItem = new PropertyItem();
-                    items.put(propName, propertyItem);
+                    items.add(propertyItem);
                 }
                 propertyItem.setPropertyName(propName);
-                var field = getFieldByPropertyName(fields, propName, configuration.getFieldPrefix());
+                var field = getFieldByPropertyName(configuration, fields, propName, configuration.getFieldPrefix());
                 if (field != null)
                 {
                     propertyItem.setField(field);
@@ -75,33 +83,57 @@ public class ReflectUtils {
                     propertyItem.setSetMethod(method);
             }
         }
-        return items.values().toArray(new PropertyItem[]{});
+        items = sortByField(items, fields);
+        return items.toArray(new PropertyItem[0]);
     }
 
-    private static Field getFieldByPropertyName(Map<String, Field> fields, String propName, String prefix) {
-        for (var fieldName : fields.keySet())
+    private static List<PropertyItem> sortByField(List<PropertyItem> items, List<Field> fields) {
+        List<PropertyItem> sortedItems = new ArrayList<>();
+        for (Field field : fields)
         {
+            PropertyItem item = items.stream().filter(o -> o.getField() != null && o.getField() == field).findFirst().orElse(null);
+            if (item != null)
+            {
+                sortedItems.add(item);
+            }
+        }
+        for (PropertyItem item : items)
+        {
+            if (!sortedItems.contains(item))
+            {
+                sortedItems.add(item);
+            }
+        }
+        return sortedItems;
+    }
+
+
+    private static Field getFieldByPropertyName(RestDocParseConfig configuration, List<Field> fields, String propName, String prefix) {
+        for (var field: fields)
+        {
+            String fieldName = getFieldNameByFiled(configuration, field);
             if (prefix != null && fieldName.startsWith(prefix))
             {
                 var name = fieldName.substring(prefix.length());
                 if (name.equals(propName))
-                    return fields.get(fieldName);
+                    return field;
                 name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
                 if (name.equals(propName))
                     if (name.equals(propName));
             }
             if (fieldName.equals(propName))
-                return fields.get(fieldName);
+                return field;
         }
-        for (var fieldName :fields.keySet())
+        for (var field:fields)
         {
+            String fieldName = getFieldNameByFiled(configuration, field);
             // 如果字段是isStudent，生成的get方法是 isStudent，因此，此处的propName为student
-            if (fields.get(fieldName).getType() == boolean.class && fieldName.startsWith("is") && fieldName.length() > 2)
+            if (field.getType() == boolean.class && fieldName.startsWith("is") && fieldName.length() > 2)
             {
                 var name = fieldName.substring(2);
                 name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
                 if (name.equals(propName))
-                    return fields.get(fieldName);
+                    return field;
             }
         }
         return null;
