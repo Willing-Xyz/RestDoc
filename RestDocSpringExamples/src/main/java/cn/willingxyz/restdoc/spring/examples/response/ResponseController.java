@@ -63,8 +63,6 @@ public class ResponseController {
     @GetMapping("/simple")
     public Integer simple()
     {
-        // todo 返回Integer，不会再swagger-ui上显示，但返回String，会在swagger-ui上显示
-        // 这是swagger-ui的一个bug
         return null;
     }
 

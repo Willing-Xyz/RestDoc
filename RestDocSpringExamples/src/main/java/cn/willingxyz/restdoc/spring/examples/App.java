@@ -63,7 +63,7 @@ public class App {
     {
         var uiConfig = new SwaggerUIConfiguration();
 //        uiConfig.setDefaultModelRendering("model");
-        uiConfig.setDefaultModelExpandDepth(0);
+        uiConfig.setDefaultModelExpandDepth(100);
 //        uiConfig.setDocExpansion("full");
         return uiConfig;
     }
