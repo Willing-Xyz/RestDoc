@@ -1,6 +1,5 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
-import cn.willingxyz.restdoc.core.parse.utils.TypeParseUtils;
 import cn.willingxyz.restdoc.core.models.ParameterModel;
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
@@ -66,11 +65,11 @@ public abstract class AbstractMethodParameterParser implements IMethodParameterP
         parameterModel.setArray(isArray);
 
         if (!isArray) {
-            parameterModel.setChildren(TypeParseUtils.parseTypeProperty(_configuration, actualParamType));
+            parameterModel.setChildren(_configuration.getTypeParser().parse(actualParamType));
         }
         else
         {
-            parameterModel.setChildren(TypeParseUtils.parseTypeProperty(_configuration, _configuration.getTypeInspector().getCollectionComponentType(actualParamType)));
+            parameterModel.setChildren(_configuration.getTypeParser().parse(_configuration.getTypeInspector().getCollectionComponentType(actualParamType)));
         }
         return parameterModel;
     }

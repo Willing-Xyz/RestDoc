@@ -1,8 +1,6 @@
 package cn.willingxyz.restdoc.core.parse;
 
-import cn.willingxyz.restdoc.core.parse.impl.JavaTypeInspector;
-import cn.willingxyz.restdoc.core.parse.impl.JavadocControllerParser;
-import cn.willingxyz.restdoc.core.parse.impl.JavadocMethodParser;
+import cn.willingxyz.restdoc.core.parse.impl.*;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -20,6 +18,10 @@ public  class RestDocParseConfig {
     private List<IMethodParameterParser> _methodParameterParsers = new ArrayList<>();
     private List<IMethodReturnParser> _returnParsers = new ArrayList<>();
 
+    private IPropertyResolver _propertyResolver;
+    private IPropertyParser _propertyParser;
+    private ITypeParser _typeParser;
+
     private ITypeInspector _typeInspector;
 
     private String _fieldPrefix;
@@ -32,5 +34,9 @@ public  class RestDocParseConfig {
         _methodParsers.add(new JavadocMethodParser());
 //        _returnParsers.add(new MethodReturnParser(this));
         _typeInspector = new JavaTypeInspector();
+
+        _propertyResolver = new PropertyResolver(this);
+        _propertyParser = new PropertyParser(this, _propertyResolver);
+        _typeParser = new TypeParser(_propertyResolver, _propertyParser);
     }
 }

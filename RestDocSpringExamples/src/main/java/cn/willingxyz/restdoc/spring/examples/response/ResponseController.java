@@ -40,7 +40,7 @@ public class ResponseController {
     }
 
     /**
-     * 返回List复杂类型
+     * 返回List简单类型
      */
     @GetMapping("/list/simple")
     public List<String> listSimple()

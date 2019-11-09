@@ -1,7 +1,6 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
-import cn.willingxyz.restdoc.core.parse.utils.TypeParseUtils;
 import cn.willingxyz.restdoc.core.models.ResponseModel;
 import com.github.therapi.runtimejavadoc.Comment;
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
@@ -48,11 +47,11 @@ public abstract class AbstractMethodReturnParser implements IMethodReturnParser 
         returnModel.setArray(isArray);
 
         if (!isArray) {
-            returnModel.setChildren(TypeParseUtils.parseTypeProperty(_configuration, actualType));
+            returnModel.setChildren(_configuration.getTypeParser().parse(actualType));
         }
         else
         {
-            returnModel.setChildren(TypeParseUtils.parseTypeProperty(_configuration, _configuration.getTypeInspector().getCollectionComponentType(actualType)));
+            returnModel.setChildren(_configuration.getTypeParser().parse(_configuration.getTypeInspector().getCollectionComponentType(actualType)));
         }
         parseInternal(method, actualType, responseModel);
         return responseModel;
