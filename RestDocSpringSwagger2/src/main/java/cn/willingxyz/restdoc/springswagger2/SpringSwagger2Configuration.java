@@ -53,7 +53,8 @@ public class SpringSwagger2Configuration {
         docConfig.setTypeInspector(new JavaTypeInspector());
         docConfig.setTypeNameParser(new TypeNameParser());
         docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
-        docConfig.setSwaggerFilters(ext.getSwaggerFilters());
+        if(ext!=null)
+            docConfig.setSwaggerFilters(ext.getSwaggerFilters());
 
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         config.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
