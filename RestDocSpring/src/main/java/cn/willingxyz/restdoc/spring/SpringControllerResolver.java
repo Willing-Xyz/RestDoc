@@ -8,8 +8,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SpringControllerResolver implements IControllerResolver {
     private static Logger _logger = LoggerFactory.getLogger(SpringControllerResolver.class);
@@ -27,6 +26,7 @@ public class SpringControllerResolver implements IControllerResolver {
         scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
 
         var classes = new ArrayList<Class>();
+        if(_packages==null)_packages= Arrays.asList("cn","com");
         for (var packageName : _packages) {
             var beans = scanner.findCandidateComponents(packageName);
             for (var bean : beans) {
