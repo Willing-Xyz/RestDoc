@@ -7,10 +7,20 @@ import org.springframework.util.StringUtils;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
 public class ReflectUtils {
+
+    private static Annotation getAnnotationByName(Field field, String annotationName){
+        if(annotationName==null || "".equals(annotationName))return null;
+        for (Annotation annotation : field.getAnnotations()) {
+            if(annotation.annotationType().getSimpleName().equals(annotationName))return annotation;
+        }
+
+        return null;
+    }
 
     public static boolean isEnum(Type type)
     {
@@ -136,6 +146,9 @@ public class ReflectUtils {
                 if (field != null)
                 {
                     propertyItem.setField(field);
+                    if(getAnnotationByName(field, "NotNull")!=null || getAnnotationByName(field, "NotEmpty")!=null || getAnnotationByName(field, "NotBlank")!=null){
+                        propertyItem.setRequired(true);
+                    }
                 }
                 if (method.getName().startsWith("get") || method.getName().startsWith("is"))
                     propertyItem.setGetMethod(method);
@@ -263,6 +276,7 @@ public class ReflectUtils {
          * 属性可能没有对应的setter
          */
         private Method _setMethod;
+        private Boolean _required;
 
         public Type getPropertyType() {
             Type propType = null;

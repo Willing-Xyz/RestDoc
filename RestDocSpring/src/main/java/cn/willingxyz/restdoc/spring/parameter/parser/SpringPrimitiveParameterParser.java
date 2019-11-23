@@ -19,7 +19,7 @@ public class SpringPrimitiveParameterParser extends AbstractMethodParameterParse
 
     @Override
     protected boolean isRequired(Parameter parameter, Type actualParamType) {
-        return true;
+        return false;
     }
 
     @Override
