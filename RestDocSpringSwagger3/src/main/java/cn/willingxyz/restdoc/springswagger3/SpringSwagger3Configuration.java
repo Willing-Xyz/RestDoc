@@ -53,7 +53,8 @@ public class SpringSwagger3Configuration {
         docConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
         docConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
         docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
-        docConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
+        if(ext!=null)
+            docConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
 
         config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         config.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
