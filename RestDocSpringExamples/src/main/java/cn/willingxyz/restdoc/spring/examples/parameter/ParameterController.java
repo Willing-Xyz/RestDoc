@@ -12,7 +12,7 @@ public class ParameterController {
      * 查询字符串
      */
     @GetMapping("/queryString")
-    public void queryString(@RequestParam int param1, @RequestParam String param2)
+    public void queryString(@RequestParam int param1, @RequestParam(required = false) String param2)
     {
     }
 
@@ -34,6 +34,13 @@ public class ParameterController {
     {
     }
 
+    /**
+     * 表单post
+     */
+    @PostMapping("/form/complex")
+    public void formComplex(ParameterA parameterA)
+    {
+    }
 
     /**
      * body 中的简单数组

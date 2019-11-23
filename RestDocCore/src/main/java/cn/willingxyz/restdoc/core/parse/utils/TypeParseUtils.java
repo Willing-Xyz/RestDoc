@@ -116,6 +116,7 @@ public class TypeParseUtils {
         var propertyModel = new PropertyModel();
         propertyModel.setName(propertyItem.getPropertyName());
         propertyModel.setPropertyType(propType);
+        propertyModel.setRequired(propertyItem.getRequired());
         setPropertyDescription(propertyItem, propertyItem, propertyModel);
 
         if (configuration.getTypeInspector().isCollection(propType))
