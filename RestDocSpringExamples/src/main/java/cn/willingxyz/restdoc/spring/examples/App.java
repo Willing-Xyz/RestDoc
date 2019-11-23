@@ -40,6 +40,8 @@ public class App {
                 .fieldPrefix("_")
                 .tagDescriptionAsName(true)
                 .hideEmptyController(true)
+                .resolveJavaDocAsTypeName(false)
+//                .httpBasicAuth(new RestDocConfig.HttpBasicAuth("restdoc","restdoc"))
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
                 .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost:8080").build()))
                 .build();

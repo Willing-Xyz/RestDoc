@@ -7,6 +7,7 @@ import cn.willingxyz.restdoc.core.parse.impl.RestDocParser;
 import cn.willingxyz.restdoc.core.parse.impl.TypeNameParser;
 import cn.willingxyz.restdoc.spring.SpringControllerResolver;
 import cn.willingxyz.restdoc.spring.SpringRestDocParseConfig;
+import cn.willingxyz.restdoc.spring.filter.HttpBasicAuthFilter;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
@@ -17,6 +18,9 @@ import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +34,7 @@ import java.util.List;
 public class SpringSwagger3Configuration {
 
     @Bean("swagger3")
-    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false)RestDocConfigSwagger3Ext ext) {
+    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false) RestDocConfigSwagger3Ext ext) {
         if (restDocConfig == null) {
             restDocConfig = RestDocConfig.builder()
                     .apiDescription("API descritpion")
@@ -92,6 +96,21 @@ public class SpringSwagger3Configuration {
         }
         var controller = new SpringSwagger3Controller(docParser, uiConfiguration);
         return controller;
+    }
+
+    @Bean
+    @ConditionalOnClass(FilterRegistrationBean.class)
+    @ConditionalOnMissingBean(RestDocConfig.HttpBasicAuth.class)
+    public FilterRegistrationBean<HttpBasicAuthFilter> swagger3HttpFilter(@Autowired(required = false) RestDocConfig restDocConfig) {
+        RestDocConfig.HttpBasicAuth httpBasicAuth;
+        if (restDocConfig == null || (httpBasicAuth = restDocConfig.getHttpBasicAuth()) == null)
+            httpBasicAuth = new RestDocConfig.HttpBasicAuth(null, null);
+
+        FilterRegistrationBean<HttpBasicAuthFilter> filterBean = new FilterRegistrationBean<>();
+        HttpBasicAuthFilter authFilter = new HttpBasicAuthFilter(httpBasicAuth.getUsername(), httpBasicAuth.getPassword());
+        filterBean.addUrlPatterns("/swagger2-ui/**","/swagger2.json","/swagger-ui/*","/swagger.json");
+        filterBean.setFilter(authFilter);
+        return filterBean;
     }
 
     @Autowired

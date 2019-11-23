@@ -1,6 +1,5 @@
 package cn.willingxyz.restdoc.core.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -30,6 +29,11 @@ public class RestDocConfig {
      */
     private boolean _hideEmptyController = false;
 
+    /**
+     * 启用httpBasic认证
+     */
+    private HttpBasicAuth _httpBasicAuth;
+
     private List<Server> _servers = new ArrayList<>();
 
     @Data
@@ -38,4 +42,16 @@ public class RestDocConfig {
         private String _url;
         private String _description;
     }
+
+    @Data
+    public static class HttpBasicAuth{
+        private String _username;
+        private String _password;
+
+        public HttpBasicAuth(String username, String password) {
+            this._username = username;
+            this._password = password;
+        }
+    }
+
 }
