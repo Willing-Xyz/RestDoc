@@ -20,6 +20,7 @@ public  class RestDocParseConfig {
 
     private IPropertyResolver _propertyResolver;
     private IPropertyParser _propertyParser;
+    private ComposePropertyPostProcessor _propertyPostProcessor;
     private ITypeParser _typeParser;
 
     private ITypeInspector _typeInspector;
@@ -37,6 +38,8 @@ public  class RestDocParseConfig {
 
         _propertyResolver = new PropertyResolver(this);
         _propertyParser = new PropertyParser(this, _propertyResolver);
-        _typeParser = new TypeParser(_propertyResolver, _propertyParser);
+        _propertyPostProcessor = new ComposePropertyPostProcessor();
+        _propertyPostProcessor.add(new RequiredPropertyPostProcessor(_typeInspector));
+        _typeParser = new TypeParser(_propertyResolver, _propertyParser, _propertyPostProcessor);
     }
 }

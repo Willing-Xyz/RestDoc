@@ -40,7 +40,9 @@ public class SpringSwagger2Configuration {
 //                    .servers(Arrays.asList(RestDocConfig.Server.builder().url("localhost:8080").description("local").build()))
                     .build();
         }
-        var config = new SpringRestDocParseConfig();
+        var parseConfig = new SpringRestDocParseConfig();
+
+        restDocConfig.getPropertyPostProcessors().forEach(o -> parseConfig.getPropertyPostProcessor().add(o));
 
         // todo 从spring容器中获取实例
         var docConfig = new Swagger2GeneratorConfig();
@@ -55,10 +57,10 @@ public class SpringSwagger2Configuration {
         docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
         docConfig.setSwaggerFilters(ext.getSwaggerFilters());
 
-        config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
-        config.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
-        config.setFieldPrefix(restDocConfig.getFieldPrefix());
-        return new RestDocParser(config);
+        parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
+        parseConfig.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
+        parseConfig.setFieldPrefix(restDocConfig.getFieldPrefix());
+        return new RestDocParser(parseConfig);
     }
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {

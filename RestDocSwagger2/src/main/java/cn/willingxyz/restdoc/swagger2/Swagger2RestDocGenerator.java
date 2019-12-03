@@ -311,6 +311,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
                 parameter.setName(name + child.getName());
                 parameter.setDescription(child.getDescription());
                 parameter.setIn("query");
+                parameter.setRequired(child.isRequired());
 
                 Property property = generateProperty(child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
                 parameter.setProperty(property);
@@ -329,6 +330,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         parameter.setIn(in);
         parameter.setName(paramModel.getName());
         parameter.setDescription(paramModel.getDescription());
+        parameter.setRequired(paramModel.isRequired());
 
         Property property = generateProperty(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
         parameter.setProperty(property);

@@ -17,5 +17,11 @@ public class TextUtils {
         return "";
     }
 
+    public static String combine(String first, String second)
+    {
+        if (first == null) return second;
+        if (second == null) return first;
+        return first + second;
+    }
 
 }

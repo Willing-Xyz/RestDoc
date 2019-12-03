@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.core.config;
 
+import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,8 @@ public class RestDocConfig {
     private boolean _hideEmptyController = false;
 
     private List<Server> _servers = new ArrayList<>();
+
+    private List<IPropertyPostProcessor> _propertyPostProcessors = new ArrayList<>();
 
     @Data
     @Builder

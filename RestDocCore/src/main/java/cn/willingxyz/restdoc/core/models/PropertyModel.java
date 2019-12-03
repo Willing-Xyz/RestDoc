@@ -9,13 +9,18 @@ import java.util.List;
 @Data
 public class PropertyModel {
     /**
+     * 关联的PropertyItem
+     */
+    private PropertyItem _propertyItem;
+
+    /**
      * 属性名
      */
     private String _name;
     /**
      * 是否必须
      */
-    private Boolean _required;
+    private boolean _required;
     private Type _propertyType;
     private boolean _isArray;
     /**
