@@ -6,18 +6,28 @@
         <artifactId>restdoc</artifactId>
         <groupId>cn.willingxyz.restdoc</groupId>
         <!--ignore version-->
-        <version>0.1.8.2</version>
+        <version>0.1.8.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>RestDocCore</artifactId>
-    <version>0.1.8.2</version>
+    <version>0.1.8.3</version>
 
     <dependencies>
         <dependency>
             <groupId>com.github.therapi</groupId>
             <artifactId>therapi-runtime-javadoc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

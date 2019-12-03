@@ -293,6 +293,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setName(paramModel.getName());
         parameter.setDescription(paramModel.getDescription());
         parameter.setIn(in);
+        parameter.setRequired(paramModel.isRequired());
 
         Schema schema = generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI);
         parameter.setSchema(schema);
@@ -313,6 +314,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
                 parameter.setName(name + child.getName());
                 parameter.setDescription(child.getDescription());
+                parameter.setRequired(child.isRequired());
                 parameter.setIn("query");
 
                 Schema schema = generateSchema(child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI);

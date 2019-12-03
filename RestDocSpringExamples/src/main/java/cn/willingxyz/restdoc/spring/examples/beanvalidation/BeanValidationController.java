@@ -20,13 +20,5 @@ public class BeanValidationController {
     {
         return null;
     }
-    /**
-     * 不级联验证
-     */
-    @PostMapping("/test/no_cas")
-    public BeanValidated test2(@RequestBody BeanValidatedChild value)
-    {
-        return null;
-    }
 
 }

@@ -7,6 +7,7 @@ import cn.willingxyz.restdoc.core.parse.impl.RestDocParser;
 import cn.willingxyz.restdoc.core.parse.impl.TypeNameParser;
 import cn.willingxyz.restdoc.spring.SpringControllerResolver;
 import cn.willingxyz.restdoc.spring.SpringRestDocParseConfig;
+import cn.willingxyz.restdoc.spring.filter.HttpBasicAuthFilter;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
@@ -17,6 +18,9 @@ import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +59,8 @@ public class SpringSwagger2Configuration {
         docConfig.setTypeInspector(new JavaTypeInspector());
         docConfig.setTypeNameParser(new TypeNameParser());
         docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
-        docConfig.setSwaggerFilters(ext.getSwaggerFilters());
+        if(ext!=null)
+            docConfig.setSwaggerFilters(ext.getSwaggerFilters());
 
         parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         parseConfig.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
@@ -89,6 +94,21 @@ public class SpringSwagger2Configuration {
         var controller = new SpringSwagger2Controller(docParser, uiConfiguration);
 //        controller.setUiConfiguration(uiConfiguration);
         return controller;
+    }
+
+    @Bean
+    @ConditionalOnClass(FilterRegistrationBean.class)
+    @ConditionalOnMissingBean(RestDocConfig.HttpBasicAuth.class)
+    public FilterRegistrationBean<HttpBasicAuthFilter> swagger2HttpFilter(@Autowired(required = false) RestDocConfig restDocConfig) {
+        RestDocConfig.HttpBasicAuth httpBasicAuth;
+        if (restDocConfig == null || (httpBasicAuth = restDocConfig.getHttpBasicAuth()) == null)
+            httpBasicAuth = new RestDocConfig.HttpBasicAuth(null, null);
+
+        FilterRegistrationBean<HttpBasicAuthFilter> filterBean = new FilterRegistrationBean<>();
+        HttpBasicAuthFilter authFilter = new HttpBasicAuthFilter(httpBasicAuth.getUsername(), httpBasicAuth.getPassword());
+        filterBean.addUrlPatterns("/swagger2-ui/**","/swagger2.json","/swagger-ui/*","/swagger.json");
+        filterBean.setFilter(authFilter);
+        return filterBean;
     }
 
     @Autowired

@@ -4,15 +4,75 @@ import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import lombok.Data;
 import lombok.var;
+import org.springframework.util.StringUtils;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
 public class ReflectUtils {
-
     public static boolean isEnum(Type type)
     {
         return type instanceof Class && ((Class)type).isEnum();
+    }
+
+    /**
+     * 为对象的field进行赋值
+     *
+     * @param instance    实例对象
+     * @param field       field对象
+     * @param targetValue field进行的赋值
+     */
+    public static void setFieldValue(Object instance, Field field, Object targetValue) {
+        if (instance == null || field == null) return;
+        try {
+            for (PropertyDescriptor descriptor : Introspector.getBeanInfo(instance.getClass()).getPropertyDescriptors()) {
+                Method writeMethod = descriptor.getWriteMethod();
+                if (descriptor.getName().equalsIgnoreCase(field.getName()) && writeMethod != null) {
+                    if (!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
+                        writeMethod.setAccessible(true);
+                    }
+                    writeMethod.invoke(instance, targetValue);
+                    return;
+                }
+            }
+            field.setAccessible(true);
+            field.set(instance, targetValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 为对象的field进行赋值
+     *
+     * @param instance    实例对象
+     * @param fieldName   field名称
+     * @param targetValue field进行的赋值
+     */
+    public static void setFieldValue(Object instance, String fieldName, Object targetValue) {
+        if (instance == null) return;
+        setFieldValue(instance, getField(instance.getClass(), fieldName), targetValue);
+    }
+
+    /**
+     * 根据fieldName获取class对象的field
+     *
+     * @param clazz     class对象
+     * @param fieldName 要获取的fieldName
+     * @return 返回已经设置为accessible的field
+     */
+    public static Field getField(Class<?> clazz, String fieldName) {
+        if (clazz == null || StringUtils.isEmpty(fieldName)) return null;
+
+        for (Field field : getAllFields(clazz)) {
+            field.setAccessible(true);
+            if (field.getName().equalsIgnoreCase(fieldName)) return field;
+        }
+
+        return null;
     }
 
     /**
@@ -48,4 +108,5 @@ public class ReflectUtils {
         while ((clazz = clazz.getSuperclass()) != null);
         return methods;
     }
+
 }

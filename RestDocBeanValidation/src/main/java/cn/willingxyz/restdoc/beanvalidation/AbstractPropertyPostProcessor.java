@@ -34,9 +34,9 @@ public abstract class AbstractPropertyPostProcessor<T extends Annotation> implem
         if (parent.getField() != null) {
             annotatedType = parent.getField().getAnnotatedType();
         } else if (parent.getGetMethod() != null) {
-            annotatedType = parent.getGetMethod().getAnnotatedParameterTypes()[0];
-        } else if (parent.getSetMethod() != null) {
             annotatedType = parent.getGetMethod().getAnnotatedReturnType();
+        } else if (parent.getSetMethod() != null) {
+            annotatedType = parent.getGetMethod().getAnnotatedParameterTypes()[0];
         }
         if (annotatedType != null) {
             if (annotatedType instanceof AnnotatedParameterizedType) {

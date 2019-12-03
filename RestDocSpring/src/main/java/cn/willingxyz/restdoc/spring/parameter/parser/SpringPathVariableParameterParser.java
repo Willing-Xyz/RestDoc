@@ -23,7 +23,7 @@ public class SpringPathVariableParameterParser extends AbstractMethodParameterPa
 
     @Override
     protected boolean isRequired(Parameter parameter, Type actualParamType) {
-        return true;
+        return parameter.getAnnotation(PathVariable.class).required();
     }
 
     @Override
