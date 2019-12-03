@@ -2,6 +2,7 @@ package cn.willingxyz.restdoc.beanvalidation;
 
 import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
+import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
 
 import javax.validation.Valid;
@@ -16,14 +17,15 @@ import java.util.List;
  */
 public abstract class AbstractPropertyPostProcessor<T extends Annotation> implements IPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
-        if (!cascadeValid(propertyModel)) return;
+    public void postProcess(PropertyModel propertyModel, TypeContext typeContext) {
+        if (!cascadeValid(propertyModel, typeContext)) return;
         postProcessInternal(propertyModel);
     }
 
-    private boolean cascadeValid(PropertyModel propertyModel) {
+    private boolean cascadeValid(PropertyModel propertyModel, TypeContext typeContext) {
         PropertyItem parent = propertyModel.getParentPropertyItem();
         if (parent == null) return true;
+
         Valid validAnno = parent.getAnnotation(Valid.class);
         if (validAnno != null)
             return true;

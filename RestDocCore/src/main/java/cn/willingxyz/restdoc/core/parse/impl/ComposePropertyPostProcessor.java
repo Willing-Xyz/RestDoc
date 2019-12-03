@@ -2,6 +2,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
+import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
 
 import java.util.ArrayList;
@@ -30,10 +31,10 @@ public class ComposePropertyPostProcessor implements IPropertyPostProcessor {
     }
 
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcess(PropertyModel propertyModel, TypeContext typeContext) {
         for (IPropertyPostProcessor postProcessor : _processors)
         {
-            postProcessor.postProcess(propertyModel);
+            postProcessor.postProcess(propertyModel, typeContext);
         }
     }
 }

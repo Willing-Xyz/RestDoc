@@ -1,12 +1,14 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.ParameterModel;
+import cn.willingxyz.restdoc.core.models.TypeContext;
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -65,11 +67,13 @@ public abstract class AbstractMethodParameterParser implements IMethodParameterP
         parameterModel.setArray(isArray);
 
         if (!isArray) {
-            parameterModel.setChildren(_configuration.getTypeParser().parse(actualParamType));
+            parameterModel.setChildren(_configuration.getTypeParser().parse(new TypeContext(actualParamType, parameter, (Method) parameter.getDeclaringExecutable())));
         }
         else
         {
-            parameterModel.setChildren(_configuration.getTypeParser().parse(_configuration.getTypeInspector().getCollectionComponentType(actualParamType)));
+            parameterModel.setChildren(_configuration.getTypeParser()
+                    .parse(new TypeContext(_configuration.getTypeInspector().getCollectionComponentType(actualParamType),
+                            parameter, (Method) parameter.getDeclaringExecutable())));
         }
         return parameterModel;
     }

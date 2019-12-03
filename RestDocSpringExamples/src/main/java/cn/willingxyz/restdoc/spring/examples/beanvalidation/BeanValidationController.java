@@ -1,9 +1,9 @@
 package cn.willingxyz.restdoc.spring.examples.beanvalidation;
 
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * BeanValidation
@@ -15,8 +15,16 @@ public class BeanValidationController {
     /**
      * bean validation
      */
-    @GetMapping("/test")
-    public BeanValidated test(BeanValidated value)
+    @PostMapping("/test")
+    public BeanValidated test(@RequestBody @Valid BeanValidated value)
+    {
+        return null;
+    }
+    /**
+     * 不级联验证
+     */
+    @PostMapping("/test/no_cas")
+    public BeanValidated test2(@RequestBody BeanValidatedChild value)
     {
         return null;
     }
