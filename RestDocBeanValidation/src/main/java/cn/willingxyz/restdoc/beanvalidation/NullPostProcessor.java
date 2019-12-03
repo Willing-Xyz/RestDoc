@@ -9,9 +9,9 @@ import javax.validation.constraints.Null;
 /**
  * javax.validation.constraints.Null
  */
-public class NullPostProcessor implements IPropertyPostProcessor {
+public class NullPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Null nullAnno = propertyModel.getPropertyItem().getAnnotation(Null.class);
         if (nullAnno != null) {
             propertyModel.setRequired(false);

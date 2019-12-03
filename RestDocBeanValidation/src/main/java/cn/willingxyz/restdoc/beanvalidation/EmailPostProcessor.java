@@ -11,9 +11,9 @@ import javax.validation.constraints.Email;
  * javax.validation.constraints.Email
  * 不支持指定正则表达式
  */
-public class EmailPostProcessor implements IPropertyPostProcessor {
+public class EmailPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Email emailAnno = propertyModel.getPropertyItem().getAnnotation(Email.class);
         if (emailAnno != null)
         {

@@ -11,9 +11,9 @@ import javax.validation.constraints.AssertTrue;
 /**
  * javax.validation.constraints.AssertTrue
  */
-public class AssertTruePostProcessor implements IPropertyPostProcessor {
+public class AssertTruePostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         AssertTrue assertTrueAnno = propertyModel.getPropertyItem().getAnnotation(AssertTrue.class);
         if (assertTrueAnno != null) {
             propertyModel.setDescription(TextUtils.combine(propertyModel.getDescription(), " (值只能为true)"));

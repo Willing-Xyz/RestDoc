@@ -10,9 +10,9 @@ import javax.validation.constraints.Size;
 /**
  * javax.validation.constraints.Size
  */
-public class SizePostProcessor implements IPropertyPostProcessor {
+public class SizePostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Size sizeAnno = propertyModel.getPropertyItem().getAnnotation(Size.class);
         if (sizeAnno != null) {
             propertyModel.setDescription(TextUtils.combine(

@@ -9,6 +9,13 @@ import java.util.List;
 @Data
 public class PropertyModel {
     /**
+     * 父级PropertyItem。可能为null
+     * 比如：
+     * A类里有一个B类型的字段b，类型B里有字段x
+     * 那么x的parentPropertyItem就是字段b
+     */
+    private PropertyItem _parentPropertyItem;
+    /**
      * 关联的PropertyItem
      */
     private PropertyItem _propertyItem;

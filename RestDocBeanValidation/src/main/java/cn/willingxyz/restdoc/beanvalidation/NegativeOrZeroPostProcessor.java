@@ -11,9 +11,9 @@ import javax.validation.constraints.NegativeOrZero;
 /**
  * javax.validation.constraints.NegativeOrZero
  */
-public class NegativeOrZeroPostProcessor implements IPropertyPostProcessor {
+public class NegativeOrZeroPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         NegativeOrZero negativeAnno = propertyModel.getPropertyItem().getAnnotation(NegativeOrZero.class);
         if (negativeAnno != null) {
             propertyModel.setDescription(TextUtils.combine(

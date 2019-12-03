@@ -11,9 +11,9 @@ import javax.validation.constraints.Positive;
 /**
  * javax.validation.constraints.Positive
  */
-public class PositivePostProcessor implements IPropertyPostProcessor {
+public class PositivePostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Positive positiveAnno = propertyModel.getPropertyItem().getAnnotation(Positive.class);
         if (positiveAnno != null) {
             propertyModel.setDescription(TextUtils.combine(

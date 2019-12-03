@@ -42,7 +42,7 @@ public class TypeParser implements ITypeParser {
             _propertyPostProcessor.postProcess(propertyModel);
             if (propertyModel.getChildren() != null && !propertyModel.getChildren().isEmpty())
             {
-                propertyModel.getChildren().forEach(_propertyPostProcessor::postProcess);
+                propertyModel.getChildren().forEach(this::postProcess);
             }
         }
     }

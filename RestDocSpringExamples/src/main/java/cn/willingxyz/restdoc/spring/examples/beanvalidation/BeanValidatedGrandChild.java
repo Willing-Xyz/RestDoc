@@ -6,7 +6,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 @Data
-public class BeanValidatedChild {
+public class BeanValidatedGrandChild {
     /**
      * AssertFalse
      */
@@ -88,7 +88,5 @@ public class BeanValidatedChild {
     @Size(min = 1, max = 12)
     private String _size;
 
-    @Valid
-    private BeanValidatedGrandChild _validatedGrandChild;
-    private BeanValidatedGrandChild _grandChild;
+
 }

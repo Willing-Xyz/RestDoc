@@ -11,9 +11,9 @@ import javax.validation.constraints.DecimalMin;
 /**
  * javax.validation.constraints.DecimalMin
  */
-public class DecimalMinPostProcessor implements IPropertyPostProcessor {
+public class DecimalMinPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         DecimalMin minAnno = propertyModel.getPropertyItem().getAnnotation(DecimalMin.class);
         if (minAnno != null)
         {

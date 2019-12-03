@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 /**
  * javax.validation.constraints.NotNull
  */
-public class NotNullPostProcessor implements IPropertyPostProcessor {
+public class NotNullPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         NotNull notNullAnno = propertyModel.getPropertyItem().getAnnotation(NotNull.class);
         if (notNullAnno != null)
         {

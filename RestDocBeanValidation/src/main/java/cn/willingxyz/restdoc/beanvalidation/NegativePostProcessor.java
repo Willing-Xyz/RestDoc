@@ -10,9 +10,9 @@ import javax.validation.constraints.Negative;
 /**
  * javax.validation.constraints.Negative
  */
-public class NegativePostProcessor implements IPropertyPostProcessor {
+public class NegativePostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Negative negativeAnno = propertyModel.getPropertyItem().getAnnotation(Negative.class);
         if (negativeAnno != null) {
             propertyModel.setDescription(TextUtils.combine(

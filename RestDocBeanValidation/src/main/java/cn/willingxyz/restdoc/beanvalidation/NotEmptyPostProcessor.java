@@ -10,9 +10,9 @@ import javax.validation.constraints.NotEmpty;
 /**
  * javax.validation.constraints.NotEmpty
  */
-public class NotEmptyPostProcessor implements IPropertyPostProcessor {
+public class NotEmptyPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         NotEmpty notEmptyAnno = propertyModel.getPropertyItem().getAnnotation(NotEmpty.class);
         if (notEmptyAnno != null)
         {

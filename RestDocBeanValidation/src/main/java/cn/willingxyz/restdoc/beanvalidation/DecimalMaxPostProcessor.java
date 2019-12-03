@@ -11,9 +11,9 @@ import javax.validation.constraints.Max;
 /**
  * javax.validation.constraints.DecimalMax
  */
-public class DecimalMaxPostProcessor implements IPropertyPostProcessor {
+public class DecimalMaxPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         DecimalMax maxAnno = propertyModel.getPropertyItem().getAnnotation(DecimalMax.class);
         if (maxAnno != null)
         {

@@ -10,9 +10,9 @@ import javax.validation.constraints.Max;
 /**
  * javax.validation.constraints.Max
  */
-public class MaxPostProcessor implements IPropertyPostProcessor {
+public class MaxPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Max maxAnno = propertyModel.getPropertyItem().getAnnotation(Max.class);
         if (maxAnno != null)
         {

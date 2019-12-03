@@ -11,9 +11,9 @@ import javax.validation.constraints.Min;
 /**
  * javax.validation.constraints.Min
  */
-public class MinPostProcessor implements IPropertyPostProcessor {
+public class MinPostProcessor extends AbstractPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel) {
+    public void postProcessInternal(PropertyModel propertyModel) {
         Min minAnno = propertyModel.getPropertyItem().getAnnotation(Min.class);
         if (minAnno != null)
         {

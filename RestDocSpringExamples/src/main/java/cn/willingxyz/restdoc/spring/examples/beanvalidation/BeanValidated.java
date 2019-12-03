@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class BeanValidated {
@@ -92,8 +93,12 @@ public class BeanValidated {
 
     @Valid
     private BeanValidatedChild _validatedChild;
-    @Valid
     private BeanValidatedChild _child;
 
     private List<@Valid BeanValidatedChild> _validatedChildren;
+    private List<BeanValidatedChild> _children;
+
+    private @Valid BeanValidatedChild[] _arrayValidatedChildren;
+    private BeanValidatedChild[] _arrayChildren;
+
 }

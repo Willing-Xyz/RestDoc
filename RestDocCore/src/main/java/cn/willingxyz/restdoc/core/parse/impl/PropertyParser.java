@@ -44,6 +44,9 @@ public class PropertyParser implements IPropertyParser {
         } else {
             propertyModel.setChildren(parseTypeProperty(configuration, fromType, propertyItem.getPropertyType(), map));
         }
+        propertyModel.getChildren().forEach(o -> {
+            o.setParentPropertyItem(propertyModel.getPropertyItem());
+        });
         return propertyModel;
     }
 
