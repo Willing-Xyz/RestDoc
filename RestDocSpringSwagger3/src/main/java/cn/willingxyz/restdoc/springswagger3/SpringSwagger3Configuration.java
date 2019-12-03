@@ -43,7 +43,11 @@ public class SpringSwagger3Configuration {
                     .packages(Arrays.asList(""))
                     .build();
         }
-        var config = new SpringRestDocParseConfig();
+        var parseConfig = new SpringRestDocParseConfig();
+
+        if (restDocConfig.getPropertyPostProcessors() != null) {
+            restDocConfig.getPropertyPostProcessors().forEach(o -> parseConfig.getPropertyPostProcessor().add(o));
+        }
 
         // todo 从spring容器中获取实例
         Swagger3GeneratorConfig docConfig = new Swagger3GeneratorConfig();
@@ -60,11 +64,11 @@ public class SpringSwagger3Configuration {
         if(ext!=null)
             docConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
 
-        config.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
-        config.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
-        config.setFieldPrefix(restDocConfig.getFieldPrefix());
+        parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
+        parseConfig.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
+        parseConfig.setFieldPrefix(restDocConfig.getFieldPrefix());
 
-        return new RestDocParser(config);
+        return new RestDocParser(parseConfig);
     }
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 @Data
 public  class RestDocParseConfig {
@@ -40,6 +41,19 @@ public  class RestDocParseConfig {
         _propertyParser = new PropertyParser(this, _propertyResolver);
         _propertyPostProcessor = new ComposePropertyPostProcessor();
         _propertyPostProcessor.add(new RequiredPropertyPostProcessor(_typeInspector));
+
+        loadPropertyPostProcessors().forEach(o -> _propertyPostProcessor.add(o));
+
         _typeParser = new TypeParser(_propertyResolver, _propertyParser, _propertyPostProcessor);
+    }
+
+    private List<IPropertyPostProcessor> loadPropertyPostProcessors()
+    {
+        List<IPropertyPostProcessor> processors = new ArrayList<>();
+        ServiceLoader<IPropertyPostProcessor> serviceLoader = ServiceLoader.load(IPropertyPostProcessor.class);
+        serviceLoader.forEach(o -> {
+            processors.add(o);
+        });
+        return processors;
     }
 }

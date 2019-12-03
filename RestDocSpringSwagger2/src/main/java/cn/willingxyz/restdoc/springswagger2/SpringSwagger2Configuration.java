@@ -46,7 +46,9 @@ public class SpringSwagger2Configuration {
         }
         var parseConfig = new SpringRestDocParseConfig();
 
-        restDocConfig.getPropertyPostProcessors().forEach(o -> parseConfig.getPropertyPostProcessor().add(o));
+        if (restDocConfig.getPropertyPostProcessors() != null) {
+            restDocConfig.getPropertyPostProcessors().forEach(o -> parseConfig.getPropertyPostProcessor().add(o));
+        }
 
         // todo 从spring容器中获取实例
         var docConfig = new Swagger2GeneratorConfig();

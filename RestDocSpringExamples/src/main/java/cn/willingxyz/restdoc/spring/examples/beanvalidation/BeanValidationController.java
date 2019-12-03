@@ -20,5 +20,10 @@ public class BeanValidationController {
     {
         return null;
     }
+    @GetMapping("/test")
+    public BeanValidated testGet(@Valid BeanValidated value)
+    {
+        return null;
+    }
 
 }

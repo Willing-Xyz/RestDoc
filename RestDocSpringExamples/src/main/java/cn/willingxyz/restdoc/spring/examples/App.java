@@ -45,25 +45,25 @@ public class App {
 //                .httpBasicAuth(new RestDocConfig.HttpBasicAuth("restdoc","restdoc"))
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
                 .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost:8080").build()))
-                .propertyPostProcessors(Arrays.asList(
-                        new NotNullPostProcessor(),
-                        new AssertFalsePostProcessor(),
-                        new AssertTruePostProcessor(),
-                        new DecimalMaxPostProcessor(),
-                        new DecimalMinPostProcessor(),
-                        new EmailPostProcessor(),
-                        new MaxPostProcessor(),
-                        new MinPostProcessor(),
-                        new NegativeOrZeroPostProcessor(),
-                        new NegativePostProcessor(),
-                        new NotBlankPostProcessor(),
-                        new NotEmptyPostProcessor(),
-                        new NotNullPostProcessor(),
-                        new NullPostProcessor(),
-                        new PositiveOrZeroPostProcessor(),
-                        new PositivePostProcessor(),
-                        new SizePostProcessor()
-                        ))
+//                .propertyPostProcessors(Arrays.asList(
+//                        new NotNullPostProcessor(),
+//                        new AssertFalsePostProcessor(),
+//                        new AssertTruePostProcessor(),
+//                        new DecimalMaxPostProcessor(),
+//                        new DecimalMinPostProcessor(),
+//                        new EmailPostProcessor(),
+//                        new MaxPostProcessor(),
+//                        new MinPostProcessor(),
+//                        new NegativeOrZeroPostProcessor(),
+//                        new NegativePostProcessor(),
+//                        new NotBlankPostProcessor(),
+//                        new NotEmptyPostProcessor(),
+//                        new NotNullPostProcessor(),
+//                        new NullPostProcessor(),
+//                        new PositiveOrZeroPostProcessor(),
+//                        new PositivePostProcessor(),
+//                        new SizePostProcessor()
+//                        ))
                 // todo 使用某种自动发现机制
                 .build();
     }

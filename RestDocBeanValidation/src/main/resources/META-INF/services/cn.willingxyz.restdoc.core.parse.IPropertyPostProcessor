@@ -1,0 +1,16 @@
+cn.willingxyz.restdoc.beanvalidation.AssertFalsePostProcessor
+cn.willingxyz.restdoc.beanvalidation.AssertTruePostProcessor
+cn.willingxyz.restdoc.beanvalidation.DecimalMaxPostProcessor
+cn.willingxyz.restdoc.beanvalidation.DecimalMinPostProcessor
+cn.willingxyz.restdoc.beanvalidation.EmailPostProcessor
+cn.willingxyz.restdoc.beanvalidation.MaxPostProcessor
+cn.willingxyz.restdoc.beanvalidation.MinPostProcessor
+cn.willingxyz.restdoc.beanvalidation.NegativeOrZeroPostProcessor
+cn.willingxyz.restdoc.beanvalidation.NegativePostProcessor
+cn.willingxyz.restdoc.beanvalidation.NotBlankPostProcessor
+cn.willingxyz.restdoc.beanvalidation.NotEmptyPostProcessor
+cn.willingxyz.restdoc.beanvalidation.NotNullPostProcessor
+cn.willingxyz.restdoc.beanvalidation.NullPostProcessor
+cn.willingxyz.restdoc.beanvalidation.PositiveOrZeroPostProcessor
+cn.willingxyz.restdoc.beanvalidation.PositivePostProcessor
+cn.willingxyz.restdoc.beanvalidation.SizePostProcessor
