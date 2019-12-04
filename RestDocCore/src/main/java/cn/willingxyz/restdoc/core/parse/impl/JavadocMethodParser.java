@@ -4,9 +4,11 @@ import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.models.PathModel;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParser;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Method;
 
+@AutoService(IMethodParser.class)
 public class JavadocMethodParser implements IMethodParser {
     @Override
     public PathModel parse(Method method, MethodJavadoc methodJavadoc, PathModel pathModel) {

@@ -1,10 +1,10 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.TypeContext;
+import cn.willingxyz.restdoc.core.config.AbstractRestDocParseConfigAware;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.models.ResponseModel;
 import com.github.therapi.runtimejavadoc.Comment;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.IMethodReturnParser;
 import lombok.var;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
@@ -13,14 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-public abstract class AbstractMethodReturnParser implements IMethodReturnParser {
-
-    private final RestDocParseConfig _configuration;
-
-    public AbstractMethodReturnParser(RestDocParseConfig configuration)
-    {
-        _configuration = configuration;
-    }
+public abstract class AbstractMethodReturnParser extends AbstractRestDocParseConfigAware implements IMethodReturnParser {
 
     @Override
     public ResponseModel parse(Method method, Comment returns, ResponseModel responseModel) {
@@ -44,16 +37,16 @@ public abstract class AbstractMethodReturnParser implements IMethodReturnParser 
         }
         returnModel.setReturnType(actualType);
 
-        boolean isArray = _configuration.getTypeInspector().isCollection(actualType);
+        boolean isArray = _config.getTypeInspector().isCollection(actualType);
         returnModel.setArray(isArray);
 
         if (!isArray) {
-            returnModel.setChildren(_configuration.getTypeParser().parse(new TypeContext(actualType, null, method)));
+            returnModel.setChildren(_config.getTypeParser().parse(new TypeContext(actualType, null, method)));
         }
         else
         {
-            returnModel.setChildren(_configuration.getTypeParser().parse(
-                    new TypeContext(_configuration.getTypeInspector().getCollectionComponentType(actualType), null, method)
+            returnModel.setChildren(_config.getTypeParser().parse(
+                    new TypeContext(_config.getTypeInspector().getCollectionComponentType(actualType), null, method)
             ));
         }
         parseInternal(method, actualType, responseModel);

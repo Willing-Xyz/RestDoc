@@ -2,9 +2,9 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.ParameterModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
+import cn.willingxyz.restdoc.core.config.AbstractRestDocParseConfigAware;
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
@@ -13,12 +13,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-public abstract class AbstractMethodParameterParser implements IMethodParameterParser {
-    protected final RestDocParseConfig _configuration;
-
-    public AbstractMethodParameterParser(RestDocParseConfig configuration) {
-        _configuration = configuration;
-    }
+public abstract class AbstractMethodParameterParser extends AbstractRestDocParseConfigAware implements IMethodParameterParser {
 
     @Override
     public ParameterModel parse(Parameter parameter, ParamJavadoc paramJavadoc, ParameterModel parameterModel) {
@@ -63,16 +58,16 @@ public abstract class AbstractMethodParameterParser implements IMethodParameterP
 
     protected ParameterModel parseInternal(Parameter parameter, Type actualParamType, ParameterModel parameterModel)
     {
-        boolean isArray = _configuration.getTypeInspector().isCollection(actualParamType);
+        boolean isArray = _config.getTypeInspector().isCollection(actualParamType);
         parameterModel.setArray(isArray);
 
         if (!isArray) {
-            parameterModel.setChildren(_configuration.getTypeParser().parse(new TypeContext(actualParamType, parameter, (Method) parameter.getDeclaringExecutable())));
+            parameterModel.setChildren(_config.getTypeParser().parse(new TypeContext(actualParamType, parameter, (Method) parameter.getDeclaringExecutable())));
         }
         else
         {
-            parameterModel.setChildren(_configuration.getTypeParser()
-                    .parse(new TypeContext(_configuration.getTypeInspector().getCollectionComponentType(actualParamType),
+            parameterModel.setChildren(_config.getTypeParser()
+                    .parse(new TypeContext(_config.getTypeInspector().getCollectionComponentType(actualParamType),
                             parameter, (Method) parameter.getDeclaringExecutable())));
         }
         return parameterModel;

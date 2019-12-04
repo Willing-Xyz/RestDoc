@@ -2,7 +2,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.IRestDocParser;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
+import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;

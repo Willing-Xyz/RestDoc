@@ -4,12 +4,14 @@ import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Type;
 
 /**
  * com.fasterxml.jackson.annotation.JsonIgnoreType
  */
+@AutoService(IPropertyPostProcessor.class)
 public class JsonIgnoreTypePostProcessor implements IPropertyPostProcessor {
     @Override
     public PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext) {

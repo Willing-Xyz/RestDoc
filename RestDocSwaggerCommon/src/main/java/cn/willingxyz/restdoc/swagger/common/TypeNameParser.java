@@ -1,6 +1,5 @@
-package cn.willingxyz.restdoc.core.parse.impl;
+package cn.willingxyz.restdoc.swagger.common;
 
-import cn.willingxyz.restdoc.core.parse.ITypeNameParser;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import lombok.Data;
 import lombok.NoArgsConstructor;

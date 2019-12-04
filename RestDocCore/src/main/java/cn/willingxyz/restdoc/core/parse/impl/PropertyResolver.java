@@ -2,7 +2,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.parse.IPropertyResolver;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
+import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.utils.MyParameterizedType;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import lombok.var;

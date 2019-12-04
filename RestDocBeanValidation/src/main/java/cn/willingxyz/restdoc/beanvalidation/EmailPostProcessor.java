@@ -1,7 +1,9 @@
 package cn.willingxyz.restdoc.beanvalidation;
 
 import cn.willingxyz.restdoc.core.models.PropertyModel;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
+import com.google.auto.service.AutoService;
 
 import javax.validation.constraints.Email;
 
@@ -9,6 +11,7 @@ import javax.validation.constraints.Email;
  * javax.validation.constraints.Email
  * 不支持指定正则表达式
  */
+@AutoService(IPropertyPostProcessor.class)
 public class EmailPostProcessor extends AbstractBeanValidationPropertyPostProcessor {
     @Override
     public PropertyModel postProcessInternal(PropertyModel propertyModel) {

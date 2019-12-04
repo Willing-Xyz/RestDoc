@@ -4,6 +4,7 @@ import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import cn.willingxyz.restdoc.core.models.MappingModel;
 import cn.willingxyz.restdoc.core.models.PathModel;
 import cn.willingxyz.restdoc.core.parse.IMethodParser;
+import com.google.auto.service.AutoService;
 import lombok.var;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
+@AutoService(IMethodParser.class)
 public class SpringMethodParser implements IMethodParser {
     @Override
     public PathModel parse(Method method, MethodJavadoc methodJavadoc, PathModel pathModel) {

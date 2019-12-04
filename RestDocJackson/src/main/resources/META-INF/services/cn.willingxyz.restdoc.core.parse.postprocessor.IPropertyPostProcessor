@@ -1,5 +1,0 @@
-cn.willingxyz.restdoc.jackson.JsonGetterPostProcessor
-cn.willingxyz.restdoc.jackson.JsonSetterPostProcessor
-cn.willingxyz.restdoc.jackson.JsonPropertyPostProcessor
-cn.willingxyz.restdoc.jackson.JsonIgnorePostProcessor
-cn.willingxyz.restdoc.jackson.JsonIgnoreTypePostProcessor

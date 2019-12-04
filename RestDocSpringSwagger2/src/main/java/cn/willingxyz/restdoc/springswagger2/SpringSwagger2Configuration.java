@@ -4,7 +4,7 @@ import cn.willingxyz.restdoc.core.config.RestDocConfig;
 import cn.willingxyz.restdoc.core.parse.IRestDocParser;
 import cn.willingxyz.restdoc.core.parse.impl.JavaTypeInspector;
 import cn.willingxyz.restdoc.core.parse.impl.RestDocParser;
-import cn.willingxyz.restdoc.core.parse.impl.TypeNameParser;
+import cn.willingxyz.restdoc.swagger.common.TypeNameParser;
 import cn.willingxyz.restdoc.spring.SpringControllerResolver;
 import cn.willingxyz.restdoc.spring.SpringRestDocParseConfig;
 import cn.willingxyz.restdoc.spring.filter.HttpBasicAuthFilter;
@@ -46,9 +46,7 @@ public class SpringSwagger2Configuration {
         }
         var parseConfig = new SpringRestDocParseConfig();
 
-        if (restDocConfig.getPropertyPostProcessors() != null) {
-            restDocConfig.getPropertyPostProcessors().forEach(o -> parseConfig.getPropertyPostProcessor().add(o));
-        }
+        parseConfig.setPackages(restDocConfig.getPackages());
 
         // todo 从spring容器中获取实例
         var docConfig = new Swagger2GeneratorConfig();
@@ -64,7 +62,6 @@ public class SpringSwagger2Configuration {
         if(ext!=null)
             docConfig.setSwaggerFilters(ext.getSwaggerFilters());
 
-        parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
         parseConfig.setRestDocGenerator(new Swagger2RestDocGenerator(docConfig));
         parseConfig.setFieldPrefix(restDocConfig.getFieldPrefix());
         return new RestDocParser(parseConfig);

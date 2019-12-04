@@ -37,8 +37,6 @@ public class RestDocConfig {
 
     private List<Server> _servers = new ArrayList<>();
 
-    private List<IPropertyPostProcessor> _propertyPostProcessors = new ArrayList<>();
-
     @Data
     @Builder
     public static class Server {

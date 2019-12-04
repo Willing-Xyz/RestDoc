@@ -1,7 +1,7 @@
-package cn.willingxyz.restdoc.core.utils;
+package cn.willingxyz.restdoc.swagger.common.utils;
 
 import cn.willingxyz.restdoc.core.parse.ITypeInspector;
-import cn.willingxyz.restdoc.core.parse.ITypeNameParser;
+import cn.willingxyz.restdoc.swagger.common.ITypeNameParser;
 import lombok.var;
 
 import java.lang.reflect.Type;

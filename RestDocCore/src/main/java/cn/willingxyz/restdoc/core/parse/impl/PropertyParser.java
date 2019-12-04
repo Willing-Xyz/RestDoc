@@ -4,7 +4,7 @@ import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.parse.IPropertyParser;
 import cn.willingxyz.restdoc.core.parse.IPropertyResolver;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
+import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.GraphChecker;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;

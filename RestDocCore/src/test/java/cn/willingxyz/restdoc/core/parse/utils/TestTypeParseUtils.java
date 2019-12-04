@@ -1,14 +1,8 @@
 package cn.willingxyz.restdoc.core.parse.utils;
 
-import cn.willingxyz.restdoc.core.parse.impl.JavaTypeInspector;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
+import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
 import lombok.Data;
-import lombok.var;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

@@ -6,11 +6,13 @@ import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import com.github.therapi.runtimejavadoc.OtherJavadoc;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
+import com.google.auto.service.AutoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
+@AutoService(IMethodFilter.class)
 public class IgnoreApiMethodFilter implements IMethodFilter {
     private static Logger _logger = LoggerFactory.getLogger(IgnoreApiMethodFilter.class);
 

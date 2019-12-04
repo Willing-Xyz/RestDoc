@@ -4,6 +4,7 @@ import cn.willingxyz.restdoc.core.parse.ITypeInspector;
 import lombok.var;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ComposeTypeInspector implements ITypeInspector {
@@ -12,6 +13,15 @@ public class ComposeTypeInspector implements ITypeInspector {
     public ComposeTypeInspector(List<ITypeInspector> typeInspectors)
     {
         _typeInspectors = typeInspectors;
+    }
+
+    public ComposeTypeInspector() {
+        _typeInspectors = new ArrayList<>();
+    }
+
+    public void add(ITypeInspector inspector)
+    {
+        _typeInspectors.add(inspector);
     }
 
     @Override

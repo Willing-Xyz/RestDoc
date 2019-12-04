@@ -3,7 +3,9 @@ package cn.willingxyz.restdoc.core.parse.postprocessor.impl;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
+import com.google.auto.service.AutoService;
 
+@AutoService(IPropertyPostProcessor.class)
 public class RequiredPropertyPostProcessor implements IPropertyPostProcessor {
 
 

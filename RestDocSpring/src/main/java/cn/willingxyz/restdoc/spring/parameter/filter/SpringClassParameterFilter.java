@@ -1,6 +1,7 @@
-package cn.willingxyz.restdoc.spring.parameter.resolver;
+package cn.willingxyz.restdoc.spring.parameter.filter;
 
 import cn.willingxyz.restdoc.core.parse.IMethodParameterFilter;
+import com.google.auto.service.AutoService;
 import lombok.var;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.context.request.WebRequest;
@@ -19,6 +20,7 @@ import java.lang.reflect.Parameter;
 import java.security.Principal;
 import java.util.*;
 
+@AutoService(IMethodParameterFilter.class)
 public class SpringClassParameterFilter implements IMethodParameterFilter {
     public  Class[] _classes = new Class[]{
             HttpServletRequest.class,

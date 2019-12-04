@@ -1,6 +1,7 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.parse.ITypeInspector;
+import com.google.auto.service.AutoService;
 import lombok.var;
 
 import java.lang.reflect.ParameterizedType;
@@ -14,6 +15,7 @@ import java.util.*;
  * 判断java基本库中的类型。
  * 该类应该放在最后一个做判断
  */
+@AutoService(ITypeInspector.class)
 public class JavaTypeInspector implements ITypeInspector {
     private List<Class> _simpleClass = new ArrayList<Class>(){{
         add(Boolean.class);

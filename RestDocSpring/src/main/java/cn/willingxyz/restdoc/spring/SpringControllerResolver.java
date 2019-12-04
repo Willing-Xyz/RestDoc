@@ -1,6 +1,8 @@
 package cn.willingxyz.restdoc.spring;
 
+import cn.willingxyz.restdoc.core.config.AbstractRestDocParseConfigAware;
 import cn.willingxyz.restdoc.core.parse.IControllerResolver;
+import com.google.auto.service.AutoService;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,24 +12,24 @@ import org.springframework.stereotype.Controller;
 
 import java.util.*;
 
-public class SpringControllerResolver implements IControllerResolver {
+@AutoService(IControllerResolver.class)
+public class SpringControllerResolver extends AbstractRestDocParseConfigAware implements IControllerResolver {
     private static Logger _logger = LoggerFactory.getLogger(SpringControllerResolver.class);
 
-    private List<String> _packages;
-
-    public SpringControllerResolver(List<String> packages)
+    public SpringControllerResolver()
     {
-        _packages = packages;
     }
 
     @Override
     public List<Class> getClasses() {
+        List<String> packages = _config.getPackages();
+
         var scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
 
         var classes = new ArrayList<Class>();
-        if(_packages==null)_packages= Arrays.asList("cn","com");
-        for (var packageName : _packages) {
+        if(packages==null)packages= Arrays.asList("cn","com");
+        for (var packageName : packages) {
             var beans = scanner.findCandidateComponents(packageName);
             for (var bean : beans) {
                 try {

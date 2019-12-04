@@ -1,13 +1,16 @@
 package cn.willingxyz.restdoc.beanvalidation;
 
 import cn.willingxyz.restdoc.core.models.PropertyModel;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
+import com.google.auto.service.AutoService;
 
 import javax.validation.constraints.Min;
 
 /**
  * javax.validation.constraints.Min
  */
+@AutoService(IPropertyPostProcessor.class)
 public class MinPostProcessor extends AbstractBeanValidationPropertyPostProcessor {
     @Override
     public PropertyModel postProcessInternal(PropertyModel propertyModel) {

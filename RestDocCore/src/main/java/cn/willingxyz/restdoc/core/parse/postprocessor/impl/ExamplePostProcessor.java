@@ -9,10 +9,12 @@ import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import com.github.therapi.runtimejavadoc.OtherJavadoc;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+@AutoService({IPropertyPostProcessor.class, IParameterPostProcessor.class, IResponsePostProcessor.class})
 public class ExamplePostProcessor implements IPropertyPostProcessor, IParameterPostProcessor, IResponsePostProcessor {
     @Override
     public PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext) {

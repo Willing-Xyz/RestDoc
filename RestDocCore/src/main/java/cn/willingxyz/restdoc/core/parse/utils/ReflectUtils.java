@@ -1,14 +1,10 @@
 package cn.willingxyz.restdoc.core.parse.utils;
 
-import cn.willingxyz.restdoc.core.models.PropertyItem;
-import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
-import lombok.Data;
 import lombok.var;
 import org.springframework.util.StringUtils;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 

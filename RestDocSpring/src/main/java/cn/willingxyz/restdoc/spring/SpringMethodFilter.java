@@ -1,6 +1,7 @@
 package cn.willingxyz.restdoc.spring;
 
 import cn.willingxyz.restdoc.core.parse.IMethodFilter;
+import com.google.auto.service.AutoService;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+@AutoService(IMethodFilter.class)
 public class SpringMethodFilter implements IMethodFilter {
     private static Logger _logger = LoggerFactory.getLogger(SpringMethodFilter.class);
 

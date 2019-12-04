@@ -1,4 +1,4 @@
-package cn.willingxyz.restdoc.core.parse;
+package cn.willingxyz.restdoc.swagger.common;
 
 import java.lang.reflect.Type;
 

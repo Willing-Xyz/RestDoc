@@ -19,10 +19,6 @@
             <artifactId>RestDocCore</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
