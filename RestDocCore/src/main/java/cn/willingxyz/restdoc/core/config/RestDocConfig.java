@@ -1,7 +1,6 @@
 package cn.willingxyz.restdoc.core.config;
 
-import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
-import lombok.AllArgsConstructor;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import lombok.Builder;
 import lombok.Data;
 

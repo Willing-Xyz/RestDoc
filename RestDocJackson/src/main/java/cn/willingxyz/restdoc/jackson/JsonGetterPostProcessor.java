@@ -2,7 +2,7 @@ package cn.willingxyz.restdoc.jackson;
 
 import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
-import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.google.auto.service.AutoService;
 

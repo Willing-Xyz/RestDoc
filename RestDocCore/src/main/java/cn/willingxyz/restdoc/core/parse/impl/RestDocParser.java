@@ -115,6 +115,13 @@ public class RestDocParser implements IRestDocParser {
                 lastResponseModel = returnParser.parse(method, returns, lastResponseModel);
             }
         }
+        for (int i = 0; i < responseModels.size(); ++i)
+        {
+            ResponseModel responseModel = responseModels.get(i);
+            responseModel = _configuration.getResponsePostProcessor().postProcess(responseModel, method);
+            responseModels.set(i, responseModel);
+        }
+        responseModels.remove(null);
         return responseModels;
     }
 
@@ -127,6 +134,8 @@ public class RestDocParser implements IRestDocParser {
         for (var parameterParser : _configuration.getMethodParameterParsers()) {
             if (parameterParser.isSupport(parameter)) {
                 parameterModel = parameterParser.parse(parameter, paramJavadoc, parameterModel);
+
+                parameterModel = _configuration.getParameterPostProcessor().postProcess(parameterModel, parameter);
                 break;
             }
         }

@@ -2,6 +2,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.annotations.IgnoreApi;
 import cn.willingxyz.restdoc.core.parse.IMethodResolver;
+import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import com.github.therapi.runtimejavadoc.OtherJavadoc;
@@ -24,9 +25,7 @@ public class IgnoreApiMethodResolver implements IMethodResolver {
         MethodJavadoc methodJavadoc = RuntimeJavadoc.getJavadoc(method);
         if (methodJavadoc.getOther() != null)
         {
-            OtherJavadoc ignoreApiJavadoc = methodJavadoc.getOther().stream()
-                    .filter(o -> o.getName().trim().equals("ignoreApi"))
-                    .findFirst().orElse(null);
+            OtherJavadoc ignoreApiJavadoc = RuntimeJavadocUtils.getTag(method, "ignoreApi");
             if (ignoreApiJavadoc != null)
                 return false;
         }

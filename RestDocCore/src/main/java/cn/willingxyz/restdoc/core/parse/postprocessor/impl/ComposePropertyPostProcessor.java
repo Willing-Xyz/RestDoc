@@ -1,9 +1,8 @@
-package cn.willingxyz.restdoc.core.parse.impl;
+package cn.willingxyz.restdoc.core.parse.postprocessor.impl;
 
-import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
-import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

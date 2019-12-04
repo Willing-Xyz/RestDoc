@@ -22,4 +22,8 @@ public class ReturnModel {
      * 该参数包含的参数，如参数为对象类型时，包含对象每个key的参数信息
      */
     private List<PropertyModel> _children = new ArrayList<>();
+    /**
+     * 例子
+     */
+    private String _example;
 }

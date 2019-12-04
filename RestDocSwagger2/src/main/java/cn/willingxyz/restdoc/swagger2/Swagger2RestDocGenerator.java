@@ -192,8 +192,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         if (returnModel.getReturnType() == void.class || returnModel.getReturnType() == Void.class)
             return apiResponse;
 
-        apiResponse.setResponseSchema(getOrGenerateModel(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
-        Property property = generateProperty(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
+        apiResponse.setResponseSchema(getOrGenerateModel(returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
+        Property property = generateProperty(returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
         apiResponse.setSchema(property);
 
         apiResponse.setDescription(combineStr(apiResponse.getDescription(), property.getDescription()));
@@ -206,6 +206,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var requestBody = new FormParameter();
 
         requestBody.setDescription(param.getDescription());
+        requestBody.setExample(param.getExample());
+
         requestBody.setRequired(param.isRequired());
 
         return requestBody;
@@ -216,19 +218,19 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         bodyParameter.setDescription(parameterModel.getDescription());
         bodyParameter.setRequired(parameterModel.isRequired());
 
-        Model model = getOrGenerateModel(parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
+        Model model = getOrGenerateModel(parameterModel.getExample(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
         bodyParameter.setSchema(model);
 
         return bodyParameter;
     }
 
-    private Model getOrGenerateModel(String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
+    private Model getOrGenerateModel(String example, String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
         var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), parameterType);
 
         if (swagger.getDefinitions() == null)
             swagger.setDefinitions(new LinkedHashMap<>());
         if (!swagger.getDefinitions().containsKey(componentName)) {
-            Property property = generateProperty(description, parameterType, children, swagger);
+            Property property = generateProperty(example, description, parameterType, children, swagger);
             Model model = null;
             if (property instanceof ObjectProperty) {
                 model = new ModelImpl();
@@ -310,10 +312,11 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
                 parameter.setName(name + child.getName());
                 parameter.setDescription(child.getDescription());
+                parameter.setExample(child.getExample());
                 parameter.setIn("query");
                 parameter.setRequired(child.isRequired());
 
-                Property property = generateProperty(child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
+                Property property = generateProperty(child.getExample(), child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
                 parameter.setProperty(property);
                 parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
                 parameters.add(parameter);
@@ -330,9 +333,10 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         parameter.setIn(in);
         parameter.setName(paramModel.getName());
         parameter.setDescription(paramModel.getDescription());
+        parameter.setExample(paramModel.getExample());
         parameter.setRequired(paramModel.isRequired());
 
-        Property property = generateProperty(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
+        Property property = generateProperty(paramModel.getExample(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
         parameter.setProperty(property);
         parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
 
@@ -340,10 +344,10 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return parameter;
     }
 
-    private Property generateProperty(String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateProperty(String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         // 数组/集合
         if (_config.getTypeInspector().isCollection(type)) {
-            return generateArrayProperty(description, type, children, swagger);
+            return generateArrayProperty(example, description, type, children, swagger);
         }
         // 枚举
         if (ReflectUtils.isEnum(type)) {
@@ -351,7 +355,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         }
         // 简单类型
         if (children == null || children.isEmpty()) {
-            return generateSimpleTypeSchema(description, type);
+            return generateSimpleTypeSchema(example, description, type);
         }
         // 复杂类型
         return generateComplexSchema(type, children, swagger);
@@ -370,24 +374,25 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var schemas = new LinkedHashMap<String, Property>();
 
         for (var propertyModel : propertyModels) {
-            var schema = generateProperty(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
+            var schema = generateProperty(propertyModel.getExample(), propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
     }
 
-    private Property generateSimpleTypeSchema(String description, Type type) {
+    private Property generateSimpleTypeSchema(String example, String description, Type type) {
         var property = new ObjectProperty();
         property.setDescription(description);
         property.setType(_config.getSwaggerTypeInspector().toSwaggerType(type));
         property.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(type));
+        property.setExample(example);
         return property;
     }
 
-    private Property generateArrayProperty(String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateArrayProperty(String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         ArrayProperty arrayProperty = new ArrayProperty();
         arrayProperty.setDescription(description);
-        Property property = generateProperty(description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
+        Property property = generateProperty(example, description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
         arrayProperty.setItems(property);
         arrayProperty.setDescription(combineStr(property.getDescription(), arrayProperty.getDescription()));
         return arrayProperty;

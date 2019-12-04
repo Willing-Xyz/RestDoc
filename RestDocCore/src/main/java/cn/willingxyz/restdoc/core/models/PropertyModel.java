@@ -34,6 +34,10 @@ public class PropertyModel {
      * 属性描述
      */
     private String _description;
+    /**
+     * 例子
+     */
+    private String _example;
 
     /**
      * 该属性包含的属性，如属性为对象类型时，包含对象每个key的参数信息

@@ -22,6 +22,10 @@ public class ParameterModel {
      */
     private String _description;
     /**
+     * 例子
+     */
+    private String _example;
+    /**
      * 参数位置，如参数放在查询字符串中或者放到body中
      */
     private ParameterLocation _location;

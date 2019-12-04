@@ -4,13 +4,12 @@ import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.parse.IPropertyParser;
-import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
+import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import cn.willingxyz.restdoc.core.parse.IPropertyResolver;
 import cn.willingxyz.restdoc.core.parse.ITypeParser;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class TypeParser implements ITypeParser {

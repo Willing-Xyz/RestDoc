@@ -1,4 +1,4 @@
-package cn.willingxyz.restdoc.core.parse;
+package cn.willingxyz.restdoc.core.parse.postprocessor;
 
 import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;

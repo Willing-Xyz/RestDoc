@@ -2,6 +2,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 
 import cn.willingxyz.restdoc.core.annotations.IgnoreApi;
 import cn.willingxyz.restdoc.core.parse.IControllerFilter;
+import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
 import com.github.therapi.runtimejavadoc.OtherJavadoc;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
@@ -25,9 +26,7 @@ public class IgnoreApiControllerFilter implements IControllerFilter {
         ClassJavadoc classJavadoc = RuntimeJavadoc.getJavadoc(clazz);
         if (classJavadoc.getOther() != null)
         {
-            OtherJavadoc ignoreApiJavadoc = classJavadoc.getOther().stream()
-                    .filter(o -> o.getName().trim().equalsIgnoreCase("ignoreApi"))
-                    .findFirst().orElse(null);
+            OtherJavadoc ignoreApiJavadoc = RuntimeJavadocUtils.getTag(clazz, "ignoreApi");
             if (ignoreApiJavadoc != null)
                 return false;
         }
