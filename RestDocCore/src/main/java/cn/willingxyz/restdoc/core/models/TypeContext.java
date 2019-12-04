@@ -17,4 +17,17 @@ public class TypeContext {
     private Type _type;
     private Parameter _parameter;
     private Method _method;
+
+    public InOut inOut()
+    {
+        if (_parameter != null)
+            return InOut.IN;
+        else
+            return InOut.OUT;
+    }
+
+    public enum InOut
+    {
+        IN, OUT
+    }
 }

@@ -40,7 +40,7 @@ public  class RestDocParseConfig {
         _propertyResolver = new PropertyResolver(this);
         _propertyParser = new PropertyParser(this, _propertyResolver);
         _propertyPostProcessor = new ComposePropertyPostProcessor();
-        _propertyPostProcessor.add(new RequiredPropertyPostProcessor(_typeInspector));
+        _propertyPostProcessor.add(new RequiredPropertyPostProcessor());
 
         loadPropertyPostProcessors().forEach(o -> _propertyPostProcessor.add(o));
 

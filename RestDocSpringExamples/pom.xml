@@ -32,6 +32,10 @@
             <artifactId>RestDocBeanValidation</artifactId>
         </dependency>
         <dependency>
+            <groupId>cn.willingxyz.restdoc</groupId>
+            <artifactId>RestDocJackson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>

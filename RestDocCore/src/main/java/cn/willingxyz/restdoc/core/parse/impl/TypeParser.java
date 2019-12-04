@@ -10,6 +10,7 @@ import cn.willingxyz.restdoc.core.parse.ITypeParser;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TypeParser implements ITypeParser {
@@ -32,20 +33,29 @@ public class TypeParser implements ITypeParser {
         for (PropertyItem item : items) {
             PropertyModel propertyModel = _propertyParser.parse(item);
             if (propertyModel != null) {
-                postProcess(propertyModel, typeContext);
-                propertyModels.add(propertyModel);
+                propertyModel = postProcess(propertyModel, typeContext);
+                if (propertyModel != null) {
+                    propertyModels.add(propertyModel);
+                }
             }
         }
         return propertyModels;
     }
 
-    protected void postProcess(PropertyModel propertyModel, TypeContext typeContext) {
+    protected PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext) {
         if (_propertyPostProcessor != null) {
-            _propertyPostProcessor.postProcess(propertyModel, typeContext);
-            if (propertyModel.getChildren() != null && !propertyModel.getChildren().isEmpty())
-            {
-                propertyModel.getChildren().forEach(o -> postProcess(o, typeContext));
+            propertyModel = _propertyPostProcessor.postProcess(propertyModel, typeContext);
+            if (propertyModel == null) return null;
+
+            if (propertyModel.getChildren() != null && !propertyModel.getChildren().isEmpty()) {
+                for (int i = 0; i < propertyModel.getChildren().size(); ++i) {
+                    PropertyModel model = propertyModel.getChildren().get(i);
+                    model = postProcess(model, typeContext);
+                    propertyModel.getChildren().set(i, model);
+                }
+                propertyModel.getChildren().remove(null);
             }
         }
+        return propertyModel;
     }
 }

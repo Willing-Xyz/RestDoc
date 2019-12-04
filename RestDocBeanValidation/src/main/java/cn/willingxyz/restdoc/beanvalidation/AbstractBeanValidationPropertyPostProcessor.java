@@ -15,11 +15,12 @@ import java.util.List;
 /**
  * 基于注解的属性
  */
-public abstract class AbstractPropertyPostProcessor<T extends Annotation> implements IPropertyPostProcessor {
+public abstract class AbstractBeanValidationPropertyPostProcessor<T extends Annotation> implements IPropertyPostProcessor {
     @Override
-    public void postProcess(PropertyModel propertyModel, TypeContext typeContext) {
-        if (!cascadeValid(propertyModel, typeContext)) return;
-        postProcessInternal(propertyModel);
+    public PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext) {
+        if (!cascadeValid(propertyModel, typeContext)) return propertyModel;
+
+        return postProcessInternal(propertyModel);
     }
 
     private boolean cascadeValid(PropertyModel propertyModel, TypeContext typeContext) {
@@ -53,5 +54,5 @@ public abstract class AbstractPropertyPostProcessor<T extends Annotation> implem
         return false;
     }
 
-    protected abstract void postProcessInternal(PropertyModel propertyModel);
+    protected abstract PropertyModel postProcessInternal(PropertyModel propertyModel);
 }

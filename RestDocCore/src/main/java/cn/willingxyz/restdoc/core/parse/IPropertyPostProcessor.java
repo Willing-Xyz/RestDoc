@@ -5,5 +5,5 @@ import cn.willingxyz.restdoc.core.models.PropertyModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
 
 public interface IPropertyPostProcessor {
-    void postProcess(PropertyModel propertyModel, TypeContext typeContext);
+    PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext);
 }

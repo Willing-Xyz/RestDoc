@@ -1,25 +1,23 @@
 package cn.willingxyz.restdoc.beanvalidation;
 
-import cn.willingxyz.restdoc.core.models.PropertyItem;
 import cn.willingxyz.restdoc.core.models.PropertyModel;
-import cn.willingxyz.restdoc.core.parse.IPropertyPostProcessor;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
 
-import javax.validation.constraints.Negative;
 import javax.validation.constraints.NegativeOrZero;
 
 /**
  * javax.validation.constraints.NegativeOrZero
  */
-public class NegativeOrZeroPostProcessor extends AbstractPropertyPostProcessor {
+public class NegativeOrZeroPostProcessor extends AbstractBeanValidationPropertyPostProcessor {
     @Override
-    public void postProcessInternal(PropertyModel propertyModel) {
+    public PropertyModel postProcessInternal(PropertyModel propertyModel) {
         NegativeOrZero negativeAnno = propertyModel.getPropertyItem().getAnnotation(NegativeOrZero.class);
-        if (negativeAnno != null) {
-            propertyModel.setDescription(TextUtils.combine(
-                    propertyModel.getDescription(),
-                    " (值只能为负数或0)"
-            ));
-        }
+        if (negativeAnno == null) return propertyModel;
+
+        propertyModel.setDescription(TextUtils.combine(
+                propertyModel.getDescription(),
+                " (值只能为负数或0)"
+        ));
+        return propertyModel;
     }
 }

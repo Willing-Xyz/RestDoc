@@ -31,10 +31,13 @@ public class ComposePropertyPostProcessor implements IPropertyPostProcessor {
     }
 
     @Override
-    public void postProcess(PropertyModel propertyModel, TypeContext typeContext) {
+    public PropertyModel postProcess(PropertyModel propertyModel, TypeContext typeContext) {
         for (IPropertyPostProcessor postProcessor : _processors)
         {
-            postProcessor.postProcess(propertyModel, typeContext);
+            propertyModel = postProcessor.postProcess(propertyModel, typeContext);
+            if (propertyModel == null)
+                return null;
         }
+        return propertyModel;
     }
 }

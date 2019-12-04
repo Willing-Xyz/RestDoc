@@ -43,7 +43,7 @@ public class App {
                 .hideEmptyController(true)
                 .resolveJavaDocAsTypeName(false)
 //                .httpBasicAuth(new RestDocConfig.HttpBasicAuth("restdoc","restdoc"))
-                .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
+                .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples.jackson"))
                 .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost:8080").build()))
 //                .propertyPostProcessors(Arrays.asList(
 //                        new NotNullPostProcessor(),
