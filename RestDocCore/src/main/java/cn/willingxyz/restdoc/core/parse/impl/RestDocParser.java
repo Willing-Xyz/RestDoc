@@ -64,7 +64,7 @@ public class RestDocParser implements IRestDocParser {
     }
 
     private PathModel handleMethod(Method method, MethodJavadoc methodJavadoc) {
-        for (var methodResolver : _configuration.getMethodResolvers()) {
+        for (var methodResolver : _configuration.getMethodFilters()) {
             if (!methodResolver.isSupport(method))
                 return null;
         }
@@ -126,7 +126,7 @@ public class RestDocParser implements IRestDocParser {
     }
 
     private ParameterModel handleMethodParameter(Parameter parameter, ParamJavadoc paramJavadoc) {
-        for (var methodParameterResolver : _configuration.getMethodParameterResolvers()) {
+        for (var methodParameterResolver : _configuration.getMethodParameterFilters()) {
             if (!methodParameterResolver.isSupport(parameter))
                 return null;
         }

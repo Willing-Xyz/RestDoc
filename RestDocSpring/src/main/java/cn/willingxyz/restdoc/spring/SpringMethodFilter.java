@@ -1,6 +1,6 @@
 package cn.willingxyz.restdoc.spring;
 
-import cn.willingxyz.restdoc.core.parse.IMethodResolver;
+import cn.willingxyz.restdoc.core.parse.IMethodFilter;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-public class SpringMethodResolver implements IMethodResolver {
-    private static Logger _logger = LoggerFactory.getLogger(SpringMethodResolver.class);
+public class SpringMethodFilter implements IMethodFilter {
+    private static Logger _logger = LoggerFactory.getLogger(SpringMethodFilter.class);
 
     private static List<Class<? extends Annotation>> _classes = Arrays.asList(
             RequestMapping.class,

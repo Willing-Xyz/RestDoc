@@ -2,7 +2,7 @@ package cn.willingxyz.restdoc.core.parse;
 
 import java.lang.reflect.Method;
 
-public interface IMethodResolver {
+public interface IMethodFilter {
     /**
      * 给定一个Method，判断该Method是否是HTTP处理接口
      */

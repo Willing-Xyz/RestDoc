@@ -8,6 +8,7 @@ import cn.willingxyz.restdoc.core.parse.postprocessor.impl.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -15,23 +16,25 @@ import java.util.ServiceLoader;
 public  class RestDocParseConfig {
     private List<IControllerResolver> _controllerResolvers = new ArrayList<>();
     private List<IControllerFilter> _controllerFilters = new ArrayList<>();
-    private List<IMethodResolver> _methodResolvers = new ArrayList<>();
-    private List<IMethodParameterResolver> _methodParameterResolvers = new ArrayList<>();
-
     private List<IControllerParser> _controllerParsers = new ArrayList<>();
+
+    private List<IMethodFilter> _methodFilters = new ArrayList<>();
     private List<IMethodParser> _methodParsers = new ArrayList<>();
+
+    private List<IMethodParameterFilter> _methodParameterFilters = new ArrayList<>();
     private List<IMethodParameterParser> _methodParameterParsers = new ArrayList<>();
+
     private List<IMethodReturnParser> _returnParsers = new ArrayList<>();
 
+    private ITypeParser _typeParser;
     private IPropertyResolver _propertyResolver;
     private IPropertyParser _propertyParser;
+
     private ComposePropertyPostProcessor _propertyPostProcessor;
     private ComposeParameterPostProcessor _parameterPostProcessor;
     private ComposeResponsePostProcessor _responsePostProcessor;
 
-    private ITypeParser _typeParser;
-
-    private ITypeInspector _typeInspector;
+    private ComposeTypeInspector _typeInspector;
 
     private String _fieldPrefix;
 
@@ -42,7 +45,7 @@ public  class RestDocParseConfig {
         _controllerParsers.add(new JavadocControllerParser());
         _methodParsers.add(new JavadocMethodParser());
 //        _returnParsers.add(new MethodReturnParser(this));
-        _typeInspector = new JavaTypeInspector();
+        _typeInspector = new ComposeTypeInspector(Arrays.asList(new JavaTypeInspector()));
 
         _propertyResolver = new PropertyResolver(this);
         _propertyParser = new PropertyParser(this, _propertyResolver);

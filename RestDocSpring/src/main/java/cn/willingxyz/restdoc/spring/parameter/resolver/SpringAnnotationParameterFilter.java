@@ -1,6 +1,6 @@
 package cn.willingxyz.restdoc.spring.parameter.resolver;
 
-import cn.willingxyz.restdoc.core.parse.IMethodParameterResolver;
+import cn.willingxyz.restdoc.core.parse.IMethodParameterFilter;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -12,7 +12,7 @@ import java.lang.reflect.Parameter;
 /**
  * 基于注解的参数过滤，即如果参数上声明了指定的注解，则不解析该参数
  */
-public class SpringAnnotationParameterResolver implements IMethodParameterResolver {
+public class SpringAnnotationParameterFilter implements IMethodParameterFilter {
 
     public static Class[] _classes = new Class[]{
             CookieValue.class,

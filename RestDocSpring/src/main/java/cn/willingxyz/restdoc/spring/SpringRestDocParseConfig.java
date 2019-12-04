@@ -2,12 +2,10 @@ package cn.willingxyz.restdoc.spring;
 
 import cn.willingxyz.restdoc.core.parse.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.impl.IgnoreApiControllerFilter;
-import cn.willingxyz.restdoc.core.parse.impl.IgnoreApiMethodResolver;
+import cn.willingxyz.restdoc.core.parse.impl.IgnoreApiMethodFilter;
 import cn.willingxyz.restdoc.spring.parameter.parser.*;
-import cn.willingxyz.restdoc.spring.parameter.resolver.SpringAnnotationParameterResolver;
-import cn.willingxyz.restdoc.spring.parameter.resolver.SpringClassParameterResolver;
-import cn.willingxyz.restdoc.spring.SpringMethodParser;
-import cn.willingxyz.restdoc.spring.SpringMethodResolver;
+import cn.willingxyz.restdoc.spring.parameter.resolver.SpringAnnotationParameterFilter;
+import cn.willingxyz.restdoc.spring.parameter.resolver.SpringClassParameterFilter;
 import cn.willingxyz.restdoc.spring.response.SpringResponseBodyReturnParser;
 
 public class SpringRestDocParseConfig extends RestDocParseConfig {
@@ -23,10 +21,10 @@ public class SpringRestDocParseConfig extends RestDocParseConfig {
         getMethodParameterParsers().add(new SpringRequestParamParameterParser(this));
         getMethodParameterParsers().add(new SpringPrimitiveParameterParser(this));
 
-        getMethodResolvers().add(new SpringMethodResolver());
-        getMethodResolvers().add(new IgnoreApiMethodResolver());
-        getMethodParameterResolvers().add(new SpringClassParameterResolver());
-        getMethodParameterResolvers().add(new SpringAnnotationParameterResolver());
+        getMethodFilters().add(new SpringMethodFilter());
+        getMethodFilters().add(new IgnoreApiMethodFilter());
+        getMethodParameterFilters().add(new SpringClassParameterFilter());
+        getMethodParameterFilters().add(new SpringAnnotationParameterFilter());
         getControllerFilters().add(new IgnoreApiControllerFilter());
 
         getReturnParsers().add(new SpringResponseBodyReturnParser(this));

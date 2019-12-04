@@ -1,6 +1,6 @@
 package cn.willingxyz.restdoc.spring.parameter.resolver;
 
-import cn.willingxyz.restdoc.core.parse.IMethodParameterResolver;
+import cn.willingxyz.restdoc.core.parse.IMethodParameterFilter;
 import lombok.var;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.context.request.WebRequest;
@@ -19,7 +19,7 @@ import java.lang.reflect.Parameter;
 import java.security.Principal;
 import java.util.*;
 
-public class SpringClassParameterResolver implements IMethodParameterResolver {
+public class SpringClassParameterFilter implements IMethodParameterFilter {
     public  Class[] _classes = new Class[]{
             HttpServletRequest.class,
             ServletResponse.class,
@@ -40,7 +40,7 @@ public class SpringClassParameterResolver implements IMethodParameterResolver {
             java.time.ZoneId.class
     };
 
-    public SpringClassParameterResolver()
+    public SpringClassParameterFilter()
     {
     }
     @Override
