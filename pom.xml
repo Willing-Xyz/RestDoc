@@ -7,7 +7,7 @@
     <groupId>cn.willingxyz.restdoc</groupId>
     <artifactId>restdoc</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.8.3</version>
+    <version>0.2.0.0-beta</version>
 
     <parent>
         <groupId>cn.willingxyz.parentpom</groupId>
@@ -30,7 +30,7 @@
 
     <properties>
         <!-- version -->
-        <RestDoc.Version>0.1.8.3</RestDoc.Version>
+        <RestDoc.Version>0.2.0.0-beta</RestDoc.Version>
     </properties>
 
     <dependencies>
@@ -181,6 +181,21 @@
                                     <name>ignoreApi</name>
                                     <placement>a</placement>
                                     <head>ignore api</head>
+                                </tag>
+                                <tag>
+                                    <name>paramExample</name>
+                                    <placement>a</placement>
+                                    <head>param example</head>
+                                </tag>
+                                <tag>
+                                    <name>returnExample</name>
+                                    <placement>a</placement>
+                                    <head>return example</head>
+                                </tag>
+                                <tag>
+                                    <name>example</name>
+                                    <placement>a</placement>
+                                    <head>example</head>
                                 </tag>
                             </tags>
                         </configuration>

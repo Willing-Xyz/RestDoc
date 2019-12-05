@@ -17,7 +17,7 @@ Maven项目增加依赖：
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.1.8.3</version>
+     <version>0.2.0.0-beta</version>
 </dependency>
 <dependency>
     <groupId>com.github.therapi</groupId>
@@ -58,6 +58,56 @@ public class SwaggerConfig {
 启动应用后，打开 http://host/swagger-ui/index.html 浏览
 
 具体可参考 [RestDocSpringExamples](https://github.com/Willing-Xyz/RestDoc/tree/master/RestDocSpringExamples)。
+
+## BeanValidation支持
+
+如果需要BeanValidation的支持，需要增加以下依赖：
+```
+<dependency>
+    <groupId>cn.willingxyz.restdoc</groupId>
+    <artifactId>RestDocBeanValidation</artifactId>
+    <version>0.2.0.0-beta</version>
+</dependency>
+```
+
+支持BeanValidation的注解：
+
+- NotNull
+- AssertFalse
+- AssertTrue
+- DecimalMax
+- DecimalMin
+- Email （不支持正则表达式）
+- Max
+- Min
+- NegativeOrZero
+- Negative
+- NotBlank
+- NotEmpty
+- NotNull
+- Null
+- PositiveOrZero
+- Positive
+
+## Jackson支持
+
+如果需要Jackson的支持，增加以下依赖：
+```
+<dependency>
+    <groupId>cn.willingxyz.restdoc</groupId>
+    <artifactId>RestDocJackson</artifactId>
+    <version>0.2.0.0-beta</version>
+</dependency>
+```
+
+支持的Jackson注解：
+
+- JsonGetter
+- JsonSetter
+- JsonIgnore
+- JsonIgnoreType
+- JsonProperty (不支持对枚举的操作)
+
 
 ## 配置参考
 
@@ -115,7 +165,7 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger2</artifactId>
-     <version>0.1.8.3</version>
+     <version>0.2.0.0-beta</version>
 </dependency>
 <dependency>
     <groupId>com.github.therapi</groupId>
@@ -138,7 +188,7 @@ public class SwaggerConfig {
 
 docker通过以下命令运行：
 
-`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.1.8.3`
+`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.2.0.0-beta`
 
 swagger3规范打开 http://localhost:8084/swagger-ui/index.html 查看。
 swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
