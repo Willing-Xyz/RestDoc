@@ -62,7 +62,6 @@ public class SpringSwagger3Configuration {
         if(ext!=null)
             generatorConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
 
-        parseConfig.getControllerResolvers().add(new SpringControllerResolver());
         parseConfig.setRestDocGenerator(new Swagger3RestDocGenerator(generatorConfig));
         parseConfig.setFieldPrefix(restDocConfig.getFieldPrefix());
 

@@ -398,6 +398,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return arrayProperty;
     }
 
+    // todo 枚举的解析放在RestDocParser中
     private Property generateEnumProperty(Class clazz) {
         var property = new StringProperty();
         var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
