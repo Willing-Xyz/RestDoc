@@ -44,7 +44,8 @@ public class App {
                 .resolveJavaDocAsTypeName(false)
 //                .httpBasicAuth(new RestDocConfig.HttpBasicAuth("restdoc","restdoc"))
                 .packages(Arrays.asList("cn.willingxyz.restdoc.spring.examples"))
-                .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("localhost:8084").build()))
+                .servers(Arrays.asList(RestDocConfig.Server.builder().description("url desc").url("https://localhost:8084").build(),
+                        RestDocConfig.Server.builder().description("second").url("http://localhost:8084").build()))
                 .build();
     }
     @Bean

@@ -16,14 +16,19 @@ import io.swagger.models.*;
 import io.swagger.models.parameters.*;
 import io.swagger.models.properties.*;
 import lombok.var;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.willingxyz.restdoc.swagger.common.utils.StringUtils.combineStr;
 
 public class Swagger2RestDocGenerator implements IRestDocGenerator {
+    private static Logger logger = LoggerFactory.getLogger(Swagger2RestDocGenerator.class);
 
 //    public static void main(String[] args) {
 //
@@ -58,10 +63,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             hideEmptyController(swagger);
         }
 
-        if (_config.getSwaggerFilters() != null)
-        {
-            for (ISwaggerFilter openAPIFilter : _config.getSwaggerFilters())
-            {
+        if (_config.getSwaggerFilters() != null) {
+            for (ISwaggerFilter openAPIFilter : _config.getSwaggerFilters()) {
                 swagger = openAPIFilter.handle(swagger);
             }
         }
@@ -74,8 +77,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             throw new RuntimeException("序列化错误");
         }
     }
-    private ObjectMapper objectMapper()
-    {
+
+    private ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -116,9 +119,38 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private void convertServers(RootModel rootModel, Swagger swagger) {
-        if (_config.getServers() != null && _config.getServers().size() > 0) {
-            swagger.setHost(_config.getServers().get(0).getUrl());
+        if (_config.getServers() == null || _config.getServers().isEmpty()) return;
+        // 把传递的url拆分为schema、host:port 和 basePath
+        String url = _config.getServers().get(0).getUrl();
+
+        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("ws://") && !url.startsWith("wss://"))
+            url = "http://" + url;
+
+        try {
+            URL urlObj = new URL(url);
+            if (urlObj.getPort() == -1)
+                swagger.setHost(urlObj.getHost());
+            else
+                swagger.setHost(urlObj.getHost() + ":" + urlObj.getPort());
+
+            swagger.setBasePath(urlObj.getPath());
+        } catch (MalformedURLException e) {
+            logger.warn("invalid server url: " + url);
         }
+
+        _config.getServers().forEach(o -> {
+            try {
+                URL urlObj = new URL(o.getUrl());
+                Scheme scheme = Scheme.forValue(urlObj.getProtocol());
+                if (scheme != null) {
+                    if (swagger.getSchemes() == null)
+                        swagger.setSchemes(new ArrayList<>());
+                    swagger.getSchemes().add(scheme);
+                }
+            } catch (MalformedURLException e) {
+                logger.warn("invalid server url: " + o.getUrl());
+            }
+        });
     }
 
     private void convertPath(RootModel rootModel, Swagger swagger) {
@@ -159,8 +191,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
         for (var pathItem : mapping.getPaths()) {
             Path path = null;
-            if (swagger.getPaths() != null)
-            {
+            if (swagger.getPaths() != null) {
                 path = swagger.getPaths().entrySet().stream()
                         .filter(o -> o.getKey().equals(pathItem))
                         .map(o -> o.getValue())

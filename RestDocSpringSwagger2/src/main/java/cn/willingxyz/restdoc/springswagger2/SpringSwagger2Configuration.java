@@ -70,7 +70,8 @@ public class SpringSwagger2Configuration {
 
     private List<SwaggerGeneratorConfig.ServerInfo> convertServers(List<RestDocConfig.Server> servers) {
         if (servers == null || servers.size() <= 0) {
-            return Collections.singletonList(SwaggerGeneratorConfig.ServerInfo.builder().description("server").url("/").build());
+            // If the host is not included, the host serving the documentation is to be used (including the port).
+            return new ArrayList<>();
         }
         List<SwaggerGeneratorConfig.ServerInfo> serverInfos = new ArrayList<>();
         for (RestDocConfig.Server server : servers) {
