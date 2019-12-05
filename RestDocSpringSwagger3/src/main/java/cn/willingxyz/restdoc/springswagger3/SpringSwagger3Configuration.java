@@ -48,7 +48,7 @@ public class SpringSwagger3Configuration {
 
 
         // todo 从spring容器中获取实例
-        Swagger3GeneratorConfig docConfig = new Swagger3GeneratorConfig();
+        Swagger3GeneratorConfig docConfig = new Swagger3GeneratorConfig(parseConfig);
         docConfig.setDescription(restDocConfig.getApiDescription());
         docConfig.setTitle(restDocConfig.getApiTitle());
         docConfig.setVersion(restDocConfig.getApiVersion());

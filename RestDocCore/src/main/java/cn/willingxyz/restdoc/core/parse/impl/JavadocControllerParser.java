@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
+import cn.willingxyz.restdoc.core.config.ExtOrder;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.models.ControllerModel;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
@@ -7,6 +8,7 @@ import cn.willingxyz.restdoc.core.parse.IControllerParser;
 import com.google.auto.service.AutoService;
 
 @AutoService(IControllerParser.class)
+@ExtOrder(Integer.MAX_VALUE)
 public class JavadocControllerParser implements IControllerParser {
 
     @Override

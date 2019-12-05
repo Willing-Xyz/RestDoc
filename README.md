@@ -46,71 +46,18 @@ public class SwaggerConfig {
 }
 ```
 
+主要需要修改包名为自己的应用包名。
+
 [其他配置参考](#配置参考)
 
 第二步，启用Annotation Processors 
+
 - **IntelliJ IDEA**: File > Settings > Preferences > Build, Execution, Deployment > Compiler > Annotation Processors > 勾选"Enable annotation processing".
 ![编译设置](./images/compile-setting.png?)
 
 启动应用后，打开 http://host/swagger-ui/index.html 浏览
 
 具体可参考 [RestDocSpringExamples](https://github.com/Willing-Xyz/RestDoc/tree/master/RestDocSpringExamples)。
-
-## swagger ui 配置
-
-swagger-ui支持一些配置来控制ui的显示。
-只需要把`SwaggerUIConfiguration`配置为一个bean。
-如：
-```
-    @Bean
-    SwaggerUIConfiguration _swaggerUIConfiguration()
-    {
-        var uiConfig = new SwaggerUIConfiguration();
-        uiConfig.setDefaultModelRendering("model");
-        uiConfig.setDefaultModelExpandDepth(0);
-        uiConfig.setDocExpansion("full");
-        return uiConfig;
-    }
-```
-
-具体的配置含义请参考 https://github.com/swagger-api/swagger-ui/blob/master/docs/usage/configuration.md
-
-## 忽略api
-
-如果想要某些controller和method不出现在swagger文档中，可以通过在controller或method上增加`@IgnoreApi`注解.
-如果该注解在controller上，表示该controller里的所有api都不会出现在swagger文档中。
-如：
-```
-@IgnoreApi
-@RestController
-@RequestMapping("/ignoreapi/all")
-public class IgnoreApiAllController {}
-```
-如果该注解在method上，表示该method的api不会出现在swagger文档中。
-```
-@IgnoreApi
-@GetMapping("/ignore")
-public void ignore(){
-}
-```
-
-此外，可以使用javadoc标签代替注解。
-如：
-```java
-/**
- * @ignoreApi
- */
-@RestController
-@RequestMapping("/ignoreapi/javadoc/all")
-public class IgnoreApiJavadocAllController {
-        /**
-         * @ignoreApi
-         */
-        @GetMapping("/ignore")
-        public void ignore(){
-        }
-}
-```
 
 ## 配置参考
 
@@ -186,14 +133,6 @@ public class SwaggerConfig {
 }
 ```
 
-## 扩展
-
-如果想要读取或修改生成的swagger对象，可以实现以下接口：
-
-- `IOpenFilter`：用于Swagger3
-- `ISwaggerFilter`：用于Swagger2
-
-具体可参考 RestDocSpringExamples.
 
 ## docker
 
@@ -208,9 +147,4 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 
 通过注解处理器在编译时生成javadoc的json文件, 将这些文件转换为Swagger-ui的OpenApi数据格式。
 
-
-## todo list
-
-- 增加Bean Validation的支持
-- 增加Spring Validator支持
-
+更多信息请参考 Wiki 

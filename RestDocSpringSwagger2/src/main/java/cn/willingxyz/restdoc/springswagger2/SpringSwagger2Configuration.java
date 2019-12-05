@@ -49,7 +49,7 @@ public class SpringSwagger2Configuration {
         parseConfig.setPackages(restDocConfig.getPackages());
 
         // todo 从spring容器中获取实例
-        var docConfig = new Swagger2GeneratorConfig();
+        var docConfig = new Swagger2GeneratorConfig(parseConfig);
         docConfig.setDescription(restDocConfig.getApiDescription());
         docConfig.setTitle(restDocConfig.getApiTitle());
         docConfig.setVersion(restDocConfig.getApiVersion());

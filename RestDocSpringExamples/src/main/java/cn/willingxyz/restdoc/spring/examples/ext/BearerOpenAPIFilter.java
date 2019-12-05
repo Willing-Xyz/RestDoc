@@ -1,12 +1,14 @@
 package cn.willingxyz.restdoc.spring.examples.ext;
 
 import cn.willingxyz.restdoc.swagger3.IOpenAPIFilter;
+import com.google.auto.service.AutoService;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.var;
 
+@AutoService(IOpenAPIFilter.class)
 public class BearerOpenAPIFilter implements IOpenAPIFilter {
     @Override
     public OpenAPI handle(OpenAPI openApi) {

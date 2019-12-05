@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.swagger.common;
 
+import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
 import cn.willingxyz.restdoc.core.parse.ITypeInspector;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,13 @@ import java.util.List;
 
 @Data
 public class SwaggerGeneratorConfig {
+
+    protected final RestDocParseConfig _parseConfig;
+
+    public SwaggerGeneratorConfig(RestDocParseConfig parseConfig)
+    {
+        _parseConfig = parseConfig;
+    }
 
     private String _version;
     private String _description;

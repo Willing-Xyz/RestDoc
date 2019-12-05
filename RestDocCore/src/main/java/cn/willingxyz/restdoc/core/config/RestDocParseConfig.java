@@ -6,11 +6,13 @@ import cn.willingxyz.restdoc.core.parse.postprocessor.IParameterPostProcessor;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IResponsePostProcessor;
 import cn.willingxyz.restdoc.core.parse.postprocessor.impl.*;
+import cn.willingxyz.restdoc.core.utils.ServiceLoaders;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static cn.willingxyz.restdoc.core.utils.ServiceLoaders.loadServices;
 
 @Data
 public  class RestDocParseConfig {
@@ -43,45 +45,32 @@ public  class RestDocParseConfig {
 
     public RestDocParseConfig()
     {
-        _controllerResolvers = loadServices(IControllerResolver.class);
-        _controllerFilters = loadServices(IControllerFilter.class);
-        _controllerParsers = loadServices(IControllerParser.class);
+        _controllerResolvers = loadServices(IControllerResolver.class, this);
+        _controllerFilters = loadServices(IControllerFilter.class, this);
+        _controllerParsers = loadServices(IControllerParser.class, this);
 
-        _methodParsers = loadServices(IMethodParser.class);
-        _methodFilters = loadServices(IMethodFilter.class);
+        _methodParsers = loadServices(IMethodParser.class, this);
+        _methodFilters = loadServices(IMethodFilter.class, this);
 
-        _methodParameterFilters = loadServices(IMethodParameterFilter.class);
-        _methodParameterParsers = loadServices(IMethodParameterParser.class);
+        _methodParameterFilters = loadServices(IMethodParameterFilter.class, this);
+        _methodParameterParsers = loadServices(IMethodParameterParser.class, this);
 
-        _returnParsers = loadServices(IMethodReturnParser.class);
+        _returnParsers = loadServices(IMethodReturnParser.class, this);
 
         _propertyPostProcessor = new ComposePropertyPostProcessor();
         _parameterPostProcessor = new ComposeParameterPostProcessor();
         _responsePostProcessor = new ComposeResponsePostProcessor();
         _typeInspector = new ComposeTypeInspector();
 
-        loadServices(IPropertyPostProcessor.class).forEach(o -> _propertyPostProcessor.add(o));
-        loadServices(IParameterPostProcessor.class).forEach(o -> _parameterPostProcessor.add(o));
-        loadServices(IResponsePostProcessor.class).forEach(o -> _responsePostProcessor.add(o));
-        loadServices(ITypeInspector.class).forEach(o -> _typeInspector.add(o));
+        loadServices(IPropertyPostProcessor.class, this).forEach(o -> _propertyPostProcessor.add(o));
+        loadServices(IParameterPostProcessor.class, this).forEach(o -> _parameterPostProcessor.add(o));
+        loadServices(IResponsePostProcessor.class, this).forEach(o -> _responsePostProcessor.add(o));
+        loadServices(ITypeInspector.class, this).forEach(o -> _typeInspector.add(o));
 
         _propertyResolver = new PropertyResolver(this);
         _propertyParser = new PropertyParser(this, _propertyResolver);
         _typeParser = new TypeParser(_propertyResolver, _propertyParser, _propertyPostProcessor);
     }
 
-    private <T> List<T> loadServices(Class<T> clazz)
-    {
-        List<T> processors = new ArrayList<>();
-        ServiceLoader<T> serviceLoader = ServiceLoader.load(clazz);
-        serviceLoader.forEach(o -> {
-            if (o instanceof IRestDocParseConfigAware)
-            {
-                IRestDocParseConfigAware configAware = (IRestDocParseConfigAware) o;
-                configAware.setRestDocParseConfig(this);
-            }
-            processors.add(o);
-        });
-        return processors;
-    }
+
 }

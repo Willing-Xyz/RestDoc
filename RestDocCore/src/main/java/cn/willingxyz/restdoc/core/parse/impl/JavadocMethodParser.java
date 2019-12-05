@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.core.parse.impl;
 
+import cn.willingxyz.restdoc.core.config.ExtOrder;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.models.PathModel;
 import com.github.therapi.runtimejavadoc.MethodJavadoc;
@@ -9,6 +10,7 @@ import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 
 @AutoService(IMethodParser.class)
+@ExtOrder(Integer.MAX_VALUE)
 public class JavadocMethodParser implements IMethodParser {
     @Override
     public PathModel parse(Method method, MethodJavadoc methodJavadoc, PathModel pathModel) {

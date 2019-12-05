@@ -79,7 +79,7 @@ public class RestDocParser implements IRestDocParser {
         for (int i = 0; i < parameters.length; i++) {
             ParamJavadoc paramJavadoc = null;
             Parameter parameter = parameters[i];
-            if (!parameter.isNamePresent()) {
+            if (!parameter.isNamePresent() && parameterNames != null) {
                 String parameterName = parameterNames[i];
                 ReflectUtils.setFieldValue(parameter, "name", parameterName);
             }

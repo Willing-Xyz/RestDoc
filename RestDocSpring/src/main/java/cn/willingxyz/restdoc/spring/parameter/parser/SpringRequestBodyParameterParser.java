@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.spring.parameter.parser;
 
+import cn.willingxyz.restdoc.core.config.ExtOrder;
 import cn.willingxyz.restdoc.core.models.ParameterModel;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
 import cn.willingxyz.restdoc.core.parse.impl.AbstractMethodParameterParser;
@@ -12,6 +13,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 @AutoService(IMethodParameterParser.class)
+@ExtOrder(900)
 public class SpringRequestBodyParameterParser extends AbstractMethodParameterParser {
 
     @Override
