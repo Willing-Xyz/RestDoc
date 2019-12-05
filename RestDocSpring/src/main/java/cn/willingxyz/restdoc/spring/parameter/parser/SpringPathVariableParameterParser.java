@@ -14,7 +14,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 @AutoService(IMethodParameterParser.class)
-@ExtOrder(800)
+@ExtOrder(300)
 public class SpringPathVariableParameterParser extends AbstractMethodParameterParser {
 
     @Override

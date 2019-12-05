@@ -10,7 +10,7 @@ import com.google.auto.service.AutoService;
 import java.lang.reflect.Method;
 
 @AutoService(IMethodParser.class)
-@ExtOrder(Integer.MAX_VALUE)
+@ExtOrder(Integer.MIN_VALUE)
 public class JavadocMethodParser implements IMethodParser {
     @Override
     public PathModel parse(Method method, MethodJavadoc methodJavadoc, PathModel pathModel) {

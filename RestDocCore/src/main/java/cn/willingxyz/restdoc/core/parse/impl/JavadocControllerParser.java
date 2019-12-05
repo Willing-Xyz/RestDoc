@@ -8,7 +8,7 @@ import cn.willingxyz.restdoc.core.parse.IControllerParser;
 import com.google.auto.service.AutoService;
 
 @AutoService(IControllerParser.class)
-@ExtOrder(Integer.MAX_VALUE)
+@ExtOrder(Integer.MIN_VALUE)
 public class JavadocControllerParser implements IControllerParser {
 
     @Override

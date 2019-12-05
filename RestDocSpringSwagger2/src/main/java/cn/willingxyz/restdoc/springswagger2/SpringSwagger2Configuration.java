@@ -34,7 +34,8 @@ import java.util.List;
 public class SpringSwagger2Configuration {
 
     @Bean("swagger2")
-    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig, @Autowired(required = false) RestDocConfigSwagger2Ext ext) {
+    IRestDocParser _docParser(@Autowired(required = false) RestDocConfig restDocConfig,
+                              @Autowired(required = false) RestDocConfigSwagger2Ext ext) {
         if (restDocConfig == null) {
             restDocConfig = RestDocConfig.builder()
                     .apiDescription("API descritpion")
@@ -91,7 +92,6 @@ public class SpringSwagger2Configuration {
             uiConfiguration = new SwaggerUIConfiguration();
         }
         var controller = new SpringSwagger2Controller(docParser, uiConfiguration);
-//        controller.setUiConfiguration(uiConfiguration);
         return controller;
     }
 

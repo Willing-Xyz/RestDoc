@@ -13,7 +13,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 @AutoService(IMethodParameterParser.class)
-@ExtOrder(900)
+@ExtOrder(200)
 public class SpringRequestBodyParameterParser extends AbstractMethodParameterParser {
 
     @Override

@@ -36,7 +36,7 @@ public class ServiceLoaders {
             }
             entries.add(new HashMap.SimpleEntry(order, o));
         });
-        entries.sort(Comparator.comparing((Map.Entry<Integer, T> entry) -> entry.getKey()).reversed());
-        return entries.stream().map(o -> o.getValue()).collect(Collectors.toList());
+        entries.sort(Comparator.comparing(Map.Entry::getKey));
+        return entries.stream().map(Map.Entry::getValue).collect(Collectors.toList());
     }
 }

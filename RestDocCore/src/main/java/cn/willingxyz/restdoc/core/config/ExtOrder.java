@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 扩展的顺序. 值越大越先执行
+ * 扩展的顺序. 值越低优先级越高
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

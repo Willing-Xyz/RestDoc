@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 @AutoService(IMethodParameterParser.class)
-@ExtOrder(500)
+@ExtOrder(600)
 public class SpringPrimitiveParameterParser extends AbstractMethodParameterParser {
 
     @Override

@@ -48,22 +48,22 @@ public class SpringSwagger3Configuration {
 
 
         // todo 从spring容器中获取实例
-        Swagger3GeneratorConfig docConfig = new Swagger3GeneratorConfig(parseConfig);
-        docConfig.setDescription(restDocConfig.getApiDescription());
-        docConfig.setTitle(restDocConfig.getApiTitle());
-        docConfig.setVersion(restDocConfig.getApiVersion());
-        docConfig.setServers(convertServers(restDocConfig.getServers()));
-        docConfig.setSwaggerTypeInspector(new PrimitiveSwaggerTypeInspector());
-        docConfig.setTypeInspector(new JavaTypeInspector());
-        docConfig.setTypeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()));
-        docConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
-        docConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
-        docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
+        Swagger3GeneratorConfig generatorConfig = new Swagger3GeneratorConfig(parseConfig);
+        generatorConfig.setDescription(restDocConfig.getApiDescription());
+        generatorConfig.setTitle(restDocConfig.getApiTitle());
+        generatorConfig.setVersion(restDocConfig.getApiVersion());
+        generatorConfig.setServers(convertServers(restDocConfig.getServers()));
+        generatorConfig.setSwaggerTypeInspector(new PrimitiveSwaggerTypeInspector());
+        generatorConfig.setTypeInspector(new JavaTypeInspector());
+        generatorConfig.setTypeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()));
+        generatorConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
+        generatorConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
+        generatorConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
         if(ext!=null)
-            docConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
+            generatorConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
 
         parseConfig.getControllerResolvers().add(new SpringControllerResolver());
-        parseConfig.setRestDocGenerator(new Swagger3RestDocGenerator(docConfig));
+        parseConfig.setRestDocGenerator(new Swagger3RestDocGenerator(generatorConfig));
         parseConfig.setFieldPrefix(restDocConfig.getFieldPrefix());
 
         return new RestDocParser(parseConfig);

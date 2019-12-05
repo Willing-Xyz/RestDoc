@@ -10,7 +10,7 @@ public class TestSwaggerFilter implements ISwaggerFilter {
     public Swagger handle(Swagger swagger) {
         System.out.println("handle swagger");
 
-        swagger.setHost("http://localhost:8084?info=add_by_extension");
+//        swagger.setHost("http://localhost:8084?info=add_by_extension");
 
         return swagger;
     }
