@@ -39,7 +39,6 @@ public  class RestDocParseConfig {
     private ComposeTypeInspector _typeInspector;
 
     private String _fieldPrefix;
-    private List<String> _packages = new ArrayList<>();
 
     private IRestDocGenerator _restDocGenerator;
 

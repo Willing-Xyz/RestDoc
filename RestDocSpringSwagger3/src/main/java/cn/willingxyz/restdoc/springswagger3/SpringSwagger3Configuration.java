@@ -44,8 +44,7 @@ public class SpringSwagger3Configuration {
                     .build();
         }
         var parseConfig = new SpringRestDocParseConfig();
-        parseConfig.setPackages(restDocConfig.getPackages());
-
+        parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
 
         // todo 从spring容器中获取实例
         Swagger3GeneratorConfig generatorConfig = new Swagger3GeneratorConfig(parseConfig);

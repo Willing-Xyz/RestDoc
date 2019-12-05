@@ -47,7 +47,7 @@ public class SpringSwagger2Configuration {
         }
         var parseConfig = new SpringRestDocParseConfig();
 
-        parseConfig.setPackages(restDocConfig.getPackages());
+        parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
 
         // todo 从spring容器中获取实例
         var docConfig = new Swagger2GeneratorConfig(parseConfig);

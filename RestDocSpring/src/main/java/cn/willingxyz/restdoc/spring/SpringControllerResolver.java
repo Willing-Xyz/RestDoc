@@ -12,23 +12,23 @@ import org.springframework.stereotype.Controller;
 
 import java.util.*;
 
-@AutoService(IControllerResolver.class)
-public class SpringControllerResolver extends AbstractRestDocParseConfigAware implements IControllerResolver {
+public class SpringControllerResolver implements IControllerResolver {
     private static Logger _logger = LoggerFactory.getLogger(SpringControllerResolver.class);
+    private final List<String> _packages;
 
-    public SpringControllerResolver()
-    {
+    public SpringControllerResolver(List<String> packages) {
+        _packages = packages;
     }
 
     @Override
     public List<Class> getClasses() {
-        List<String> packages = _config.getPackages();
+        List<String> packages = _packages;
 
         var scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
 
         var classes = new ArrayList<Class>();
-        if(packages==null)packages= Arrays.asList("cn","com");
+        if (packages == null) packages = Arrays.asList("cn", "com");
         for (var packageName : packages) {
             var beans = scanner.findCandidateComponents(packageName);
             for (var bean : beans) {
