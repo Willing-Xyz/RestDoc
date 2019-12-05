@@ -7,9 +7,9 @@ import cn.willingxyz.restdoc.core.models.ResponseModel;
 import com.github.therapi.runtimejavadoc.Comment;
 import cn.willingxyz.restdoc.core.parse.IMethodReturnParser;
 import lombok.var;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
@@ -26,9 +26,9 @@ public abstract class AbstractMethodReturnParser extends AbstractRestDocParseCon
         Type actualType = method.getGenericReturnType();
         if (actualType == Optional.class)
         {
-            if (method.getGenericReturnType() instanceof ParameterizedTypeImpl)
+            if (method.getGenericReturnType() instanceof ParameterizedType)
             {
-                actualType = ((ParameterizedTypeImpl)method.getGenericReturnType()).getActualTypeArguments()[0];
+                actualType = ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
             }
             else
             {

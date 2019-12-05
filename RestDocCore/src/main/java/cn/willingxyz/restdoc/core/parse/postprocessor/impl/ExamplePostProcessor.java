@@ -1,5 +1,6 @@
 package cn.willingxyz.restdoc.core.parse.postprocessor.impl;
 
+import cn.willingxyz.restdoc.core.annotations.Example;
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IParameterPostProcessor;
 import cn.willingxyz.restdoc.core.parse.postprocessor.IPropertyPostProcessor;
@@ -11,6 +12,7 @@ import com.github.therapi.runtimejavadoc.MethodJavadoc;
 import com.github.therapi.runtimejavadoc.OtherJavadoc;
 import com.google.auto.service.AutoService;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -40,27 +42,42 @@ public class ExamplePostProcessor implements IPropertyPostProcessor, IParameterP
         if (propertyItem.getField() != null)
         {
             example = RuntimeJavadocUtils.getTagComment(propertyItem.getField(), "example");
+            example = getExampleFromAnnotation(propertyItem.getField(), example);
         }
         if (example == null || example.trim().isEmpty())
         {
             if (propertyItem.getGetMethod() != null) {
                 example = RuntimeJavadocUtils.getTagComment(propertyItem.getGetMethod(), "returnExample");
+                example = getExampleFromAnnotation(propertyItem.getGetMethod(), example);
             }
         }
         if (example == null || example.trim().isEmpty())
         {
             if (propertyItem.getSetMethod() != null) {
                 example = RuntimeJavadocUtils.getTagComment(propertyItem.getSetMethod(), "paramExample");
+                example = getExampleFromAnnotation(propertyItem.getSetMethod(), example);
             }
         }
         return example;
     }
     private String getParameterExample(Parameter parameter)
     {
-        return RuntimeJavadocUtils.getTagComment((Method) parameter.getDeclaringExecutable(), "paramExample", parameter.getName());
+        String example = RuntimeJavadocUtils.getTagComment((Method) parameter.getDeclaringExecutable(), "paramExample", parameter.getName());
+        return getExampleFromAnnotation(parameter, example);
     }
     private String getResponseExample(Method method)
     {
-        return RuntimeJavadocUtils.getTagComment(method, "returnExample");
+        String example = RuntimeJavadocUtils.getTagComment(method, "returnExample");
+        return getExampleFromAnnotation(method, example);
+    }
+    private String getExampleFromAnnotation(AnnotatedElement element, String example)
+    {
+        if (example == null || example.trim().isEmpty())
+        {
+            Example exampleAnno = element.getAnnotation(Example.class);
+            if (exampleAnno != null)
+                example = exampleAnno.value();
+        }
+        return example;
     }
 }

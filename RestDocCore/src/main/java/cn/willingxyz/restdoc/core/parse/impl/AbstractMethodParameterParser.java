@@ -6,10 +6,10 @@ import cn.willingxyz.restdoc.core.config.AbstractRestDocParseConfigAware;
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
@@ -27,9 +27,9 @@ public abstract class AbstractMethodParameterParser extends AbstractRestDocParse
         Type actualParamType = parameter.getParameterizedType();
         if (parameter.getType() == Optional.class)
         {
-            if (parameter.getParameterizedType() instanceof ParameterizedTypeImpl)
+            if (parameter.getParameterizedType() instanceof ParameterizedType)
             {
-                actualParamType = ((ParameterizedTypeImpl)parameter.getParameterizedType()).getActualTypeArguments()[0];
+                actualParamType = ((ParameterizedType)parameter.getParameterizedType()).getActualTypeArguments()[0];
             }
             else
             {
