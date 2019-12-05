@@ -7,7 +7,7 @@
     <groupId>cn.willingxyz.restdoc</groupId>
     <artifactId>restdoc</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.0.0-beta</version>
+    <version>0.2.0.0-beta1</version>
 
     <parent>
         <groupId>cn.willingxyz.parentpom</groupId>
@@ -30,7 +30,7 @@
 
     <properties>
         <!-- version -->
-        <RestDoc.Version>0.2.0.0-beta</RestDoc.Version>
+        <RestDoc.Version>0.2.0.0-beta1</RestDoc.Version>
     </properties>
 
     <dependencies>

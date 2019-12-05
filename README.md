@@ -17,7 +17,7 @@ Maven项目增加依赖：
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger3</artifactId>
-     <version>0.2.0.0-beta</version>
+     <version>0.2.0.0-beta1</version>
 </dependency>
 <dependency>
     <groupId>com.github.therapi</groupId>
@@ -66,7 +66,7 @@ public class SwaggerConfig {
 <dependency>
     <groupId>cn.willingxyz.restdoc</groupId>
     <artifactId>RestDocBeanValidation</artifactId>
-    <version>0.2.0.0-beta</version>
+    <version>0.2.0.0-beta1</version>
 </dependency>
 ```
 
@@ -96,7 +96,7 @@ public class SwaggerConfig {
 <dependency>
     <groupId>cn.willingxyz.restdoc</groupId>
     <artifactId>RestDocJackson</artifactId>
-    <version>0.2.0.0-beta</version>
+    <version>0.2.0.0-beta1</version>
 </dependency>
 ```
 
@@ -165,7 +165,7 @@ Name属性对应的字段是_name，因此 fieldPrefix应该设置为 `.fieldPre
 <dependency>
      <groupId>cn.willingxyz.restdoc</groupId>
      <artifactId>RestDocSpringSwagger2</artifactId>
-     <version>0.2.0.0-beta</version>
+     <version>0.2.0.0-beta1</version>
 </dependency>
 <dependency>
     <groupId>com.github.therapi</groupId>
@@ -188,7 +188,7 @@ public class SwaggerConfig {
 
 docker通过以下命令运行：
 
-`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.2.0.0-beta`
+`docker run --rm -d -p 8084:8084 willingxyz/restdoc:0.2.0.0-beta1`
 
 swagger3规范打开 http://localhost:8084/swagger-ui/index.html 查看。
 swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
