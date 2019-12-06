@@ -26,7 +26,10 @@ function configUI(baseUrl) {
                plugins: [
                    SwaggerUIBundle.plugins.DownloadUrl
                ],
-               layout: result.layout
+               layout: result.layout,
+               onComplete: function () {
+                   handleAuthorizeAction();
+               }
            })
         }
     });
