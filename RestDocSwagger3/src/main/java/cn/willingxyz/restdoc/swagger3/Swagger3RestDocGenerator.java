@@ -371,7 +371,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
         for (var propertyModel : propertyModels) {
             var schema = generateSchema(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
-            schema.setRequired(propertyModels.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
+//            schema.setRequired(propertyModels.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
