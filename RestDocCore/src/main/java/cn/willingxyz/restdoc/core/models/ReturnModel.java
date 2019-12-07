@@ -26,4 +26,8 @@ public class ReturnModel {
      * 例子
      */
     private String _example;
+    /**
+     * 枚举的可选值
+     */
+    private List<String> enums;
 }

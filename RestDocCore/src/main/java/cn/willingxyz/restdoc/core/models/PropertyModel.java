@@ -43,4 +43,9 @@ public class PropertyModel {
      * 该属性包含的属性，如属性为对象类型时，包含对象每个key的参数信息
      */
     private List<PropertyModel> _children = new ArrayList<>();
+
+    /**
+     * 枚举的可选值
+     */
+    private List<String> enums;
 }

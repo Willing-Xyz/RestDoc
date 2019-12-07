@@ -5,6 +5,7 @@ import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
 import cn.willingxyz.restdoc.swagger.common.utils.ClassNameUtils;
+import cn.willingxyz.restdoc.swagger.common.utils.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,23 +51,13 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             }
         }
 
-        var objectMapper = objectMapper();
+        var objectMapper = JsonUtils.objectMapper();
         try {
             var swaggerJson = objectMapper.writeValueAsString(openApi);
             return swaggerJson;
         } catch (JsonProcessingException e) {
             throw new RuntimeException("序列化错误");
         }
-    }
-
-    private ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Enum.class, new EnumSerializer());
-        objectMapper.registerModule(module);
-        return objectMapper;
     }
 
     private OpenAPI generateOpenApi(RootModel rootModel) {

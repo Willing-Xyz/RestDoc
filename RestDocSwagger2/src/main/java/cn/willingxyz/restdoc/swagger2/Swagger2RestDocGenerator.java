@@ -2,15 +2,12 @@ package cn.willingxyz.restdoc.swagger2;
 
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.IRestDocGenerator;
-import cn.willingxyz.restdoc.core.parse.utils.EnumSerializer;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
 import cn.willingxyz.restdoc.swagger.common.utils.ClassNameUtils;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import cn.willingxyz.restdoc.swagger.common.utils.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import io.swagger.models.*;
 import io.swagger.models.parameters.*;
@@ -65,23 +62,12 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             }
         }
 
-        var objectMapper = objectMapper();
+        var objectMapper = JsonUtils.objectMapper();
         try {
-            var swaggerJson = objectMapper.writeValueAsString(swagger);
-            return swaggerJson;
+            return objectMapper.writeValueAsString(swagger);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("序列化错误");
         }
-    }
-
-    private ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Enum.class, new EnumSerializer());
-        objectMapper.registerModule(module);
-        return objectMapper;
     }
 
     private Swagger generateSwagger(RootModel rootModel) {
@@ -160,8 +146,6 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     }
 
     private void convertSinglePath(Swagger swagger, ControllerModel controller, PathModel method, MappingModel mapping) {
-
-
         var operation = new Operation();
         operation.addTag(getTagName(controller));
         operation.setSummary(TextUtils.getFirstLine(method.getDescription()));
@@ -170,17 +154,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
         // 参数解析
         for (var param : method.getParameters()) {
-            if (param.getLocation() == ParameterModel.ParameterLocation.QUERY) {
-                convertQueryString(param, swagger).forEach(o -> operation.addParameter(o));
-            } else if (param.getLocation() == ParameterModel.ParameterLocation.BODY) {
-                operation.addParameter(convertRequestBody(param, swagger));
-            } else if (param.getLocation() == ParameterModel.ParameterLocation.PATH) {
-                operation.addParameter(generateSingleParameterSchema("path", param, swagger));
-            } else if (param.getLocation() == ParameterModel.ParameterLocation.HEADER) {
-                operation.addParameter(generateSingleParameterSchema("header", param, swagger));
-            } else if (param.getLocation() == ParameterModel.ParameterLocation.FILE) {
-                operation.addParameter(convertFileParameter(param));
-            }
+            convertParameter(swagger, operation, param);
         }
         // 响应解析
         operation.setResponses(convertResponses(method, swagger));
@@ -202,6 +176,21 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         }
     }
 
+    private void convertParameter(Swagger swagger, Operation operation, ParameterModel param) {
+        if (param.getLocation() == ParameterModel.ParameterLocation.QUERY) {
+            convertQueryString(param, swagger).forEach(o -> operation.addParameter(o));
+        } else if (param.getLocation() == ParameterModel.ParameterLocation.BODY) {
+            operation.addParameter(convertRequestBody(param, swagger));
+        } else if (param.getLocation() == ParameterModel.ParameterLocation.PATH) {
+            operation.addParameter(generateSingleParameterSchema("path", param, swagger));
+        } else if (param.getLocation() == ParameterModel.ParameterLocation.HEADER) {
+            operation.addParameter(generateSingleParameterSchema("header", param, swagger));
+        } else if (param.getLocation() == ParameterModel.ParameterLocation.FILE) {
+            operation.consumes("multipart/form-data");
+            operation.addParameter(convertFileParameter(param));
+        }
+    }
+
     private Map<String, Response> convertResponses(PathModel method, Swagger swagger) {
         var responses = new LinkedHashMap<String, Response>();
         for (var res : method.getResponse()) {
@@ -219,8 +208,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         if (returnModel.getReturnType() == void.class || returnModel.getReturnType() == Void.class)
             return apiResponse;
 
-        apiResponse.setResponseSchema(getOrGenerateModel(returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
-        Property property = generateProperty(returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
+        apiResponse.setResponseSchema(getOrGenerateModel(false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
+        Property property = generateProperty(false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
         apiResponse.setSchema(property);
 
         apiResponse.setDescription(combineStr(apiResponse.getDescription(), property.getDescription()));
@@ -230,35 +219,37 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
 
     private Parameter convertFileParameter(ParameterModel param) {
-        var requestBody = new FormParameter();
+        var formDataParameter = new FormParameter();
 
-        requestBody.setName(param.getName());
-        requestBody.setDescription(param.getDescription());
-        requestBody.setExample(param.getExample());
+        formDataParameter.setType("file");
+        formDataParameter.setName(param.getName());
+        formDataParameter.setDescription(param.getDescription());
+        formDataParameter.setExample(param.getExample());
 
-        requestBody.setRequired(param.isRequired());
+        formDataParameter.setRequired(param.isRequired());
 
-        return requestBody;
+        return formDataParameter;
     }
 
     private Parameter convertRequestBody(ParameterModel parameterModel, Swagger swagger) {
         BodyParameter bodyParameter = new BodyParameter();
+        bodyParameter.setName(parameterModel.getName());
         bodyParameter.setDescription(parameterModel.getDescription());
         bodyParameter.setRequired(parameterModel.isRequired());
 
-        Model model = getOrGenerateModel(parameterModel.getExample(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
+        Model model = getOrGenerateModel(parameterModel.isRequired(), parameterModel.getExample(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
         bodyParameter.setSchema(model);
 
         return bodyParameter;
     }
 
-    private Model getOrGenerateModel(String example, String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
+    private Model getOrGenerateModel(boolean required, String example, String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
         var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), parameterType);
 
         if (swagger.getDefinitions() == null)
             swagger.setDefinitions(new LinkedHashMap<>());
         if (!swagger.getDefinitions().containsKey(componentName)) {
-            Property property = generateProperty(example, description, parameterType, children, swagger);
+            Property property = generateProperty(required, example, description, parameterType, children, swagger);
             Model model = null;
             if (property instanceof ObjectProperty) {
                 model = new ModelImpl();
@@ -319,8 +310,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var parameters = new ArrayList<Parameter>();
         if (paramModel.getChildren() != null && paramModel.getChildren().size() > 0) // 复杂对象
         {
-            convertParameterChildren(paramModel.getChildren(), null, swagger)
-                    .stream().forEach(o -> parameters.add(o));
+            convertParameterChildren(paramModel.getChildren(), null, swagger).forEach(o -> parameters.add(o));
         } else {
             parameters.add(generateSingleParameterSchema("query", paramModel, swagger));
         }
@@ -334,7 +324,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
             name = paraName + ".";
         for (var child : propertyModels) {
             if (child.isArray()) {
-                convertParameterChildren(child.getChildren(), child.getName(), swagger).stream().forEach(o -> parameters.add(o));
+                convertParameterChildren(child.getChildren(), child.getName(), swagger).forEach(o -> parameters.add(o));
             } else if (child.getChildren() == null || child.getChildren().size() == 0) {
                 var parameter = new GenericParameter();
 
@@ -344,14 +334,13 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
                 parameter.setIn("query");
                 parameter.setRequired(child.isRequired());
 
-                Property property = generateProperty(child.getExample(), child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
+                Property property = generateProperty(child.isRequired(), child.getExample(), child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
                 parameter.setProperty(property);
                 parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
                 parameters.add(parameter);
             } else {
                 parameters.addAll(convertParameterChildren(child.getChildren(), name + child.getName(), swagger));
             }
-            // todo path
         }
         return parameters;
     }
@@ -364,18 +353,17 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         parameter.setExample(paramModel.getExample());
         parameter.setRequired(paramModel.isRequired());
 
-        Property property = generateProperty(paramModel.getExample(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
+        Property property = generateProperty(paramModel.isRequired(), paramModel.getExample(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
         parameter.setProperty(property);
         parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
-
 
         return parameter;
     }
 
-    private Property generateProperty(String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateProperty(boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         // 数组/集合
         if (_config.getTypeInspector().isCollection(type)) {
-            return generateArrayProperty(example, description, type, children, swagger);
+            return generateArrayProperty(required, example, description, type, children, swagger);
         }
         // 枚举
         if (ReflectUtils.isEnum(type)) {
@@ -383,7 +371,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         }
         // 简单类型
         if (children == null || children.isEmpty()) {
-            return generateSimpleTypeSchema(example, description, type);
+            return generateSimpleTypeSchema(required, example, description, type);
         }
         // 复杂类型
         return generateComplexSchema(type, children, swagger);
@@ -402,25 +390,26 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var schemas = new LinkedHashMap<String, Property>();
 
         for (var propertyModel : propertyModels) {
-            var schema = generateProperty(propertyModel.getExample(), propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
+            var schema = generateProperty(propertyModel.isRequired(), propertyModel.getExample(), propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
     }
 
-    private Property generateSimpleTypeSchema(String example, String description, Type type) {
+    private Property generateSimpleTypeSchema(boolean required, String example, String description, Type type) {
         var property = new ObjectProperty();
         property.setDescription(description);
         property.setType(_config.getSwaggerTypeInspector().toSwaggerType(type));
         property.setFormat(_config.getSwaggerTypeInspector().toSwaggerFormat(type));
         property.setExample(example);
+        property.setRequired(required);
         return property;
     }
 
-    private Property generateArrayProperty(String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateArrayProperty(boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         ArrayProperty arrayProperty = new ArrayProperty();
         arrayProperty.setDescription(description);
-        Property property = generateProperty(example, description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
+        Property property = generateProperty(required, example, description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
         arrayProperty.setItems(property);
         arrayProperty.setDescription(combineStr(property.getDescription(), arrayProperty.getDescription()));
         return arrayProperty;

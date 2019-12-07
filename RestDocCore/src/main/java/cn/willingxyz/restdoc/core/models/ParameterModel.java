@@ -36,6 +36,11 @@ public class ParameterModel {
      */
     private List<PropertyModel> _children = new ArrayList<>();
 
+    /**
+     * 枚举的可选值
+     */
+    private List<String> enums;
+
     public enum ParameterLocation
     {
         BODY, QUERY, PATH, HEADER, FILE;
