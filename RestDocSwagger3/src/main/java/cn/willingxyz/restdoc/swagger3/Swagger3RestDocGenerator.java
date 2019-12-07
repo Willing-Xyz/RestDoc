@@ -324,6 +324,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
             openAPI.getComponents().schemas(new LinkedHashMap<>());
         if (!openAPI.getComponents().getSchemas().containsKey(componentName)) {
             var schema = generateComplexTypeSchema(type, children, openAPI);
+            schema.setRequired(children.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
             openAPI.getComponents().addSchemas(componentName, schema);
         }
         return openAPI.getComponents().getSchemas().get(componentName);
@@ -370,6 +371,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
         for (var propertyModel : propertyModels) {
             var schema = generateSchema(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
+            schema.setRequired(propertyModels.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
