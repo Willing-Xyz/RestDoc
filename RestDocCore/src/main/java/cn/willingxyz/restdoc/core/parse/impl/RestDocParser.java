@@ -3,6 +3,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 import cn.willingxyz.restdoc.core.models.*;
 import cn.willingxyz.restdoc.core.parse.IRestDocParser;
 import cn.willingxyz.restdoc.core.config.RestDocParseConfig;
+import cn.willingxyz.restdoc.core.parse.utils.ParamUtils;
 import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.RuntimeJavadocUtils;
 import com.github.therapi.runtimejavadoc.ClassJavadoc;
@@ -76,15 +77,19 @@ public class RestDocParser implements IRestDocParser {
         }
         String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
         Parameter[] parameters = method.getParameters();
+
         for (int i = 0; i < parameters.length; i++) {
             ParamJavadoc paramJavadoc = null;
             Parameter parameter = parameters[i];
+            String parameterName;
             if (!parameter.isNamePresent() && parameterNames != null) {
-                String parameterName = parameterNames[i];
-                ReflectUtils.setFieldValue(parameter, "name", parameterName);
+                parameterName = parameterNames[i];
+                ParamUtils.cacheParameterName(parameter, parameterName);
+            } else {
+                parameterName = parameter.getName();
             }
             if (methodJavadoc != null) {
-                paramJavadoc = methodJavadoc.getParams().stream().filter(o -> o.getName().equals(parameter.getName())).findFirst().orElse(null);
+                paramJavadoc = methodJavadoc.getParams().stream().filter(o -> o.getName().equals(parameterName)).findFirst().orElse(null);
             }
             var parameterModel = handleMethodParameter(parameter, paramJavadoc);
             if (parameterModel != null)
@@ -115,8 +120,7 @@ public class RestDocParser implements IRestDocParser {
                 lastResponseModel = returnParser.parse(method, returns, lastResponseModel);
             }
         }
-        for (int i = 0; i < responseModels.size(); ++i)
-        {
+        for (int i = 0; i < responseModels.size(); ++i) {
             ResponseModel responseModel = responseModels.get(i);
             responseModel = _configuration.getResponsePostProcessor().postProcess(responseModel, method);
             responseModels.set(i, responseModel);

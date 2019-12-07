@@ -13,7 +13,6 @@ import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import cn.willingxyz.restdoc.core.parse.utils.TextUtils;
 import com.github.therapi.runtimejavadoc.RuntimeJavadoc;
 import com.google.auto.service.AutoService;
-import javafx.beans.property.StringProperty;
 import lombok.var;
 
 import java.lang.reflect.Method;

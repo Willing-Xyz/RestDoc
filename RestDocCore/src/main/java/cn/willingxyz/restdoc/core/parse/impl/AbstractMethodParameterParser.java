@@ -3,6 +3,7 @@ package cn.willingxyz.restdoc.core.parse.impl;
 import cn.willingxyz.restdoc.core.models.ParameterModel;
 import cn.willingxyz.restdoc.core.models.TypeContext;
 import cn.willingxyz.restdoc.core.config.AbstractRestDocParseConfigAware;
+import cn.willingxyz.restdoc.core.parse.utils.ParamUtils;
 import com.github.therapi.runtimejavadoc.ParamJavadoc;
 import cn.willingxyz.restdoc.core.parse.IMethodParameterParser;
 import cn.willingxyz.restdoc.core.parse.utils.FormatUtils;
@@ -49,7 +50,7 @@ public abstract class AbstractMethodParameterParser extends AbstractRestDocParse
     }
 
     protected String getParameterName(Parameter parameter) {
-        return parameter.getName();
+        return ParamUtils.discoverParameterName(parameter);
     }
 
     protected abstract ParameterModel.ParameterLocation getParameterLocation(Parameter parameter, Type actualParamType);
