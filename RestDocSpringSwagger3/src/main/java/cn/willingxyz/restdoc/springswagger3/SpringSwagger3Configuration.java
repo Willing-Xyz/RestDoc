@@ -55,9 +55,13 @@ public class SpringSwagger3Configuration {
         generatorConfig.setSwaggerTypeInspector(new PrimitiveSwaggerTypeInspector());
         generatorConfig.setTypeInspector(new JavaTypeInspector());
         generatorConfig.setTypeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()));
-        generatorConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
         generatorConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
 
+        if (restDocConfig.isTagDescriptionAsName()) {
+            List<IOpenAPIFilter> openAPIFilters = new ArrayList<>(ext.getOpenAPIFilters());
+            openAPIFilters.add(new TagDescriptionAsNameOpenAPIFilter());
+            ext.setOpenAPIFilters(openAPIFilters);
+        }
         if (restDocConfig.isHideEmptyController()) {
             List<IOpenAPIFilter> openAPIFilters = new ArrayList<>(ext.getOpenAPIFilters());
             openAPIFilters.add(new HideEmptyControllerOpenAPIFilter());

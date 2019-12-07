@@ -44,10 +44,8 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     public String generate(RootModel rootModel) {
         var openApi = generateOpenApi(rootModel);
 
-        if (_config.getOpenAPIFilters() != null)
-        {
-            for (IOpenAPIFilter openAPIFilter : _config.getOpenAPIFilters())
-            {
+        if (_config.getOpenAPIFilters() != null) {
+            for (IOpenAPIFilter openAPIFilter : _config.getOpenAPIFilters()) {
                 openApi = openAPIFilter.handle(openApi);
             }
         }
@@ -61,8 +59,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         }
     }
 
-    private ObjectMapper objectMapper()
-    {
+    private ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -109,7 +106,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         for (var controller : rootModel.getControllers()) {
             var tag = new Tag();
             tag.setName(getTagName(controller));
-            if(!_config.isResolveJavaDocAsTypeName())
+            if (!_config.isResolveJavaDocAsTypeName())
                 tag.setDescription(controller.getDescription());
             openApi.addTagsItem(tag);
         }
@@ -153,8 +150,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
 
         for (var path : mapping.getPaths()) {
             PathItem pathItem = null;
-            if (openApi.getPaths() != null)
-            {
+            if (openApi.getPaths() != null) {
                 pathItem = openApi.getPaths().entrySet().stream()
                         .filter(o -> o.getKey().equals(path))
                         .map(o -> o.getValue())
@@ -428,10 +424,6 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     }
 
     private String getTagName(ControllerModel controller) {
-        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty()) {
-            return TextUtils.getFirstLine(controller.getDescription());
-        } else {
-            return _config.getTypeNameParser().parse(controller.getControllerClass());
-        }
+        return _config.getTypeNameParser().parse(controller.getControllerClass());
     }
 }

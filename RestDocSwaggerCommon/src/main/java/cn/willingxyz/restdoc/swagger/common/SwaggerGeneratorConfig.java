@@ -22,10 +22,6 @@ public class SwaggerGeneratorConfig {
     private String _description;
     private String _title;
     /**
-     * 把Tag的描述显示为tag Name。默认tag name为类的名字，如果该值为true，则使用javadoc的第一行作为name
-     */
-    private boolean _tagDescriptionAsName = false;
-    /**
      * 将JavaDoc的注释作为类的名称
      */
     private boolean _resolveJavaDocAsTypeName = false;

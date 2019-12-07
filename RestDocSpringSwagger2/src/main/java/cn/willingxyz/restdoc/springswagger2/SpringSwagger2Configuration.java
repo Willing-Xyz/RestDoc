@@ -55,10 +55,15 @@ public class SpringSwagger2Configuration {
         docConfig.setVersion(restDocConfig.getApiVersion());
         docConfig.setServers(convertServers(restDocConfig.getServers()));
         docConfig.setSwaggerTypeInspector(new PrimitiveSwaggerTypeInspector());
-        docConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
         docConfig.setTypeInspector(new JavaTypeInspector());
         docConfig.setTypeNameParser(new TypeNameParser());
 
+        if (restDocConfig.isTagDescriptionAsName())
+        {
+            List<ISwaggerFilter> swaggerFilters = new ArrayList<>(ext.getSwaggerFilters());
+            swaggerFilters.add(new TagDescriptionAsNameSwaggerFilter());
+            ext.setSwaggerFilters(swaggerFilters);
+        }
         if (restDocConfig.isHideEmptyController()) {
             List<ISwaggerFilter> swaggerFilters = new ArrayList<>(ext.getSwaggerFilters());
             swaggerFilters.add(new HideEmptyControllerSwaggerFilter());

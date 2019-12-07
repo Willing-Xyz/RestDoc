@@ -458,12 +458,6 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
 
 
     private String getTagName(ControllerModel controller) {
-        if (_config.isTagDescriptionAsName() && controller.getDescription() != null && !controller.getDescription().isEmpty()) {
-            return TextUtils.getFirstLine(controller.getDescription());
-        } else {
-            return _config.getTypeNameParser().parse(controller.getControllerClass());
-        }
+        return _config.getTypeNameParser().parse(controller.getControllerClass());
     }
-
-
 }
