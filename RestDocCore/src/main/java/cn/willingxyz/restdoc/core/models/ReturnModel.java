@@ -29,5 +29,5 @@ public class ReturnModel {
     /**
      * 枚举的可选值
      */
-    private List<String> enums;
+    private List<String> _enums;
 }

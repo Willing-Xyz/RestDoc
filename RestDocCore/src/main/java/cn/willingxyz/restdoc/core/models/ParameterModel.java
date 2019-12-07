@@ -39,7 +39,7 @@ public class ParameterModel {
     /**
      * 枚举的可选值
      */
-    private List<String> enums;
+    private List<String> _enums;
 
     public enum ParameterLocation
     {

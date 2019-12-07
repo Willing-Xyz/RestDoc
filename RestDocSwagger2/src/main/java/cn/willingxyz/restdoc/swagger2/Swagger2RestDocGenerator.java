@@ -208,8 +208,8 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         if (returnModel.getReturnType() == void.class || returnModel.getReturnType() == Void.class)
             return apiResponse;
 
-        apiResponse.setResponseSchema(getOrGenerateModel(false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
-        Property property = generateProperty(false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
+        apiResponse.setResponseSchema(getOrGenerateModel(returnModel.getEnums(), false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger));
+        Property property = generateProperty(returnModel.getEnums(), false, returnModel.getExample(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), swagger);
         apiResponse.setSchema(property);
 
         apiResponse.setDescription(combineStr(apiResponse.getDescription(), property.getDescription()));
@@ -237,19 +237,19 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         bodyParameter.setDescription(parameterModel.getDescription());
         bodyParameter.setRequired(parameterModel.isRequired());
 
-        Model model = getOrGenerateModel(parameterModel.isRequired(), parameterModel.getExample(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
+        Model model = getOrGenerateModel(parameterModel.getEnums(), parameterModel.isRequired(), parameterModel.getExample(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), swagger);
         bodyParameter.setSchema(model);
 
         return bodyParameter;
     }
 
-    private Model getOrGenerateModel(boolean required, String example, String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
+    private Model getOrGenerateModel(List<String> enums, boolean required, String example, String description, Type parameterType, List<PropertyModel> children, Swagger swagger) {
         var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), parameterType);
 
         if (swagger.getDefinitions() == null)
             swagger.setDefinitions(new LinkedHashMap<>());
         if (!swagger.getDefinitions().containsKey(componentName)) {
-            Property property = generateProperty(required, example, description, parameterType, children, swagger);
+            Property property = generateProperty(enums, required, example, description, parameterType, children, swagger);
             Model model = null;
             if (property instanceof ObjectProperty) {
                 model = new ModelImpl();
@@ -334,7 +334,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
                 parameter.setIn("query");
                 parameter.setRequired(child.isRequired());
 
-                Property property = generateProperty(child.isRequired(), child.getExample(), child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
+                Property property = generateProperty(child.getEnums(), child.isRequired(), child.getExample(), child.getDescription(), child.getPropertyType(), child.getChildren(), swagger);
                 parameter.setProperty(property);
                 parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
                 parameters.add(parameter);
@@ -353,21 +353,21 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         parameter.setExample(paramModel.getExample());
         parameter.setRequired(paramModel.isRequired());
 
-        Property property = generateProperty(paramModel.isRequired(), paramModel.getExample(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
+        Property property = generateProperty(paramModel.getEnums(), paramModel.isRequired(), paramModel.getExample(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), swagger);
         parameter.setProperty(property);
         parameter.setDescription(combineStr(parameter.getDescription(), property.getDescription()));
 
         return parameter;
     }
 
-    private Property generateProperty(boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateProperty(List<String> enums, boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         // 数组/集合
         if (_config.getTypeInspector().isCollection(type)) {
-            return generateArrayProperty(required, example, description, type, children, swagger);
+            return generateArrayProperty(enums, required, example, description, type, children, swagger);
         }
         // 枚举
-        if (ReflectUtils.isEnum(type)) {
-            return generateEnumProperty((Class) type);
+        if (enums != null) {
+            return generateEnumProperty((Class) type, enums, description);
         }
         // 简单类型
         if (children == null || children.isEmpty()) {
@@ -390,7 +390,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         var schemas = new LinkedHashMap<String, Property>();
 
         for (var propertyModel : propertyModels) {
-            var schema = generateProperty(propertyModel.isRequired(), propertyModel.getExample(), propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
+            var schema = generateProperty(propertyModel.getEnums(), propertyModel.isRequired(), propertyModel.getExample(), propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), swagger);
             schemas.put(propertyModel.getName(), schema);
         }
         return schemas;
@@ -406,42 +406,19 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         return property;
     }
 
-    private Property generateArrayProperty(boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
+    private Property generateArrayProperty(List<String> enums, boolean required, String example, String description, Type type, List<PropertyModel> children, Swagger swagger) {
         ArrayProperty arrayProperty = new ArrayProperty();
         arrayProperty.setDescription(description);
-        Property property = generateProperty(required, example, description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
+        Property property = generateProperty(enums, required, example, description, _config.getTypeInspector().getCollectionComponentType(type), children, swagger);
         arrayProperty.setItems(property);
         arrayProperty.setDescription(combineStr(property.getDescription(), arrayProperty.getDescription()));
         return arrayProperty;
     }
 
-    // todo 枚举的解析放在RestDocParser中
-    private Property generateEnumProperty(Class clazz) {
+    private Property generateEnumProperty(Class clazz, List<String> enums, String description) {
         var property = new StringProperty();
-        var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
-
-        String enumStr = "";
-        for (var enumConst : enumDoc.getEnumConstants()) {
-            if (!enumStr.isEmpty())
-                enumStr += ", ";
-            enumStr += enumConst.getName();
-            String desc = FormatUtils.format(enumConst.getComment());
-            if (desc != null && !desc.isEmpty()) {
-                enumStr += ": " + desc;
-            }
-        }
-
-        String desc = FormatUtils.format(enumDoc.getComment());
-        if (desc == null || desc.isEmpty())
-            property.setDescription(enumStr);
-        else
-            property.setDescription(desc + "; " + enumStr);
-        var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
-        // todo 如何决定是string还是int
+        property.setDescription(description);
         property.setEnum(enums);
-//        if (enums.size() > 0) {
-//            property.setDefault(enums.get(0));
-//        }
         return property;
     }
 

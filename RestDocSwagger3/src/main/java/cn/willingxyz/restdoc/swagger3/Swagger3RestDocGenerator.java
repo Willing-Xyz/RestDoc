@@ -198,7 +198,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         requestBody.setRequired(parameterModel.isRequired());
         requestBody.setDescription(parameterModel.getDescription());
 
-        Schema contentSchema = generateSchema(parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), openAPI);
+        Schema contentSchema = generateSchema(parameterModel.getEnums(), parameterModel.getDescription(), parameterModel.getParameterType(), parameterModel.getChildren(), openAPI);
 
         requestBody.setContent(createContent(contentSchema));
         return requestBody;
@@ -247,7 +247,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         if (returnModel.getReturnType() == void.class || returnModel.getReturnType() == Void.class)
             return apiResponse;
 
-        Schema schema = generateSchema(returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), openAPI);
+        Schema schema = generateSchema(returnModel.getEnums(), returnModel.getDescription(), returnModel.getReturnType(), returnModel.getChildren(), openAPI);
 
         apiResponse.setContent(createContent(schema));
         return apiResponse;
@@ -277,7 +277,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         parameter.setIn(in);
         parameter.setRequired(paramModel.isRequired());
 
-        Schema schema = generateSchema(paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI);
+        Schema schema = generateSchema(paramModel.getEnums(), paramModel.getDescription(), paramModel.getParameterType(), paramModel.getChildren(), openAPI);
         parameter.setSchema(schema);
         parameter.setDescription(combineStr(parameter.getDescription(), schema.getDescription()));
         return parameter;
@@ -299,7 +299,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
                 parameter.setRequired(child.isRequired());
                 parameter.setIn("query");
 
-                Schema schema = generateSchema(child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI);
+                Schema schema = generateSchema(child.getEnums(), child.getDescription(), child.getPropertyType(), child.getChildren(), openAPI);
                 parameter.setSchema(schema);
                 parameter.setDescription(combineStr(parameter.getDescription(), schema.getDescription()));
 
@@ -315,7 +315,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     // ----------------------core---------------
 
     // 生成Schema，并放入openapi中。
-    private Schema getOrGenerateComplexSchema(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema getOrGenerateComplexSchema(List<String> enums, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var componentName = ClassNameUtils.getComponentName(_config.getTypeInspector(), _config.getTypeNameParser(), type);
 
         if (openAPI.getComponents() == null)
@@ -323,7 +323,7 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         if (openAPI.getComponents().getSchemas() == null)
             openAPI.getComponents().schemas(new LinkedHashMap<>());
         if (!openAPI.getComponents().getSchemas().containsKey(componentName)) {
-            var schema = generateComplexTypeSchema(type, children, openAPI);
+            var schema = generateComplexTypeSchema(enums, type, children, openAPI);
             schema.setRequired(children.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
             openAPI.getComponents().addSchemas(componentName, schema);
         }
@@ -331,46 +331,46 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
     }
 
     // 生成schema
-    private Schema generateSchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateSchema(List<String> enums, String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         // 数组/集合
         if (_config.getTypeInspector().isCollection(type)) {
-            return generateArraySchema(description, type, children, openAPI);
+            return generateArraySchema(enums, description, type, children, openAPI);
         }
         // 枚举
         if (ReflectUtils.isEnum(type)) {
-            return generateEnumSchema((Class) type);
+            return generateEnumSchema((Class) type, enums, description);
         }
         // 简单类型
         if (children == null || children.isEmpty()) {
             return generateSimpleTypeSchema(description, type);
         }
         // 复杂类型
-        return getOrGenerateComplexSchema(type, children, openAPI);
+        return getOrGenerateComplexSchema(enums, type, children, openAPI);
     }
 
-    private Schema generateArraySchema(String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateArraySchema(List<String> enums, String description, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var arraySchema = new ArraySchema();
         arraySchema.setDescription(description);
-        Schema schema = generateSchema(description, _config.getTypeInspector().getCollectionComponentType(type), children, openAPI);
+        Schema schema = generateSchema(enums, description, _config.getTypeInspector().getCollectionComponentType(type), children, openAPI);
         arraySchema.setItems(schema);
         arraySchema.setDescription(combineStr(arraySchema.getDescription(), schema.getDescription()));
         return arraySchema;
     }
 
-    private Schema generateComplexTypeSchema(Type type, List<PropertyModel> children, OpenAPI openAPI) {
+    private Schema generateComplexTypeSchema(List<String> enums, Type type, List<PropertyModel> children, OpenAPI openAPI) {
         var schema = new Schema();
         var classDoc = RuntimeJavadoc.getJavadoc(type.getTypeName());
         schema.setDescription(FormatUtils.format(classDoc.getComment()));
-        schema.setProperties(generateComplexTypeSchemaProperty(type, children, openAPI));
+        schema.setProperties(generateComplexTypeSchemaProperty(enums, type, children, openAPI));
 
         return schema;
     }
 
-    private Map<String, Schema> generateComplexTypeSchemaProperty(Type type, List<PropertyModel> propertyModels, OpenAPI openAPI) {
+    private Map<String, Schema> generateComplexTypeSchemaProperty(List<String> enums, Type type, List<PropertyModel> propertyModels, OpenAPI openAPI) {
         var schemas = new LinkedHashMap<String, Schema>();
 
         for (var propertyModel : propertyModels) {
-            var schema = generateSchema(propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
+            var schema = generateSchema(enums, propertyModel.getDescription(), propertyModel.getPropertyType(), propertyModel.getChildren(), openAPI);
 //            schema.setRequired(propertyModels.stream().filter(o -> o.isRequired()).map(o -> o.getName()).collect(Collectors.toList()));
             schemas.put(propertyModel.getName(), schema);
         }
@@ -385,34 +385,11 @@ public class Swagger3RestDocGenerator implements IRestDocGenerator {
         return schema;
     }
 
-    private Schema generateEnumSchema(Class clazz) {
-        var enumDoc = RuntimeJavadoc.getJavadoc(clazz);
-        var enums = Arrays.stream(clazz.getEnumConstants()).map(o -> o.toString()).collect(Collectors.toList());
-
+    private Schema generateEnumSchema(Class clazz, List<String> enums, String description) {
         var itemSchema = new Schema();
-
-        String enumStr = "";
-        for (var enumConst : enumDoc.getEnumConstants()) {
-            if (!enumStr.isEmpty())
-                enumStr += ", ";
-            enumStr += enumConst.getName();
-            String desc = FormatUtils.format(enumConst.getComment());
-            if (desc != null && !desc.isEmpty()) {
-                enumStr += ": " + desc;
-            }
-        }
-
-        String desc = FormatUtils.format(enumDoc.getComment());
-        if (desc == null || desc.isEmpty())
-            itemSchema.setDescription(enumStr);
-        else
-            itemSchema.setDescription(desc + "; " + enumStr);
-
         itemSchema.setType("string"); // todo 如何决定是string还是int
         itemSchema.setEnum(enums);
-//        if (enums.size() > 0) {
-//            itemSchema.setDefault(enums.get(0));
-//        }
+        itemSchema.setDescription(description);
         return itemSchema;
     }
 

@@ -47,5 +47,5 @@ public class PropertyModel {
     /**
      * 枚举的可选值
      */
-    private List<String> enums;
+    private List<String> _enums;
 }
