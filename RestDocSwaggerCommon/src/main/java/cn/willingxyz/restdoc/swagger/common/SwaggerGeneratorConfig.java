@@ -29,10 +29,7 @@ public class SwaggerGeneratorConfig {
      * 将JavaDoc的注释作为类的名称
      */
     private boolean _resolveJavaDocAsTypeName = false;
-    /**
-     * 如果controller里没有方法，则不显示该controller
-     */
-    private boolean _hideEmptyController = false;
+
     private List<ServerInfo> _servers = new ArrayList<>();
     private ISwaggerTypeInspector _swaggerTypeInspector;
     private ITypeInspector _typeInspector;

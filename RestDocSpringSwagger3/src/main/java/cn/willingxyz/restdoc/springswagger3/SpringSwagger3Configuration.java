@@ -11,9 +11,7 @@ import cn.willingxyz.restdoc.spring.filter.HttpBasicAuthFilter;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
-import cn.willingxyz.restdoc.swagger3.RestDocConfigSwagger3Ext;
-import cn.willingxyz.restdoc.swagger3.Swagger3GeneratorConfig;
-import cn.willingxyz.restdoc.swagger3.Swagger3RestDocGenerator;
+import cn.willingxyz.restdoc.swagger3.*;
 import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +44,8 @@ public class SpringSwagger3Configuration {
         var parseConfig = new SpringRestDocParseConfig();
         parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
 
+
+
         // todo 从spring容器中获取实例
         Swagger3GeneratorConfig generatorConfig = new Swagger3GeneratorConfig(parseConfig);
         generatorConfig.setDescription(restDocConfig.getApiDescription());
@@ -57,7 +57,12 @@ public class SpringSwagger3Configuration {
         generatorConfig.setTypeNameParser(new TypeNameParser(restDocConfig.isResolveJavaDocAsTypeName()));
         generatorConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
         generatorConfig.setResolveJavaDocAsTypeName(restDocConfig.isResolveJavaDocAsTypeName());
-        generatorConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
+
+        if (restDocConfig.isHideEmptyController()) {
+            List<IOpenAPIFilter> openAPIFilters = new ArrayList<>(ext.getOpenAPIFilters());
+            openAPIFilters.add(new HideEmptyControllerOpenAPIFilter());
+            ext.setOpenAPIFilters(openAPIFilters);
+        }
         if(ext!=null)
             generatorConfig.setOpenAPIFilters(ext.getOpenAPIFilters());
 

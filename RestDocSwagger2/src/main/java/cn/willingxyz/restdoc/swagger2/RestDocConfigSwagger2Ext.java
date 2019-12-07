@@ -10,5 +10,11 @@ import java.util.List;
 @Data
 @Builder
 public class RestDocConfigSwagger2Ext {
-    private List<ISwaggerFilter> _swaggerFilters = new ArrayList<>();
+    private List<ISwaggerFilter> _swaggerFilters;
+
+    public List<ISwaggerFilter> getSwaggerFilters()
+    {
+        if (_swaggerFilters == null) _swaggerFilters = new ArrayList<>();
+        return _swaggerFilters;
+    }
 }

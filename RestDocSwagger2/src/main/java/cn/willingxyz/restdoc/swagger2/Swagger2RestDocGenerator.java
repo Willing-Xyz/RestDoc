@@ -59,10 +59,6 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     public String generate(RootModel rootModel) {
         var swagger = generateSwagger(rootModel);
 
-        if (_config.isHideEmptyController()) {
-            hideEmptyController(swagger);
-        }
-
         if (_config.getSwaggerFilters() != null) {
             for (ISwaggerFilter openAPIFilter : _config.getSwaggerFilters()) {
                 swagger = openAPIFilter.handle(swagger);
@@ -236,6 +232,7 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
     private Parameter convertFileParameter(ParameterModel param) {
         var requestBody = new FormParameter();
 
+        requestBody.setName(param.getName());
         requestBody.setDescription(param.getDescription());
         requestBody.setExample(param.getExample());
 
@@ -468,24 +465,5 @@ public class Swagger2RestDocGenerator implements IRestDocGenerator {
         }
     }
 
-    private void hideEmptyController(Swagger swagger) {
-        if (swagger.getPaths() == null) return;
-        Set<String> tags = new HashSet<>();
-        for (var path : swagger.getPaths().values()) {
-            if (path.getGet() != null) tags.addAll(path.getGet().getTags());
-            if (path.getPost() != null) tags.addAll(path.getPost().getTags());
-            if (path.getPut() != null) tags.addAll(path.getPut().getTags());
-            if (path.getDelete() != null) tags.addAll(path.getDelete().getTags());
-            if (path.getOptions() != null) tags.addAll(path.getOptions().getTags());
-            if (path.getHead() != null) tags.addAll(path.getHead().getTags());
-            if (path.getPatch() != null) tags.addAll(path.getPatch().getTags());
-        }
 
-        for (Iterator<Tag> iterator = swagger.getTags().iterator(); iterator.hasNext(); ) {
-            Tag tag = iterator.next();
-            if (!tags.stream().filter(o -> o.equals(tag.getName())).findFirst().isPresent()) {
-                iterator.remove();
-            }
-        }
-    }
 }

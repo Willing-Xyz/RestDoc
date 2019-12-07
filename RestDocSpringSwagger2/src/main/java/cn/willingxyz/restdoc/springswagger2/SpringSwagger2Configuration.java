@@ -11,9 +11,7 @@ import cn.willingxyz.restdoc.spring.filter.HttpBasicAuthFilter;
 import cn.willingxyz.restdoc.swagger.common.PrimitiveSwaggerTypeInspector;
 import cn.willingxyz.restdoc.swagger.common.SwaggerGeneratorConfig;
 import cn.willingxyz.restdoc.swagger.common.SwaggerUIConfiguration;
-import cn.willingxyz.restdoc.swagger2.Swagger2GeneratorConfig;
-import cn.willingxyz.restdoc.swagger2.RestDocConfigSwagger2Ext;
-import cn.willingxyz.restdoc.swagger2.Swagger2RestDocGenerator;
+import cn.willingxyz.restdoc.swagger2.*;
 import lombok.var;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +47,7 @@ public class SpringSwagger2Configuration {
 
         parseConfig.getControllerResolvers().add(new SpringControllerResolver(restDocConfig.getPackages()));
 
+
         // todo 从spring容器中获取实例
         var docConfig = new Swagger2GeneratorConfig(parseConfig);
         docConfig.setDescription(restDocConfig.getApiDescription());
@@ -59,7 +58,12 @@ public class SpringSwagger2Configuration {
         docConfig.setTagDescriptionAsName(restDocConfig.isTagDescriptionAsName());
         docConfig.setTypeInspector(new JavaTypeInspector());
         docConfig.setTypeNameParser(new TypeNameParser());
-        docConfig.setHideEmptyController(restDocConfig.isHideEmptyController());
+
+        if (restDocConfig.isHideEmptyController()) {
+            List<ISwaggerFilter> swaggerFilters = new ArrayList<>(ext.getSwaggerFilters());
+            swaggerFilters.add(new HideEmptyControllerSwaggerFilter());
+            ext.setSwaggerFilters(swaggerFilters);
+        }
         if(ext!=null)
             docConfig.setSwaggerFilters(ext.getSwaggerFilters());
 

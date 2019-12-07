@@ -10,5 +10,11 @@ import java.util.List;
 @Data
 @Builder
 public class RestDocConfigSwagger3Ext {
-    private List<IOpenAPIFilter> _openAPIFilters = new ArrayList<>();
+    private List<IOpenAPIFilter> _openAPIFilters;
+
+    public List<IOpenAPIFilter> getOpenAPIFilters()
+    {
+        if (_openAPIFilters == null) _openAPIFilters = new ArrayList<>();
+        return _openAPIFilters;
+    }
 }
