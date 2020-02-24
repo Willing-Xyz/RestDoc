@@ -20,4 +20,13 @@ public class JacksonController {
         return null;
     }
 
+    /**
+     * jsonIgnoreProperties
+     */
+    @GetMapping("/jsonIgnoreProperties")
+    public IgnorePropertiesBean jsonIgnoreProperties(IgnorePropertiesBean bean)
+    {
+        return null;
+    }
+
 }

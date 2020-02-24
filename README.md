@@ -107,6 +107,7 @@ public class SwaggerConfig {
 - JsonIgnore
 - JsonIgnoreType
 - JsonProperty (不支持对枚举的操作)
+- JsonIgnoreProperties (仅支持value属性)
 
 
 ## 配置参考

@@ -18,6 +18,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RestDocParser implements IRestDocParser {
     private final RestDocParseConfig _configuration;
@@ -105,7 +106,7 @@ public class RestDocParser implements IRestDocParser {
     }
 
     private List<ResponseModel> handleReturnValue(Method method, Comment returns) {
-        var responseModels = new ArrayList<ResponseModel>();
+        List<ResponseModel> responseModels = new ArrayList<>();
         ResponseModel lastResponseModel = null;
         for (var returnParser : _configuration.getReturnParsers()) {
             if (returnParser.isNew()) {
@@ -125,7 +126,7 @@ public class RestDocParser implements IRestDocParser {
             responseModel = _configuration.getResponsePostProcessor().postProcess(responseModel, method);
             responseModels.set(i, responseModel);
         }
-        responseModels.remove(null);
+        responseModels = responseModels.stream().filter(o -> o != null).collect(Collectors.toList());
         return responseModels;
     }
 

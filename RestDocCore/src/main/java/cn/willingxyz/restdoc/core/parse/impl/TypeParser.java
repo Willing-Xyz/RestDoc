@@ -11,6 +11,7 @@ import cn.willingxyz.restdoc.core.parse.ITypeParser;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TypeParser implements ITypeParser {
     private final IPropertyResolver _propertyResolver;
@@ -52,7 +53,7 @@ public class TypeParser implements ITypeParser {
                     model = postProcess(model, typeContext);
                     propertyModel.getChildren().set(i, model);
                 }
-                propertyModel.getChildren().remove(null);
+                propertyModel.setChildren(propertyModel.getChildren().stream().filter(o -> o != null).collect(Collectors.toList()));
             }
         }
         return propertyModel;
