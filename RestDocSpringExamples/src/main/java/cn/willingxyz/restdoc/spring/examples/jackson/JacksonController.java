@@ -13,18 +13,18 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/jackson")
 public class JacksonController {
-
-    @GetMapping("/test")
-    public JacksonBean test(JacksonBean value)
-    {
-        return null;
-    }
+//
+//    @GetMapping("/test")
+//    public JacksonBean test(JacksonBean value)
+//    {
+//        return null;
+//    }
 
     /**
      * jsonIgnoreProperties
      */
     @GetMapping("/jsonIgnoreProperties")
-    public IgnorePropertiesBean jsonIgnoreProperties(IgnorePropertiesBean bean)
+    public IgnorePropertiesBean jsonIgnoreProperties(IgnorePropertiesBean bean, IgnorePropertiesBean.FamilyExt ext)
     {
         return null;
     }

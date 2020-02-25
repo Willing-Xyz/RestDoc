@@ -20,15 +20,21 @@ public class IgnorePropertiesBean {
     @JsonIgnoreProperties(value = "dog")
     public void setDog(String dog) {}
 
-    private Family _family;
+    private FamilyExt _familyExt;
 
     @Data
-    @JsonIgnoreProperties(value = "brother")
+    @JsonIgnoreProperties({"parent"})
     public static class Family {
         private String _brother;
         @JsonIgnoreProperties(value = "sister")
         private String _sister;
         private String _parent;
         private String _child;
+    }
+
+    @Data
+    @JsonIgnoreProperties(value = { "brother"})
+    public static class FamilyExt extends Family {
+        private String _ext;
     }
 }
