@@ -8,10 +8,7 @@ import cn.willingxyz.restdoc.core.parse.utils.ReflectUtils;
 import lombok.var;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PropertyResolver implements IPropertyResolver {
     private final RestDocParseConfig _config;
@@ -214,6 +211,7 @@ public class PropertyResolver implements IPropertyResolver {
         add(ParameterizedType.class);
         add(ClassLoader.class);
         add(Enum.class);
+        add(Map.class);
     }};
 
 }

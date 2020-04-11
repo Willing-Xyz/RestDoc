@@ -198,4 +198,4 @@ swagger2规范打开 http://localhost:8084/swagger2-ui/index.html 查看。
 
 通过注解处理器在编译时生成javadoc的json文件, 将这些文件转换为Swagger-ui的OpenApi数据格式。
 
-更多信息请参考 Wiki 
+更多信息请参考 [Wiki](https://github.com/Willing-Xyz/RestDoc/wiki)
