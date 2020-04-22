@@ -29,4 +29,12 @@ public class JacksonController {
         return null;
     }
 
+    /**
+     * jsonIgnoreProperties2
+     */
+    @GetMapping("/jsonIgnoreProperties2")
+    public IgnorePropertiesBean.FamilyExt jsonIgnoreProperties2(IgnorePropertiesBean bean, IgnorePropertiesBean.FamilyExt ext)
+    {
+        return null;
+    }
 }

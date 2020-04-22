@@ -25,8 +25,18 @@ public class JsonIgnorePropertiesPostProcessor implements IPropertyPostProcessor
             return null;
         }
         // 2. 当@JsonIgnoreProperties出现在类上
+        // 2.1 当@JsonIgnoreProperties出现在定义该属性的类上
         Class clazz = propertyModel.getPropertyItem().getDeclaringClass();
         if (clazz != null) {
+            List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
+            if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
+                return null;
+            }
+        }
+        // 2.2 当@JsonIgnoreProperties出现在子类上
+        if (typeContext.getType() != null && typeContext.getType() instanceof Class) {
+            clazz = (Class) typeContext.getType();
+
             List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
             if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
                 return null;
