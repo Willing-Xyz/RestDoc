@@ -36,10 +36,14 @@ public class JsonIgnorePropertiesPostProcessor implements IPropertyPostProcessor
         // 2.2 当@JsonIgnoreProperties出现在子类上
         if (typeContext.getType() != null && typeContext.getType() instanceof Class) {
             clazz = (Class) typeContext.getType();
-
-            List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
-            if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
-                return null;
+            while (true) {
+                List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
+                if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
+                    return null;
+                }
+                if (clazz == null || clazz == propertyModel.getPropertyItem().getDeclaringClass())
+                    break;
+                clazz = clazz.getSuperclass();
             }
         }
         // 参数所属的类作为类的属性
