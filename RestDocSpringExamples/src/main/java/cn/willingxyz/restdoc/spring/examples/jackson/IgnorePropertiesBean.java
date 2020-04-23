@@ -34,7 +34,8 @@ public class IgnorePropertiesBean {
 
     @Data
     @JsonIgnoreProperties(value = { "brother"})
-    public static class FamilyExt extends Family {
+    public static class FamilyExt<T> extends Family {
         private String _ext;
+        private T _obj;
     }
 }

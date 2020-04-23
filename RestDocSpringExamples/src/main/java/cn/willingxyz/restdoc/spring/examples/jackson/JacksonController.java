@@ -1,6 +1,7 @@
 package cn.willingxyz.restdoc.spring.examples.jackson;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,8 +34,15 @@ public class JacksonController {
      * jsonIgnoreProperties2
      */
     @GetMapping("/jsonIgnoreProperties2")
-    public IgnorePropertiesBean.FamilyExt jsonIgnoreProperties2(IgnorePropertiesBean bean, IgnorePropertiesBean.FamilyExt ext)
+    public R<MyPage<IgnorePropertiesBean.FamilyExt<MyPage>>> jsonIgnoreProperties2()
     {
         return null;
+    }
+
+    @Data
+    public class R<T>{
+        private long _code;
+        private T _data;
+        private String _msg;
     }
 }

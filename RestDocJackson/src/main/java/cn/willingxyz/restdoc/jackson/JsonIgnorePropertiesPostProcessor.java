@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,11 +50,21 @@ public class JsonIgnorePropertiesPostProcessor implements IPropertyPostProcessor
         }
         // 参数所属的类作为类的属性
         PropertyItem parentPropertyItem = propertyModel.getParentPropertyItem();
-        if (parentPropertyItem != null && parentPropertyItem.getPropertyType() instanceof Class) {
-            clazz = (Class) parentPropertyItem.getPropertyType();
-            List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
-            if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
-                return null;
+        if (parentPropertyItem != null) {
+            if (parentPropertyItem.getPropertyType() instanceof Class) {
+                clazz = (Class) parentPropertyItem.getPropertyType();
+            }
+            else if (parentPropertyItem.getPropertyType() instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType)parentPropertyItem.getPropertyType()).getRawType();
+                if (rawType instanceof Class) {
+                    clazz = (Class) rawType;
+                }
+            }
+            if (clazz != null) {
+                List<JsonIgnoreProperties> jsonIgnorePropertiesList = getAnnotation(clazz);
+                if (jsonIgnorePropertiesList.stream().anyMatch(o -> arrayContains(o.value(), propertyModel.getName()))) {
+                    return null;
+                }
             }
         }
         // 属性所属的类作为作为方法参数
